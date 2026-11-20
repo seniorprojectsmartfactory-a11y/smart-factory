@@ -1,0 +1,47 @@
+name: smart-factory
+services:
+  influxdb:
+    image: influxdb:2.9.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8086:8086"
+    environment:
+      INFLUXD_BOLT_PATH: /var/lib/influxdb2/influxd.bolt
+      INFLUXD_SQLITE_PATH: /var/lib/influxdb2/influxd.sqlite
+      INFLUXD_ENGINE_PATH: /var/lib/influxdb2/engine
+    volumes:
+      - ./data/influxdb-primary:/var/lib/influxdb2
+  influxdb-legacy:
+    image: influxdb:2.9.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8087:8086"
+    environment:
+      INFLUXD_BOLT_PATH: /var/lib/influxdb2/influxd.bolt
+      INFLUXD_SQLITE_PATH: /var/lib/influxdb2/influxd.sqlite
+      INFLUXD_ENGINE_PATH: /var/lib/influxdb2/engine
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb2
+  nodered:
+    image: nodered/node-red:5.0.8
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1881:1880"
+    environment:
+      TZ: Asia/Bangkok
+    volumes:
+      - ./data/nodered:/data
+    depends_on:
+      - influxdb
+      - influxdb-legacy
+  grafana:
+    image: grafana/grafana:13.2.3
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 1s
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    depends_on:
+      - influxdb

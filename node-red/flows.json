@@ -1,0 +1,1969 @@
+[
+    {
+        "id": "tab1",
+        "type": "tab",
+        "label": "Smart Factory - WISE4250",
+        "disabled": false,
+        "info": "Poll Advantech WISE-4250-S262 (192.0.2.200) over Modbus TCP and write DI/DO status into InfluxDB for Grafana dashboards."
+    },
+    {
+        "id": "tab2",
+        "type": "tab",
+        "label": "AMR - WISE-4012",
+        "disabled": false,
+        "info": "WISE-4012 real Modbus polling remains active for Debug. Temporary simulator writes changing AI0-AI3 values to existing measurement wise4012_ai_raw; real Modbus-to-Influx wire is disconnected while simulation is active."
+    },
+    {
+        "id": "simtab1",
+        "type": "tab",
+        "label": "Enterprise Simulation",
+        "disabled": false,
+        "info": "Simulated factory and AMR business data"
+    },
+    {
+        "id": "objdet_tab",
+        "type": "tab",
+        "label": "Object Detection - WISE4012",
+        "disabled": false,
+        "info": "KEYENCE PZ-G41N -> WISE-4012 DI0 -> Modbus TCP -> rising-edge count -> InfluxDB -> Grafana"
+    },
+    {
+        "id": "mir_di0_tab",
+        "type": "tab",
+        "label": "MiR - DI0 Sound Alert",
+        "disabled": true,
+        "info": "PZ-G41N DI0 rising edge -> Beep 1s at 40%. Requires Ready, stationary, empty queue. Never resumes robot, clears a queue, or commands movement. First sample is baseline; cooldown 3s; no retries/backlog."
+    },
+    {
+        "id": "sf_rebuild_telemetry",
+        "type": "tab",
+        "label": "Smart Factory – MiR & UR monitoring",
+        "disabled": false,
+        "info": "Read-only robot telemetry. WISE remains in Object Detection – WISE4012."
+    },
+    {
+        "id": "mbclient1",
+        "type": "modbus-client",
+        "name": "WISE-4250",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "192.0.2.200",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true
+    },
+    {
+        "id": "influxcfg1",
+        "type": "influxdb",
+        "hostname": "influxdb-legacy",
+        "port": "8086",
+        "protocol": "http",
+        "database": "factory_iot",
+        "name": "InfluxDB - factory_iot",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://influxdb-legacy:8086",
+        "timeout": "",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "mbclient2",
+        "type": "modbus-client",
+        "name": "WISE-4012",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "192.0.2.102",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "objdet_live_base",
+        "type": "ui-base",
+        "name": "WISE-4012 Live Sensor Monitor",
+        "path": "/wise-live",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "fixed",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 2,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "objdet_live_theme",
+        "type": "ui-theme",
+        "name": "Industrial Dark",
+        "colors": {
+            "surface": "#0b1620",
+            "primary": "#19b8ff",
+            "bgPage": "#050b12",
+            "groupBg": "#08131e",
+            "groupOutline": "#243f55"
+        },
+        "sizes": {
+            "density": "compact",
+            "pagePadding": "0px",
+            "groupGap": "0px",
+            "groupBorderRadius": "0px",
+            "widgetGap": "0px"
+        }
+    },
+    {
+        "id": "objdet_live_page",
+        "type": "ui-page",
+        "name": "WISE-4012 Live Sensor Monitor",
+        "ui": "objdet_live_base",
+        "path": "/sensor-monitor",
+        "icon": "sensors",
+        "layout": "grid",
+        "theme": "objdet_live_theme",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "wise-live-page",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "objdet_live_group",
+        "type": "ui-group",
+        "name": "Live Monitor",
+        "page": "objdet_live_page",
+        "width": "12",
+        "height": "1",
+        "order": 1,
+        "showTitle": false,
+        "className": "wise-live-group",
+        "visible": true,
+        "disabled": false,
+        "groupType": "default"
+    },
+    {
+        "id": "sf_rebuild_influx",
+        "type": "influxdb",
+        "hostname": "influxdb",
+        "port": "8086",
+        "protocol": "http",
+        "database": "senior_project",
+        "name": "Smart Factory • InfluxDB 2",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://influxdb:8086",
+        "timeout": "10",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "readdi1",
+        "type": "modbus-read",
+        "z": "tab1",
+        "name": "Read DI 0-7 (FC02)",
+        "topic": "di",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "Input",
+        "adr": "0",
+        "quantity": "8",
+        "rate": "2",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "server": "mbclient1",
+        "useIOFile": false,
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 200,
+        "y": 100,
+        "wires": [
+            [
+                "fndi1",
+                "dbgdi1"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "fndi1",
+        "type": "function",
+        "z": "tab1",
+        "name": "format DI fields",
+        "func": "const vals = msg.payload || [];\nconst fields = {};\nfor (let i = 0; i < 8; i++) {\n    fields['di' + i] = vals[i] ? 1 : 0;\n}\nmsg.payload = fields;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 120,
+        "wires": [
+            [
+                "influxdi1"
+            ]
+        ]
+    },
+    {
+        "id": "influxdi1",
+        "type": "influxdb out",
+        "z": "tab1",
+        "influxdb": "influxcfg1",
+        "name": "write wise4250_di",
+        "measurement": "wise4250_di",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "factory_iot",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "smart_factory",
+        "bucket": "factory_iot",
+        "x": 750,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "dbgdi1",
+        "type": "debug",
+        "z": "tab1",
+        "name": "DI raw",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "readdo1",
+        "type": "modbus-read",
+        "z": "tab1",
+        "name": "Read DO 0-3 (FC01)",
+        "topic": "do",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "Coil",
+        "adr": "0",
+        "quantity": "4",
+        "rate": "2",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "mbclient1",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 200,
+        "y": 220,
+        "wires": [
+            [
+                "fndo1",
+                "dbgdo1"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "fndo1",
+        "type": "function",
+        "z": "tab1",
+        "name": "format DO fields",
+        "func": "const vals = msg.payload || [];\nconst fields = {};\nfor (let i = 0; i < 4; i++) {\n    fields['do' + i] = vals[i] ? 1 : 0;\n}\nmsg.payload = fields;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 240,
+        "wires": [
+            [
+                "influxdo1"
+            ]
+        ]
+    },
+    {
+        "id": "influxdo1",
+        "type": "influxdb out",
+        "z": "tab1",
+        "influxdb": "influxcfg1",
+        "name": "write wise4250_do",
+        "measurement": "wise4250_do",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "factory_iot",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "smart_factory",
+        "bucket": "factory_iot",
+        "x": 750,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "dbgdo1",
+        "type": "debug",
+        "z": "tab1",
+        "name": "DO raw",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "readai1",
+        "type": "modbus-read",
+        "z": "tab2",
+        "name": "Read AI raw 40001-40004 (FC03, addr 1)",
+        "topic": "ai_raw",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "1",
+        "quantity": "4",
+        "rate": "1",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "mbclient2",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 200,
+        "y": 100,
+        "wires": [
+            [
+                "fnai1",
+                "dbgai1"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "fnai1",
+        "type": "function",
+        "z": "tab2",
+        "name": "format AI registers",
+        "func": "const p = msg.payload;\nconst vals = Array.isArray(p) ? p : (p && Array.isArray(p.data) ? p.data : null);\n\nif (!vals || vals.length < 4) {\n    node.error(\"Expected at least 4 AI holding-register values in msg.payload\", msg);\n    return null;\n}\n\nmsg.payload = {\n    device: \"WISE4012\",\n    ip: \"192.0.2.102\",\n    ai0: Number(vals[0]),\n    ai1: Number(vals[1]),\n    ai2: Number(vals[2]),\n    ai3: Number(vals[3])\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 100,
+        "wires": [
+            [
+                "dbgai2",
+                "influxai1",
+                "dbgai3"
+            ]
+        ]
+    },
+    {
+        "id": "influxai1",
+        "type": "influxdb out",
+        "z": "tab2",
+        "influxdb": "influxcfg1",
+        "name": "write wise4012_ai_raw",
+        "measurement": "wise4012_ai_raw",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "factory_iot",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "smart_factory",
+        "bucket": "factory_iot",
+        "x": 710,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "dbgai1",
+        "type": "debug",
+        "z": "tab2",
+        "name": "raw Modbus response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "dbgai2",
+        "type": "debug",
+        "z": "tab2",
+        "name": "parsed Analog Input values",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "dbgai3",
+        "type": "debug",
+        "z": "tab2",
+        "name": "data to InfluxDB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "simaiinject1",
+        "type": "inject",
+        "z": "tab2",
+        "name": "SIM AI every 2 sec",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "2",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.5,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 240,
+        "wires": [
+            [
+                "simaifn1"
+            ]
+        ]
+    },
+    {
+        "id": "simaifn1",
+        "type": "function",
+        "z": "tab2",
+        "name": "simulate WISE-4012 AI",
+        "func": "const t = Date.now() / 1000;\nconst round = (value, digits = 1) => Number(value.toFixed(digits));\nconst clamp = (value, min, max) => Math.max(min, Math.min(max, value));\n\n// Temporary AMR operating values based on the existing amr_status schema.\n// These are simulated until the MiR200 REST API is connected.\nmsg.payload = {\n    device: \"WISE4012\",\n    ip: \"192.0.2.102\",\n    ai0: round(clamp(72 + 20 * Math.sin(t / 45), 15, 100), 1),   // Battery SOC (%)\n    ai1: round(clamp(75 + 15 * Math.sin(t / 18 + 1), 0, 100), 1), // Utilization (%)\n    ai2: round(clamp(97 + 2 * Math.sin(t / 25 + 2), 90, 100), 2), // Mission success (%)\n    ai3: round(clamp(6.2 + 1.8 * Math.sin(t / 14 + 3), 1, 15), 2), // Cycle time (min)\n    simulated: true\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 240,
+        "wires": [
+            [
+                "simdbg1"
+            ]
+        ]
+    },
+    {
+        "id": "simdbg1",
+        "type": "debug",
+        "z": "tab2",
+        "name": "SIM data to InfluxDB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "siminject1",
+        "type": "inject",
+        "z": "simtab1",
+        "name": "Generate simulated KPI every 10 sec",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "10",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.5,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 200,
+        "wires": [
+            [
+                "simfunction1"
+            ]
+        ]
+    },
+    {
+        "id": "simfunction1",
+        "type": "function",
+        "z": "simtab1",
+        "name": "Simulate enterprise + 6 AMRs",
+        "func": "let tick = context.get('tick') || 0;\ntick += 1;\ncontext.set('tick', tick);\nconst now = new Date();\nconst hour = now.getHours() + now.getMinutes() / 60;\nconst shift = hour < 8 ? 'C' : (hour < 16 ? 'A' : 'B');\nconst rand = (min, max) => min + Math.random() * (max - min);\nconst clamp = (value, min, max) => Math.max(min, Math.min(max, value));\nconst productionRate = Math.round(rand(430, 520));\nconst progress = (hour % 8) / 8;\nconst outputToday = Math.max(0, Math.round(Math.floor(hour / 8) * 4000 + progress * 4000 + rand(-80, 80)));\nconst availability = rand(88, 97);\nconst performance = rand(85, 96);\nconst quality = rand(96, 99.7);\nconst oee = availability * performance * quality / 10000;\n\nconst enterprise = { payload: {\n    production_rate_uph: productionRate,\n    output_today: outputToday,\n    target_today: 12000,\n    oee_pct: Number(oee.toFixed(2)),\n    availability_pct: Number(availability.toFixed(2)),\n    performance_pct: Number(performance.toFixed(2)),\n    quality_pct: Number(quality.toFixed(2)),\n    downtime_min: Number(rand(18, 55).toFixed(1)),\n    energy_kwh: Number((outputToday * 0.42 + rand(30, 80)).toFixed(1)),\n    cost_savings_thb: Number((outputToday * 1.85).toFixed(0)),\n    on_time_delivery_pct: Number(rand(91, 99).toFixed(2)),\n    order_fill_rate_pct: Number(rand(93, 99.5).toFixed(2)),\n    safety_incidents: 0,\n    labor_saved_hours: Number((outputToday / 240).toFixed(1))\n}};\n\nconst states = ['RUNNING', 'IDLE', 'CHARGING', 'RUNNING'];\nconst amrPoints = [];\nfor (let index = 1; index <= 3; index++) {\n    const state = states[(tick + index) % states.length];\n    const battery = clamp(92 - ((tick * 1.7 + index * 9) % 75) + rand(-2, 2), 15, 100);\n    amrPoints.push([{\n        utilization_pct: Number(rand(68, 92).toFixed(2)),\n        battery_soc: Number(battery.toFixed(1)),\n        mission_success_pct: Number(rand(94, 99.8).toFixed(2)),\n        missions_today: Math.round(rand(32, 68)),\n        cycle_time_min: Number(rand(4.2, 8.5).toFixed(2)),\n        distance_km: Number(rand(18, 46).toFixed(2)),\n        downtime_min: Number(rand(0, 18).toFixed(1)),\n        state_code: state === 'RUNNING' ? 3 : (state === 'IDLE' ? 2 : 1)\n    }, {\n        amr_id: 'AMR-' + String(index).padStart(2, '0'),\n        state: state,\n        shift: shift\n    }]);\n}\n\nconst alarm = { payload: [[{\n    critical_count: 0,\n    warning_count: Math.round(rand(0, 3)),\n    info_count: Math.round(rand(1, 3)),\n    mttr_min: Number(rand(6, 14).toFixed(1)),\n    mtbf_hours: Number(rand(80, 140).toFixed(1))\n}, { shift: shift }]] };\n\nreturn [enterprise, { payload: amrPoints }, alarm];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 120,
+        "wires": [
+            [
+                "simentout1"
+            ],
+            [
+                "simamrout1"
+            ],
+            [
+                "simalarmout1"
+            ]
+        ]
+    },
+    {
+        "id": "simentout1",
+        "type": "influxdb out",
+        "z": "simtab1",
+        "influxdb": "influxcfg1",
+        "name": "write enterprise_overview",
+        "measurement": "enterprise_overview",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "factory_iot",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "smart_factory",
+        "bucket": "factory_iot",
+        "x": 790,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "simamrout1",
+        "type": "influxdb out",
+        "z": "simtab1",
+        "influxdb": "influxcfg1",
+        "name": "write amr_status",
+        "measurement": "amr_status",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "factory_iot",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "smart_factory",
+        "bucket": "factory_iot",
+        "x": 770,
+        "y": 130,
+        "wires": []
+    },
+    {
+        "id": "simalarmout1",
+        "type": "influxdb out",
+        "z": "simtab1",
+        "influxdb": "influxcfg1",
+        "name": "write factory_alarm",
+        "measurement": "factory_alarm",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "factory_iot",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "smart_factory",
+        "bucket": "factory_iot",
+        "x": 780,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "objdet_note_mapping",
+        "type": "comment",
+        "z": "objdet_tab",
+        "name": "VERIFIED: FC03 addr 300 = register 40301 all-DI bitmask; DI0 = bit 0",
+        "info": "Live probe on 2026-09-17: address 300 returned 0x0000; address 301 returned Modbus exception 02.",
+        "x": 420,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "objdet_note_config",
+        "type": "comment",
+        "z": "objdet_tab",
+        "name": "Edit INVERT_LOGIC in Parse DI0; edit DEBOUNCE_MS in Process Object Sensor",
+        "info": "INVERT_LOGIC defaults false. DEBOUNCE_MS defaults 200.",
+        "x": 420,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "objdet_note_influx",
+        "type": "comment",
+        "z": "objdet_tab",
+        "name": "Influx bucket: senior_project | measurements: object_detection + object_detection_event",
+        "info": "Uses the existing encrypted InfluxDB credential configuration.",
+        "x": 460,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "objdet_read",
+        "type": "modbus-read",
+        "z": "objdet_tab",
+        "name": "Poll WISE-4012 DI0 every 500 ms",
+        "topic": "wise4012_di",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "300",
+        "quantity": "1",
+        "rate": "500",
+        "rateUnit": "ms",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "mbclient2",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "objdet_parse",
+                "objdet_raw_dbg"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "objdet_raw_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "Raw response from WISE-4012",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "objdet_parse",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Parse WISE-4012 DI0",
+        "func": "// Verified against the real WISE-4012 on 2026-09-17:\n// FC03, address 300 (register 40301), quantity 1 returns an all-DI bitmask.\n// DI0 is bit 0 of the first register.\nconst INVERT_LOGIC = false; // Change to true if the physical signal is active-low.\n\nconst p = msg.payload;\nconst values = Array.isArray(p) ? p : (p && Array.isArray(p.data) ? p.data : null);\nif (!values || values.length < 1) {\n    node.error(\"Expected a Modbus register array in msg.payload\", msg);\n    return null;\n}\n\nconst diBitmask = Number(values[0]);\nif (!Number.isFinite(diBitmask)) {\n    node.error(\"WISE-4012 DI register is not numeric\", msg);\n    return null;\n}\n\nconst rawDi0 = diBitmask & 1;\nconst sensorValue = INVERT_LOGIC ? (rawDi0 ^ 1) : rawDi0;\nmsg.payload = {\n    sensor_name: \"PZ-G41N\",\n    device: \"WISE-4012\",\n    channel: \"DI0\",\n    detected: sensorValue === 1,\n    sensor_value: sensorValue,\n    raw_sensor_value: rawDi0,\n    di_bitmask: diBitmask,\n    timestamp: new Date().toISOString()\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 220,
+        "wires": [
+            [
+                "objdet_parsed_dbg",
+                "objdet_process",
+                "mir_di0_linkout"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_parsed_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "Parsed DI0",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "objdet_process",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Process Object Sensor",
+        "func": "// Rising-edge object counter. Node context intentionally owns the state.\nconst DEBOUNCE_MS = 200; // Easy tuning point: recommended 100-300 ms.\n\nif (msg.topic === \"reset_object_counter\") {\n    context.set(\"object_count\", 0);\n    context.set(\"previous_sensor_state\", null);\n    context.set(\"last_detection_ms\", 0);\n    // Preserve msg.req/msg.res when this came from an HTTP In node.\n    msg.payload = {\n        ok: true,\n        object_count: 0,\n        message: \"Object counter and previous sensor state reset\",\n        timestamp: new Date().toISOString()\n    };\n    msg.statusCode = 200;\n    msg.headers = { \"content-type\": \"application/json\" };\n    return [null, null, msg];\n}\n\nconst data = msg.payload;\nif (!data || (data.sensor_value !== 0 && data.sensor_value !== 1)) {\n    node.error(\"Process Object Sensor expected sensor_value 0 or 1\", msg);\n    return null;\n}\n\nconst now = Date.now();\nconst currentState = data.sensor_value;\nconst previousState = context.get(\"previous_sensor_state\");\nlet objectCount = Number(context.get(\"object_count\") || 0);\nlet lastDetectionMs = Number(context.get(\"last_detection_ms\") || 0);\nlet risingEdge = false;\n\n// Do not invent an edge on deploy/restart when the first sample is already high.\nif (previousState === 0 && currentState === 1) {\n    if ((now - lastDetectionMs) >= DEBOUNCE_MS) {\n        risingEdge = true;\n        objectCount += 1;\n        lastDetectionMs = now;\n    }\n}\n\ncontext.set(\"previous_sensor_state\", currentState);\ncontext.set(\"object_count\", objectCount);\ncontext.set(\"last_detection_ms\", lastDetectionMs);\n\ndata.object_count = objectCount;\ndata.event = risingEdge ? \"object_detected\" : \"none\";\ndata.detection_event = risingEdge ? 1 : 0;\ndata.timestamp = new Date(now).toISOString();\nmsg.payload = data;\n\nconst eventMsg = risingEdge ? { payload: { ...data } } : null;\nreturn [msg, eventMsg, null];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 260,
+        "wires": [
+            [
+                "objdet_processed_dbg",
+                "pz_state_throttle",
+                "objdet_live_model"
+            ],
+            [
+                "objdet_event_lp"
+            ],
+            [
+                "objdet_http_out",
+                "objdet_reset_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_processed_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "After Process Object Sensor",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1030,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "objdet_state_lp",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Build object_detection Line Protocol",
+        "func": "function escTag(value) {\n    return String(value).replace(/\\\\/g, \"\\\\\\\\\").replace(/ /g, \"\\\\ \").replace(/,/g, \"\\\\,\").replace(/=/g, \"\\\\=\");\n}\nfunction escString(value) {\n    return String(value).replace(/\\\\/g, \"\\\\\\\\\").replace(/\"/g, '\\\\\"');\n}\nconst d = msg.payload;\nconst tags = { sensor: d.sensor_name, device: d.device, channel: d.channel };\nconst fields = {\n    detected: d.detected ? 1 : 0,\n    sensor_value: d.sensor_value,\n    object_count: d.object_count,\n    detection_event: d.detection_event,\n    event: d.event,\n    timestamp: d.timestamp\n};\nmsg.line_protocol = \"object_detection,sensor=\" + escTag(tags.sensor) + \",device=\" + escTag(tags.device) + \",channel=\" + escTag(tags.channel) +\n    \" detected=\" + fields.detected + \"i,sensor_value=\" + fields.sensor_value + \"i,object_count=\" + fields.object_count +\n    \"i,detection_event=\" + fields.detection_event + \"i,event=\\\"\" + escString(fields.event) + \"\\\",timestamp=\\\"\" + escString(fields.timestamp) + \"\\\"\";\n// node-red-contrib-influxdb converts [fields, tags] to line protocol and adds server time.\nmsg.payload = [fields, tags];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 280,
+        "wires": [
+            [
+                "objdet_lp_dbg",
+                "objdet_state_out"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_event_lp",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Build object_detection_event Line Protocol",
+        "func": "function escTag(value) {\n    return String(value).replace(/\\\\/g, \"\\\\\\\\\").replace(/ /g, \"\\\\ \").replace(/,/g, \"\\\\,\").replace(/=/g, \"\\\\=\");\n}\nfunction escString(value) {\n    return String(value).replace(/\\\\/g, \"\\\\\\\\\").replace(/\"/g, '\\\\\"');\n}\nconst d = msg.payload;\nconst tags = { sensor: d.sensor_name, device: d.device, channel: d.channel };\nconst fields = { object_count: d.object_count, event: \"object_detected\", timestamp: d.timestamp };\nmsg.line_protocol = \"object_detection_event,sensor=\" + escTag(tags.sensor) + \",device=\" + escTag(tags.device) + \",channel=\" + escTag(tags.channel) +\n    \" object_count=\" + fields.object_count + \"i,event=\\\"object_detected\\\",timestamp=\\\"\" + escString(fields.timestamp) + \"\\\"\";\nmsg.payload = [fields, tags];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 360,
+        "wires": [
+            [
+                "objdet_event_lp_dbg",
+                "objdet_event_out"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_lp_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "Line Protocol before InfluxDB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "line_protocol",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "objdet_event_lp_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "Event Line Protocol before InfluxDB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "line_protocol",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "objdet_state_out",
+        "type": "influxdb out",
+        "z": "objdet_tab",
+        "influxdb": "sf_rebuild_influx",
+        "name": "Write object_detection",
+        "measurement": "object_detection",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "senior_project",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "KU",
+        "bucket": "senior_project",
+        "x": 1340,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "objdet_event_out",
+        "type": "influxdb out",
+        "z": "objdet_tab",
+        "influxdb": "sf_rebuild_influx",
+        "name": "Write object_detection_event",
+        "measurement": "object_detection_event",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "senior_project",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "KU",
+        "bucket": "senior_project",
+        "x": 1360,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "objdet_reset_inject",
+        "type": "inject",
+        "z": "objdet_tab",
+        "name": "Reset Object Counter",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "reset_object_counter",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 460,
+        "wires": [
+            [
+                "objdet_process"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_http_in",
+        "type": "http in",
+        "z": "objdet_tab",
+        "name": "POST /api/reset-object-count",
+        "url": "/api/reset-object-count",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 520,
+        "wires": [
+            [
+                "objdet_http_prepare"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_http_prepare",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Prepare Reset Request",
+        "func": "msg.topic = \"reset_object_counter\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 520,
+        "wires": [
+            [
+                "objdet_process"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_http_out",
+        "type": "http response",
+        "z": "objdet_tab",
+        "name": "Reset API Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 1040,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "objdet_reset_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "Reset Object Counter Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "objdet_write_status",
+        "type": "status",
+        "z": "objdet_tab",
+        "name": "InfluxDB Write Status",
+        "scope": [
+            "objdet_state_out",
+            "objdet_event_out"
+        ],
+        "x": 180,
+        "y": 620,
+        "wires": [
+            [
+                "objdet_write_status_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_write_status_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "HTTP Response / Status from InfluxDB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "objdet_write_catch",
+        "type": "catch",
+        "z": "objdet_tab",
+        "name": "Catch InfluxDB Write Errors",
+        "scope": [
+            "objdet_state_out",
+            "objdet_event_out"
+        ],
+        "uncaught": false,
+        "x": 200,
+        "y": 660,
+        "wires": [
+            [
+                "objdet_write_error_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_write_error_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "InfluxDB Write Errors",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "objdet_live_note",
+        "type": "comment",
+        "z": "objdet_tab",
+        "name": "LIVE branch only: no extra Modbus polling and no InfluxDB query",
+        "info": "Branch from Process Object Sensor output 1. Existing InfluxDB/Grafana wires remain unchanged.",
+        "x": 340,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "objdet_live_model",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Build WISE Live Dashboard Model",
+        "func": "// Live UI branch only. This does not write to or query InfluxDB.\nconst data = msg.payload;\nif (!data || (data.sensor_value !== 0 && data.sensor_value !== 1)) {\n    node.warn(\"Live Dashboard expected sensor_value 0 or 1\");\n    return null;\n}\n\nconst receivedAtMs = Date.now();\nlet lastDetectionMs = Number(context.get(\"last_detection_ms\") || 0);\n\n// Reuse the rising-edge decision made by Process Object Sensor.\n// The event timestamp is created when Node-RED processes that rising edge.\nif (data.detection_event === 1 || data.event === \"object_detected\") {\n    const eventTime = Date.parse(data.timestamp);\n    lastDetectionMs = Number.isFinite(eventTime) ? eventTime : receivedAtMs;\n    context.set(\"last_detection_ms\", lastDetectionMs);\n}\n\nmsg.topic = \"wise4012_live\";\nmsg.payload = {\n    device: data.device || \"WISE-4012\",\n    sensor_name: data.sensor_name || \"PZ-G41N\",\n    channel: data.channel || \"DI0\",\n    sensor_value: data.sensor_value,\n    detected: data.sensor_value === 1,\n    object_count: Number(data.object_count || 0),\n    last_detection_ms: lastDetectionMs || null,\n    last_detection_iso: lastDetectionMs ? new Date(lastDetectionMs).toISOString() : null,\n    received_at_ms: receivedAtMs,\n    received_at_iso: new Date(receivedAtMs).toISOString()\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 800,
+        "wires": [
+            [
+                "objdet_live_ui"
+            ]
+        ]
+    },
+    {
+        "id": "objdet_live_ui",
+        "type": "ui-template",
+        "z": "objdet_tab",
+        "group": "objdet_live_group",
+        "page": "",
+        "ui": "",
+        "name": "WISE-4012 Industrial Live UI",
+        "order": 1,
+        "width": 12,
+        "height": 10,
+        "head": "",
+        "format": "<template>\n  <div class=\"wise-live-shell\">\n    <header class=\"wise-header\">\n      <div>\n        <div class=\"eyebrow\">SENIOR PROJECT ?????- IIoT LIVE</div>\n        <h1>WISE-4012 Live Sensor Monitor</h1>\n      </div>\n      <div class=\"device-tag\">PZ-G41N ?????- DI0</div>\n    </header>\n\n    <section class=\"status-grid\">\n      <article class=\"metric-card\" :class=\"sensorDetected ? 'state-detected' : 'state-clear'\">\n        <div class=\"metric-label\">SENSOR STATUS</div>\n        <div class=\"metric-value\">{{ sensorDetected ? 'DETECTED' : 'CLEAR' }}</div>\n        <div class=\"metric-sub\">Digital Input DI0</div>\n      </article>\n\n      <article class=\"metric-card\">\n        <div class=\"metric-label\">LAST DETECTION</div>\n        <div class=\"metric-value time-value\">{{ lastDetectionText }}</div>\n        <div class=\"metric-sub\">Rising edge 0 ??�?�??� 1</div>\n      </article>\n\n      <article class=\"metric-card\" :class=\"isOnline ? 'state-online' : 'state-offline'\">\n        <div class=\"metric-label\">WISE CONNECTION</div>\n        <div class=\"metric-value\">{{ isOnline ? 'ONLINE' : 'OFFLINE' }}</div>\n        <div class=\"metric-sub\">Timeout {{ (timeoutMs / 1000).toFixed(1) }} seconds</div>\n      </article>\n\n      <article class=\"metric-card\" :class=\"isOnline ? '' : 'state-offline'\">\n        <div class=\"metric-label\">DATA AGE</div>\n        <div class=\"metric-value time-value\">{{ dataAgeText }}</div>\n        <div class=\"metric-sub\">Since latest WISE response</div>\n      </article>\n    </section>\n\n    <section class=\"lower-grid\">\n      <article class=\"indicator-panel\" :class=\"sensorDetected ? 'indicator-detected' : 'indicator-clear'\">\n        <div class=\"metric-label\">LIVE DETECTION INDICATOR</div>\n        <div class=\"led-wrap\">\n          <div class=\"live-led\" :class=\"sensorDetected ? 'led-red' : 'led-green'\">\n            <div class=\"led-core\"></div>\n          </div>\n        </div>\n        <div class=\"indicator-text\">{{ sensorDetected ? 'DETECTED' : 'CLEAR' }}</div>\n        <div class=\"indicator-caption\">Direct from Process Object Sensor ?????- No InfluxDB query</div>\n      </article>\n\n      <article class=\"counter-panel\">\n        <div class=\"metric-label\">OBJECT COUNT</div>\n        <div class=\"counter-value\">{{ objectCount }}</div>\n        <div class=\"counter-caption\">Rising-edge events captured by Node-RED</div>\n        <div class=\"counter-rule\">0??�?�??�1 +1 ?????- 1??�?�??�1 no count ?????- 1??�?�??�0 no count</div>\n        <div class=\"counter-warning\">Demo/event counter ??�?�???� not a certified production counter</div>\n      </article>\n    </section>\n\n    <footer class=\"wise-footer\">\n      <span>WISE-4012: 192.0.2.102</span>\n      <span>Live WebSocket update</span>\n      <span>{{ lastUpdateClock }}</span>\n    </footer>\n  </div>\n</template>\n\n<script>\nexport default {\n  data () {\n    return {\n      sensorValue: 0,\n      objectCount: 0,\n      lastDetectionMs: null,\n      lastUpdateMs: null,\n      nowMs: Date.now(),\n      timeoutMs: 2500,\n      timer: null\n    }\n  },\n  computed: {\n    sensorDetected () {\n      return this.sensorValue === 1\n    },\n    dataAgeMs () {\n      return this.lastUpdateMs ? Math.max(0, this.nowMs - this.lastUpdateMs) : null\n    },\n    isOnline () {\n      return this.dataAgeMs !== null && this.dataAgeMs <= this.timeoutMs\n    },\n    dataAgeText () {\n      if (this.dataAgeMs === null) return 'Waiting...'\n      if (this.dataAgeMs < 1000) return Math.round(this.dataAgeMs) + ' ms'\n      return (this.dataAgeMs / 1000).toFixed(2) + ' s'\n    },\n    lastDetectionText () {\n      if (!this.lastDetectionMs) return 'No detection yet'\n      return new Date(this.lastDetectionMs).toLocaleTimeString('th-TH', {\n        hour: '2-digit',\n        minute: '2-digit',\n        second: '2-digit',\n        hour12: false\n      })\n    },\n    lastUpdateClock () {\n      if (!this.lastUpdateMs) return 'Waiting for WISE data'\n      return 'Last update ' + new Date(this.lastUpdateMs).toLocaleTimeString('th-TH', {\n        hour: '2-digit',\n        minute: '2-digit',\n        second: '2-digit',\n        fractionalSecondDigits: 1,\n        hour12: false\n      })\n    }\n  },\n  watch: {\n    msg: {\n      handler (value) {\n        this.applyMessage(value)\n      },\n      deep: true\n    }\n  },\n  methods: {\n    applyMessage (message) {\n      const p = message && message.payload\n      if (!p || (p.sensor_value !== 0 && p.sensor_value !== 1)) return\n      this.sensorValue = p.sensor_value\n      this.objectCount = Number(p.object_count || 0)\n      this.lastDetectionMs = p.last_detection_ms || null\n      this.lastUpdateMs = Number(p.received_at_ms || Date.now())\n      this.nowMs = Date.now()\n    }\n  },\n  mounted () {\n    this.applyMessage(this.msg)\n    this.timer = setInterval(() => {\n      this.nowMs = Date.now()\n    }, 50)\n  },\n  unmounted () {\n    clearInterval(this.timer)\n  }\n}\n</script>\n\n<style>\n.wise-live-shell {\n  min-height: 100%;\n  box-sizing: border-box;\n  padding: 22px;\n  color: #e8f2ff;\n  background:\n    linear-gradient(rgba(24, 52, 78, .16) 1px, transparent 1px),\n    linear-gradient(90deg, rgba(24, 52, 78, .16) 1px, transparent 1px),\n    radial-gradient(circle at 20% 0%, #142c42 0, #08131e 42%, #050b12 100%);\n  background-size: 28px 28px, 28px 28px, auto;\n  font-family: Inter, \"Segoe UI\", sans-serif;\n}\n.wise-header, .wise-footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n.wise-header { margin-bottom: 18px; }\n.eyebrow, .metric-label {\n  color: #74a5c9;\n  font-size: 12px;\n  font-weight: 800;\n  letter-spacing: .16em;\n}\n.wise-header h1 {\n  margin: 4px 0 0;\n  font-size: clamp(24px, 3vw, 40px);\n  line-height: 1.05;\n}\n.device-tag {\n  border: 1px solid #2b6386;\n  border-radius: 999px;\n  padding: 10px 16px;\n  color: #9ed8ff;\n  background: rgba(12, 35, 52, .86);\n  font-weight: 700;\n}\n.status-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 14px;\n}\n.metric-card, .indicator-panel, .counter-panel {\n  border: 1px solid #243f55;\n  border-radius: 14px;\n  background: linear-gradient(145deg, rgba(17, 37, 53, .96), rgba(8, 20, 31, .98));\n  box-shadow: 0 12px 30px rgba(0, 0, 0, .22), inset 0 1px rgba(255,255,255,.03);\n}\n.metric-card {\n  min-height: 126px;\n  padding: 18px;\n  box-sizing: border-box;\n}\n.metric-value {\n  margin-top: 17px;\n  font-size: clamp(24px, 3vw, 42px);\n  font-weight: 900;\n  letter-spacing: .02em;\n}\n.time-value { font-size: clamp(21px, 2.4vw, 34px); }\n.metric-sub { margin-top: 8px; color: #7992a5; font-size: 12px; }\n.state-clear, .state-online { border-color: #16865e; box-shadow: inset 0 -4px #18c981; }\n.state-clear .metric-value, .state-online .metric-value { color: #39e39c; }\n.state-detected, .state-offline { border-color: #a83b49; box-shadow: inset 0 -4px #ff4d5f; }\n.state-detected .metric-value, .state-offline .metric-value { color: #ff6574; }\n.lower-grid {\n  display: grid;\n  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);\n  gap: 14px;\n  margin-top: 14px;\n}\n.indicator-panel, .counter-panel {\n  min-height: 350px;\n  padding: 22px;\n  box-sizing: border-box;\n  text-align: center;\n}\n.led-wrap { display: grid; place-items: center; margin: 20px 0 10px; }\n.live-led {\n  width: clamp(130px, 18vw, 210px);\n  aspect-ratio: 1;\n  display: grid;\n  place-items: center;\n  border-radius: 50%;\n  border: 10px solid #122330;\n  background: #1b2b37;\n}\n.led-core { width: 70%; height: 70%; border-radius: 50%; background: currentColor; }\n.led-green { color: #2ee795; box-shadow: 0 0 18px #1bbd7a, 0 0 70px rgba(46,231,149,.46), inset 0 0 24px rgba(255,255,255,.25); }\n.led-red { color: #ff4055; box-shadow: 0 0 18px #ff4055, 0 0 82px rgba(255,64,85,.58), inset 0 0 24px rgba(255,255,255,.25); animation: detect-pulse .55s infinite alternate; }\n.indicator-text { font-size: clamp(30px, 5vw, 62px); font-weight: 950; letter-spacing: .06em; }\n.indicator-clear .indicator-text { color: #39e39c; }\n.indicator-detected .indicator-text { color: #ff6574; }\n.indicator-caption, .counter-caption { color: #8ca5b8; margin-top: 7px; }\n.counter-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; }\n.counter-value { color: #56bfff; font-size: clamp(80px, 12vw, 150px); font-weight: 950; line-height: 1; }\n.counter-rule { margin-top: 22px; color: #afc4d4; font-size: 13px; }\n.counter-warning { margin-top: 14px; padding: 8px 10px; border-radius: 8px; color: #e6bc62; background: rgba(230,188,98,.08); font-size: 12px; }\n.wise-footer {\n  margin-top: 14px;\n  padding: 12px 4px 0;\n  border-top: 1px solid #1d3447;\n  color: #648096;\n  font-size: 12px;\n}\n@keyframes detect-pulse { from { transform: scale(.97); } to { transform: scale(1.03); } }\n@media (max-width: 900px) {\n  .status-grid { grid-template-columns: repeat(2, 1fr); }\n  .lower-grid { grid-template-columns: 1fr; }\n}\n@media (max-width: 540px) {\n  .wise-live-shell { padding: 12px; }\n  .wise-header, .wise-footer { align-items: flex-start; flex-direction: column; }\n  .status-grid { grid-template-columns: 1fr; }\n}\n</style>",
+        "storeOutMessages": true,
+        "passthru": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "wise-live-widget",
+        "x": 1300,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "pz_state_throttle",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Preserve PZ-G41N 500 ms write cadence",
+        "func": "// Keep the established PZ-G41N Influx cadence while the shared DI poll runs at 100 ms.\nconst WRITE_INTERVAL_MS = 500;\nconst now = Date.now();\nconst state = msg.payload && msg.payload.sensor_value;\nconst previousState = context.get(\"last_state\");\nconst lastWriteMs = Number(context.get(\"last_write_ms\") || 0);\nif (state === previousState && (now - lastWriteMs) < WRITE_INTERVAL_MS) return null;\ncontext.set(\"last_state\", state);\ncontext.set(\"last_write_ms\", now);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1010,
+        "y": 240,
+        "wires": [
+            [
+                "objdet_state_lp"
+            ]
+        ]
+    },
+    {
+        "id": "ez18m_note",
+        "type": "comment",
+        "z": "objdet_tab",
+        "name": "EZ-18M: verified DI1 active-high; debounce 150 ms; heartbeat 5 s",
+        "info": "Physical test 2026-09-22: seven target-in/target-out cycles. DI1 changed 0->1 on target entry and 1->0 on removal. No synthetic data.",
+        "x": 340,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "ez18m_parse",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Extract EZ-18M raw DI1",
+        "func": "// Verified with the physical WISE-4012 on 2026-09-22.\n// FC03 address 300 (register 40301) is the all-DI bitmask; DI1 is bit 1.\n// Seven physical target cycles confirmed active-high behavior: 0=clear, 1=detected.\nconst INVERT_LOGIC = false;\nconst p = msg.payload;\nconst values = Array.isArray(p) ? p : (p && Array.isArray(p.data) ? p.data : null);\nif (!values || values.length < 1) { node.error(\"Expected a Modbus register array in msg.payload\", msg); return null; }\nconst diBitmask = Number(values[0]);\nif (!Number.isFinite(diBitmask)) { node.error(\"WISE-4012 DI register is not numeric\", msg); return null; }\nconst rawDi1 = (diBitmask >> 1) & 1;\nconst logicalState = INVERT_LOGIC ? (rawDi1 ^ 1) : rawDi1;\nmsg.payload = {\n    sensor_name: \"EZ-18M\", sensor_type: \"proximity\", device: \"WISE-4012\", channel: \"DI1\",\n    raw_DI1: rawDi1, proximity_detected: logicalState === 1, detected: logicalState === 1,\n    sensor_value: logicalState, di_bitmask: diBitmask, timestamp: new Date().toISOString()\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 580,
+        "wires": [
+            [
+                "ez18m_raw_dbg",
+                "ez18m_process"
+            ]
+        ]
+    },
+    {
+        "id": "ez18m_raw_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "EZ-18M raw DI1 (temporary verification)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "ez18m_process",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Debounce + rising edge + EZ-18M counter",
+        "func": "// Stable-state debounce plus rising-edge counter for EZ-18M.\nconst DEBOUNCE_MS = 150;   // Easy tuning point: recommended 50-200 ms.\nconst HEARTBEAT_MS = 5000; // Current-state heartbeat for Grafana freshness.\nconst data = msg.payload;\nif (!data || (data.raw_DI1 !== 0 && data.raw_DI1 !== 1)) { node.error(\"Process EZ-18M expected raw_DI1 0 or 1\", msg); return null; }\nconst now = Date.now();\nconst rawState = data.raw_DI1;\nlet stableState = context.get(\"stable_state\");\nlet pendingState = context.get(\"pending_state\");\nlet pendingSince = Number(context.get(\"pending_since\") || 0);\nlet objectCount = Number(context.get(\"object_count\") || 0);\nlet lastDetection = context.get(\"last_detection_timestamp\") || \"\";\nlet lastWriteMs = Number(context.get(\"last_write_ms\") || 0);\nlet stateChanged = false;\nlet risingEdge = false;\nif (stableState === undefined || stableState === null) {\n    stableState = rawState;\n    context.set(\"stable_state\", stableState);\n    context.set(\"pending_state\", null);\n    context.set(\"pending_since\", 0);\n    stateChanged = true;\n} else if (rawState !== stableState) {\n    if (pendingState !== rawState) {\n        context.set(\"pending_state\", rawState);\n        context.set(\"pending_since\", now);\n        return null;\n    }\n    if ((now - pendingSince) < DEBOUNCE_MS) return null;\n    const previousStableState = stableState;\n    stableState = rawState;\n    context.set(\"stable_state\", stableState);\n    context.set(\"pending_state\", null);\n    context.set(\"pending_since\", 0);\n    stateChanged = true;\n    if (previousStableState === 0 && stableState === 1) {\n        risingEdge = true;\n        objectCount += 1;\n        lastDetection = new Date(now).toISOString();\n        context.set(\"object_count\", objectCount);\n        context.set(\"last_detection_timestamp\", lastDetection);\n    }\n} else {\n    context.set(\"pending_state\", null);\n    context.set(\"pending_since\", 0);\n}\nconst heartbeatDue = (now - lastWriteMs) >= HEARTBEAT_MS;\nif (!stateChanged && !heartbeatDue) return null;\ndata.raw_DI1 = stableState;\ndata.proximity_detected = stableState === 1;\ndata.detected = stableState === 1;\ndata.sensor_value = stableState;\ndata.object_count = objectCount;\ndata.event = risingEdge ? \"object_detected\" : \"none\";\ndata.detection_event = risingEdge ? 1 : 0;\ndata.last_detection_timestamp = lastDetection;\ndata.timestamp = new Date(now).toISOString();\nmsg.payload = data;\ncontext.set(\"last_write_ms\", now);\nconst eventMsg = risingEdge ? { payload: { ...data } } : null;\nreturn [msg, eventMsg];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 600,
+        "wires": [
+            [
+                "ez18m_processed_dbg",
+                "ez18m_state_lp"
+            ],
+            [
+                "ez18m_event_lp"
+            ]
+        ]
+    },
+    {
+        "id": "ez18m_processed_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "EZ-18M debounced state (temporary verification)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "ez18m_state_lp",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Build EZ-18M state point",
+        "func": "const d = msg.payload;\nconst fields = {\n    raw_DI1: d.raw_DI1, detected: d.detected ? 1 : 0, sensor_value: d.sensor_value,\n    object_count: d.object_count, detection_event: d.detection_event, event: d.event,\n    timestamp: d.timestamp, last_detection_timestamp: d.last_detection_timestamp || \"\"\n};\nconst tags = { sensor: d.sensor_name, device: d.device, channel: d.channel, sensor_type: d.sensor_type };\nmsg.payload = [fields, tags];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 620,
+        "wires": [
+            [
+                "ez18m_state_dbg",
+                "objdet_state_out"
+            ]
+        ]
+    },
+    {
+        "id": "ez18m_state_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "EZ-18M state to InfluxDB (temporary verification)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ez18m_event_lp",
+        "type": "function",
+        "z": "objdet_tab",
+        "name": "Build EZ-18M detection event",
+        "func": "const d = msg.payload;\nconst fields = { raw_DI1: d.raw_DI1, detected: 1, object_count: d.object_count, event: \"object_detected\", timestamp: d.timestamp };\nconst tags = { sensor: d.sensor_name, device: d.device, channel: d.channel, sensor_type: d.sensor_type };\nmsg.payload = [fields, tags];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 680,
+        "wires": [
+            [
+                "ez18m_event_dbg",
+                "objdet_event_out"
+            ]
+        ]
+    },
+    {
+        "id": "ez18m_event_dbg",
+        "type": "debug",
+        "z": "objdet_tab",
+        "name": "EZ-18M event to InfluxDB (temporary verification)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "ez18m_read",
+        "type": "modbus-read",
+        "z": "objdet_tab",
+        "name": "Poll WISE-4012 DI1 every 100 ms",
+        "topic": "wise4012_di1",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "300",
+        "quantity": "1",
+        "rate": "100",
+        "rateUnit": "ms",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "mbclient2",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 190,
+        "y": 580,
+        "wires": [
+            [
+                "ez18m_parse"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "mir_di0_linkout",
+        "type": "link out",
+        "z": "objdet_tab",
+        "name": "DI0 to MiR sound alert",
+        "mode": "link",
+        "links": [
+            "mir_di0_linkin"
+        ],
+        "x": 650,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "mir_di0_linkin",
+        "type": "link in",
+        "z": "mir_di0_tab",
+        "name": "WISE4012 DI0",
+        "links": [
+            "mir_di0_linkout"
+        ],
+        "x": 75,
+        "y": 140,
+        "wires": [
+            [
+                "mir_di0_gate"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_gate",
+        "type": "function",
+        "z": "mir_di0_tab",
+        "name": "DI0 rising edge / cooldown 3s",
+        "func": "// Baseline the first sample; only a real 0 -> 1 edge triggers a request.\nconst now = Date.now();\nconst manual = msg.topic === 'test_mir_beep';\nif (!manual) {\n    const d = msg.payload;\n    if (!d || d.device !== 'WISE-4012' || d.channel !== 'DI0' || ![0, 1].includes(d.sensor_value)) return null;\n    const previous = context.get('previous');\n    context.set('previous', d.sensor_value);\n    if (previous !== 0 || d.sensor_value !== 1) return null;\n}\nif (now < (flow.get('mir_alert_busy_until') || 0)) return null;\nif (now - (flow.get('mir_alert_last_attempt') || 0) < 3000) return null;\nflow.set('mir_alert_last_attempt', now);\nflow.set('mir_alert_busy_until', now + 20000);\nmsg.event = {source: manual ? 'manual_test' : 'PZ-G41N DI0', timestamp: new Date(now).toISOString()};\nmsg.payload = '';\nmsg.headers = {};\nmsg.requestTimeout = 3000;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 100,
+        "wires": [
+            [
+                "mir_di0_status_req"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_status_req",
+        "type": "http request",
+        "z": "mir_di0_tab",
+        "name": "Read MiR status",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.0.2.130/api/v2.0.0/status",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": true,
+        "headers": [],
+        "x": 560,
+        "y": 100,
+        "wires": [
+            [
+                "mir_di0_status_check"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_status_check",
+        "type": "function",
+        "z": "mir_di0_tab",
+        "name": "Require Ready + stationary",
+        "func": "const s = msg.payload;\nlet reason = null;\nif (msg.statusCode !== 200 || !s || s.robot_name !== 'MiR_S1299') reason = 'MiR status unavailable or robot mismatch';\nelse if (s.state_id !== 3) reason = 'MiR is ' + s.state_text + '; requires Ready';\nelse if (s.mission_queue_id != null) reason = 'MiR has an active mission';\nelse if (!Array.isArray(s.errors) || s.errors.length) reason = 'MiR reports errors';\nelse if (!s.velocity || Math.abs(s.velocity.linear) > 0.01 || Math.abs(s.velocity.angular) > 0.01) reason = 'MiR is moving';\nif (reason) { msg.alert_result = {outcome:'skipped',reason}; return [null,msg]; }\nmsg.payload = '';\nmsg.headers = {};\nreturn [msg,null];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 100,
+        "wires": [
+            [
+                "mir_di0_actions_req"
+            ],
+            [
+                "mir_di0_result"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_actions_req",
+        "type": "http request",
+        "z": "mir_di0_tab",
+        "name": "Verify sound-only mission",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.0.2.130/api/v2.0.0/missions/6f1e92eb-e029-11f1-abd5-0001299a3e90/actions",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": true,
+        "headers": [],
+        "x": 300,
+        "y": 210,
+        "wires": [
+            [
+                "mir_di0_actions_check"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_actions_check",
+        "type": "function",
+        "z": "mir_di0_tab",
+        "name": "Reject modified sound mission",
+        "func": "const a = msg.payload;\nlet valid = msg.statusCode === 200 && Array.isArray(a) && a.length === 3;\nif (valid) {\n    a.sort((x,y) => x.priority-y.priority);\n    const p = Object.fromEntries((a[0].parameters || []).map(x=>[x.id,x.value]));\n    const wait = Object.fromEntries((a[1].parameters || []).map(x=>[x.id,x.value]));\n    valid = a[0].action_type === 'sound' && a[1].action_type === 'wait' && a[2].action_type === 'sound_stop'\n        && a.every(x=>x.mission_id === '6f1e92eb-e029-11f1-abd5-0001299a3e90' && x.scope_reference == null)\n        && p.sound === 'mirconst-guid-0000-0001-sounds000000' && Number(p.volume) === 40\n        && p.mode === 'custom' && p.duration === '00:00:01.000000' && wait.time === '00:00:01.100000';\n}\nif (!valid) { msg.alert_result={outcome:'skipped',reason:'Sound mission changed or cannot be verified'}; return [null,msg]; }\nmsg.payload=''; msg.headers={}; return [msg,null];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 210,
+        "wires": [
+            [
+                "mir_di0_queue_req"
+            ],
+            [
+                "mir_di0_result"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_queue_req",
+        "type": "http request",
+        "z": "mir_di0_tab",
+        "name": "Read mission queue",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.0.2.130/api/v2.0.0/mission_queue",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": true,
+        "headers": [],
+        "x": 300,
+        "y": 300,
+        "wires": [
+            [
+                "mir_di0_queue_check"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_queue_check",
+        "type": "function",
+        "z": "mir_di0_tab",
+        "name": "Require empty queue",
+        "func": "const q=msg.payload;\nif (msg.statusCode !== 200 || !Array.isArray(q)) {\n    msg.alert_result={outcome:'skipped',reason:'Cannot verify mission queue'}; return [null,msg];\n}\nconst pending=q.filter(x=>!['Done','Aborted'].includes(x.state));\nif (pending.length) {\n    msg.alert_result={outcome:'skipped',reason:'Existing pending/executing mission; beep not queued',pending_count:pending.length};\n    return [null,msg];\n}\nmsg.payload={mission_id:'6f1e92eb-e029-11f1-abd5-0001299a3e90'};\nmsg.headers={'content-type':'application/json'};\nreturn [msg,null];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 300,
+        "wires": [
+            [
+                "mir_di0_enqueue"
+            ],
+            [
+                "mir_di0_result"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_enqueue",
+        "type": "http request",
+        "z": "mir_di0_tab",
+        "name": "Queue Beep 1s only",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.0.2.130/api/v2.0.0/mission_queue",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": true,
+        "headers": [],
+        "x": 870,
+        "y": 300,
+        "wires": [
+            [
+                "mir_di0_result"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_result",
+        "type": "function",
+        "z": "mir_di0_tab",
+        "name": "MiR alert result",
+        "func": "let r=msg.alert_result;\nif (!r) {\n    if (msg.error) r={outcome:'error',reason:'MiR request failed; no automatic retry'};\n    else if (msg.statusCode === 201 || msg.statusCode === 200) r={outcome:'queued',queue_id:msg.payload && msg.payload.id};\n    else r={outcome:'error',reason:'MiR queue rejected request',http_status:msg.statusCode};\n}\nr.timestamp=new Date().toISOString();\nr.source=msg.event && msg.event.source;\nflow.set('mir_alert_busy_until',0);\nflow.set('mir_alert_status',r);\nnode.status({fill:r.outcome==='queued'?'green':r.outcome==='skipped'?'yellow':'red',shape:'dot',text:r.reason || ('beep queued #'+r.queue_id)});\nreturn {payload:r};\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 420,
+        "wires": [
+            [
+                "mir_di0_debug"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_debug",
+        "type": "debug",
+        "z": "mir_di0_tab",
+        "name": "MiR DI0 alert result (no credentials)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 950,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "mir_di0_catch",
+        "type": "catch",
+        "z": "mir_di0_tab",
+        "name": "MiR request error - do not retry",
+        "scope": [
+            "mir_di0_status_req",
+            "mir_di0_actions_req",
+            "mir_di0_queue_req",
+            "mir_di0_enqueue"
+        ],
+        "uncaught": false,
+        "x": 280,
+        "y": 420,
+        "wires": [
+            [
+                "mir_di0_result"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_test",
+        "type": "inject",
+        "z": "mir_di0_tab",
+        "name": "Test Beep - same Ready/queue checks",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "test_mir_beep",
+        "x": 290,
+        "y": 40,
+        "wires": [
+            [
+                "mir_di0_gate"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_http",
+        "type": "http in",
+        "z": "mir_di0_tab",
+        "name": "Read alert status",
+        "url": "/api/mir-di0-alert/status",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 240,
+        "y": 510,
+        "wires": [
+            [
+                "mir_di0_http_data"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_http_data",
+        "type": "function",
+        "z": "mir_di0_tab",
+        "name": "Alert configuration + last result",
+        "func": "msg.payload={robot:'MiR_S1299',input:'WISE-4012 DI0 / PZ-G41N',mission_id:'6f1e92eb-e029-11f1-abd5-0001299a3e90',sound:'Beep',duration_seconds:1,volume_percent:40,cooldown_seconds:3,last_result:flow.get('mir_alert_status') || null}; msg.headers={'content-type':'application/json'}; return msg;",
+        "outputs": 1,
+        "x": 560,
+        "y": 510,
+        "wires": [
+            [
+                "mir_di0_http_reply"
+            ]
+        ]
+    },
+    {
+        "id": "mir_di0_http_reply",
+        "type": "http response",
+        "z": "mir_di0_tab",
+        "name": "Alert status",
+        "statusCode": "",
+        "headers": {},
+        "x": 870,
+        "y": 510,
+        "wires": []
+    },
+    {
+        "id": "mir_di0_note",
+        "type": "comment",
+        "z": "mir_di0_tab",
+        "name": "Ready + empty queue required. No auto-resume, motion, retry or queued backlog.",
+        "info": "Independent DI0 edge branch. Sensor counters/history are unchanged. MiR API credentials use Node-RED encrypted credential storage.",
+        "x": 530,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "sf_rebuild_tick",
+        "type": "inject",
+        "z": "sf_rebuild_telemetry",
+        "name": "Poll the three MiRs every 1 s",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.8,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "sf_rebuild_requests"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_requests",
+        "type": "function",
+        "z": "sf_rebuild_telemetry",
+        "name": "Build read-only requests",
+        "func": "return [[{\"device\":\"MiR-.105\",\"host\":\"192.0.2.105\",\"role\":\"MiR with UR arm\"},{\"device\":\"MiR-.211\",\"host\":\"192.0.2.211\",\"role\":\"MiR\"},{\"device\":\"MiR-.201\",\"host\":\"192.0.2.201\",\"role\":\"MiR_S1300\"}].map(robot => {\n    const headers = { Accept: 'application/json' };\n    const auth = env.get('SF_MIR_' + robot.host.split('.').pop() + '_AUTH');\n    if (auth) headers.Authorization = auth;\n    return { robot, url: 'http://' + robot.host + '/api/v2.0.0/status',\n      headers, requestTimeout: 1600, followRedirects: false };\n  })];",
+        "outputs": 1,
+        "timeout": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 445,
+        "y": 100,
+        "wires": [
+            [
+                "sf_rebuild_status_get"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_status_get",
+        "type": "http request",
+        "z": "sf_rebuild_telemetry",
+        "name": "GET MiR status",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 690,
+        "y": 100,
+        "wires": [
+            [
+                "sf_rebuild_status"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_status",
+        "type": "function",
+        "z": "sf_rebuild_telemetry",
+        "name": "Validate / record MiR telemetry",
+        "func": "const point = (measurement, fields, tags) => ({ measurement, payload: [fields, tags] });\nconst p = msg.payload;\n  const robot = msg.robot;\n  if (!robot) return null;\n  const tags = { device: robot.device };\n  const status = Number(msg.statusCode);\n  const valid = status === 200 && p && typeof p === 'object' &&\n    (Number.isFinite(p.battery_percentage) || Number.isFinite(p.position?.x));\n  if (!valid) {\n    const reason = status === 401 || status === 403 ? 'API authentication required' :\n      status >= 100 ? 'HTTP ' + status : 'API unreachable';\n    flow.set('error:' + robot.device, reason);\n    node.status({ fill: 'yellow', shape: 'ring', text: robot.device + ': ' + reason });\n    return [point('sf_device_health', { online: 0, detail: reason }, tags), null];\n  }\n  const fields = {};\n  const numbers = {\n    battery: p.battery_percentage, x: p.position?.x, y: p.position?.y,\n    orientation: p.position?.orientation, speed: p.velocity?.linear,\n    angular_velocity: p.velocity?.angular, state_id: p.state_id,\n    distance: p.distance_moved,\n  };\n  for (const [key, value] of Object.entries(numbers)) {\n    if (Number.isFinite(value)) fields[key] = value;\n  }\n  for (const [key, value] of Object.entries({ state: p.state_text, mission: p.mission_text, map_id: p.map_id })) {\n    if (typeof value === 'string') fields[key] = value.slice(0, 500);\n  }\n  if (typeof p.serial_number === 'string') fields.serial = p.serial_number;\n  flow.set('error:' + robot.device, '');\n  flow.set('status:' + robot.device, { ...fields, received: Date.now() });\n  node.status({ fill: 'green', shape: 'dot', text: robot.device + ': ' + (fields.state || 'status received') });\n  let mapRequest = null;\n  if (typeof p.map_id === 'string' && /^[0-9a-z-]{1,80}$/i.test(p.map_id)) {\n    const cached = flow.get('map:' + robot.device);\n    const previousAttempt = flow.get('map-attempt:' + robot.device);\n    if ((!cached || cached.id !== p.map_id) &&\n        (!previousAttempt || previousAttempt.id !== p.map_id || Date.now() - previousAttempt.time > 30000)) {\n      flow.set('map-attempt:' + robot.device, { id: p.map_id, time: Date.now() });\n      const headers = { Accept: 'application/json' };\n      const auth = env.get('SF_MIR_' + robot.host.split('.').pop() + '_AUTH');\n      if (auth) headers.Authorization = auth;\n      mapRequest = { robot, mapId: p.map_id,\n        url: 'http://' + robot.host + '/api/v2.0.0/maps/' + encodeURIComponent(p.map_id),\n        headers, requestTimeout: 3000, followRedirects: false };\n    }\n  }\n  return [[point('sf_device_health', { online: 1, detail: 'REST API OK' }, tags),\n    point('sf_mir_status', fields, tags)], mapRequest];",
+        "outputs": 2,
+        "timeout": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 100,
+        "wires": [
+            [
+                "sf_rebuild_writer"
+            ],
+            [
+                "sf_rebuild_map_get"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_map_get",
+        "type": "http request",
+        "z": "sf_rebuild_telemetry",
+        "name": "GET each MiR map",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 960,
+        "y": 170,
+        "wires": [
+            [
+                "sf_rebuild_cache"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_cache",
+        "type": "function",
+        "z": "sf_rebuild_telemetry",
+        "name": "Cache map in its own frame",
+        "func": "const p = msg.payload;\n  const device = msg.robot?.device;\n  if (!device || flow.get('status:' + device)?.map_id !== msg.mapId) return null;\n  if (msg.statusCode !== 200 || typeof p?.map !== 'string' || p.map.length > 12000000 ||\n      ![p.resolution, p.origin_x, p.origin_y, p.origin_theta].every(Number.isFinite) || p.resolution <= 0) {\n    node.status({ fill: 'yellow', shape: 'ring', text: device + ': map unavailable' });\n    return null;\n  }\n  const image = Buffer.from(p.map, 'base64');\n  if (image.length < 24 || image.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;\n  const width = image.readUInt32BE(16);\n  const height = image.readUInt32BE(20);\n  if (!width || !height || width > 10000 || height > 10000) return null;\n  flow.set('map:' + device, { id: msg.mapId, map: image.toString('base64'),\n    name: String(p.name || ''), width, height,\n    resolution: p.resolution, x: p.origin_x, y: p.origin_y, theta: p.origin_theta });\n  node.status({ fill: 'green', shape: 'dot', text: device + ': map cached' });\n  return null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 170,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "sf_rebuild_ur",
+        "type": "function",
+        "z": "sf_rebuild_telemetry",
+        "name": "UR RTDE · read outputs only",
+        "func": "return null;",
+        "outputs": 1,
+        "timeout": 0,
+        "initialize": "const point = (measurement, fields, tags) => ({ measurement, payload: [fields, tags] });\nconst host = '192.0.2.222';\n  const tags = { device: 'UR-.222' };\n  const fields = ['actual_q', 'actual_TCP_pose', 'actual_TCP_speed', 'robot_mode', 'runtime_state', 'safety_mode'];\n  const spec = ['VECTOR6D', 'VECTOR6D', 'VECTOR6D', 'INT32', 'UINT32', 'INT32'];\n  const write = (measurement, values) => node.send(point(measurement, values, tags));\n  const health = (online, detail) => {\n    write('sf_device_health', { online, detail });\n    node.status({ fill: online ? 'green' : 'yellow', shape: online ? 'dot' : 'ring', text: detail });\n  };\n  const frame = (type, content = Buffer.alloc(0)) => {\n    const packet = Buffer.alloc(3 + content.length);\n    packet.writeUInt16BE(packet.length);\n    packet[2] = type.charCodeAt(0);\n    content.copy(packet, 3);\n    return packet;\n  };\n  let socket;\n  let retry;\n  let stopped = false;\n  function connect() {\n    if (stopped) return;\n    let pending = Buffer.alloc(0);\n    let state = 'version';\n    let recipe = 0;\n    let report = 0;\n    let reason = 'RTDE disconnected';\n    const client = socket = net.createConnection({ host, port: 30004 });\n    const fail = (detail) => { reason = detail; client.destroy(); };\n    client.setTimeout(4500);\n    client.on('connect', () => client.write(frame('V', Buffer.from([0, 2]))));\n    client.on('timeout', () => fail('RTDE timeout'));\n    client.on('error', (error) => { reason = 'RTDE ' + (error.code || 'socket error'); });\n    client.on('close', () => {\n      if (stopped) return;\n      health(0, reason);\n      retry = setTimeout(connect, 4000);\n    });\n    client.on('data', (chunk) => {\n      pending = Buffer.concat([pending, chunk]);\n      while (pending.length >= 3) {\n        const size = pending.readUInt16BE();\n        if (size < 3 || size > 8192) return fail('Invalid RTDE frame');\n        if (pending.length < size) return;\n        const type = String.fromCharCode(pending[2]);\n        const data = pending.subarray(3, size);\n        pending = pending.subarray(size);\n        if (type === 'V' && state === 'version') {\n          if (data[0] !== 1) return fail('RTDE protocol v2 was rejected');\n          const frequency = Buffer.alloc(8);\n          frequency.writeDoubleBE(2);\n          client.write(frame('O', Buffer.concat([frequency, Buffer.from(fields.join(','))])));\n          state = 'outputs';\n        } else if (type === 'O' && state === 'outputs') {\n          if (!data[0] || data.subarray(1).toString() !== spec.join(',')) return fail('RTDE output recipe rejected');\n          recipe = data[0];\n          client.write(frame('S'));\n          state = 'start';\n        } else if (type === 'S' && state === 'start') {\n          if (data[0] !== 1) return fail('RTDE start rejected');\n          state = 'stream';\n        } else if (type === 'U' && state === 'stream') {\n          if (data.length !== 157 || data[0] !== recipe) return fail('RTDE data format mismatch');\n          const values = {};\n          for (let j = 0; j < 6; j++) values['joint_' + (j + 1)] = data.readDoubleBE(1 + j * 8) * 180 / Math.PI;\n          const pose = ['tcp_x', 'tcp_y', 'tcp_z', 'tcp_rx', 'tcp_ry', 'tcp_rz'];\n          for (let j = 0; j < 6; j++) values[pose[j]] = data.readDoubleBE(49 + j * 8);\n          values.tcp_speed = Math.hypot(data.readDoubleBE(97), data.readDoubleBE(105), data.readDoubleBE(113));\n          values.robot_mode = data.readInt32BE(145);\n          values.runtime_state = data.readUInt32BE(149);\n          values.safety_mode = data.readInt32BE(153);\n          if (!Object.values(values).every(Number.isFinite)) continue;\n          write('sf_ur_status', values);\n          if (Date.now() - report > 3000) {\n            report = Date.now();\n            health(1, 'RTDE streaming');\n          }\n        }\n      }\n    });\n  }\n  globalThis.stopRtde = () => {\n    stopped = true;\n    if (retry) clearTimeout(retry);\n    if (socket) socket.destroy();\n  };\n  connect();",
+        "finalize": "globalThis.stopRtde?.();",
+        "libs": [
+            {
+                "var": "net",
+                "module": "net"
+            }
+        ],
+        "x": 925,
+        "y": 235,
+        "wires": [
+            [
+                "sf_rebuild_writer"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_map_http",
+        "type": "http in",
+        "z": "sf_rebuild_telemetry",
+        "name": "Read-only live map",
+        "url": "/smart-factory/live-map",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 480,
+        "y": 310,
+        "wires": [
+            [
+                "sf_rebuild_render"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_render",
+        "type": "function",
+        "z": "sf_rebuild_telemetry",
+        "name": "Draw the shared Floor 9 Live Map",
+        "func": "// Node-RED Function body. The installer embeds the checked config and PNG.\nconst configuration = {\n  \"MiR-.105\": {\n    \"mapId\": \"15b69c6d-9e08-11f0-92e7-0001299a3e90\",\n    \"anchors\": [\n      {\n        \"x\": 46.820227,\n        \"y\": 95.039205,\n        \"u\": 130,\n        \"v\": 160\n      },\n      {\n        \"x\": 114.392159,\n        \"y\": 92.047727,\n        \"u\": 1010,\n        \"v\": 180\n      }\n    ],\n    \"check\": {\n      \"x\": 107.425,\n      \"y\": 73.225,\n      \"u\": 924.5,\n      \"v\": 426.5\n    },\n    \"maxErrorM\": 0.25\n  },\n  \"MiR-.201\": {\n    \"mapId\": \"f1a3e4c9-b95f-11f0-95c3-0001299a3e90\",\n    \"anchors\": [\n      {\n        \"x\": 3.51196,\n        \"y\": 46.926733,\n        \"u\": 130,\n        \"v\": 160\n      },\n      {\n        \"x\": 71.180028,\n        \"y\": 45.413835,\n        \"u\": 1010,\n        \"v\": 180\n      }\n    ],\n    \"check\": {\n      \"x\": 64.575,\n      \"y\": 26.45,\n      \"u\": 924.5,\n      \"v\": 426.5\n    },\n    \"maxErrorM\": 0.25\n  }\n};\nconst background = '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';\nconst width = 1196;\nconst height = 583;\nconst localAddresses = ['127.0.0.1', '::1', '::ffff:127.0.0.1'];\nif (!localAddresses.includes(msg.req?.socket?.remoteAddress)) {\n  msg.statusCode = 403;\n  msg.payload = 'This live map is available on the monitoring computer.';\n  return msg;\n}\n\nfunction escape(value) {\n  const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' };\n  return String(value ?? '').replace(/[&<>\"']/g, char => entities[char]);\n}\n\nfunction inImage(u, v) {\n  return Number.isFinite(u) && Number.isFinite(v) && u >= 0 && v >= 0 && u < width && v < height;\n}\n\nfunction calibrate(entry, mapId) {\n  if (!entry || !mapId || entry.mapId !== mapId) return null;\n  const { anchors, check, maxErrorM } = entry;\n  if (!Array.isArray(anchors) || anchors.length !== 2 || !(maxErrorM > 0) || !Number.isFinite(maxErrorM)) {\n    return null;\n  }\n  const [p, q] = anchors;\n  if (![p, q, check].every(point => point && Number.isFinite(point.x) &&\n      Number.isFinite(point.y) && inImage(point.u, point.v))) return null;\n\n  const dx = q.x - p.x;\n  const dy = q.y - p.y;\n  const du = q.u - p.u;\n  const dv = p.v - q.v;\n  const norm = dx * dx + dy * dy;\n  if (norm === 0 || (du === 0 && dv === 0)) return null;\n\n  const a = (du * dx + dv * dy) / norm;\n  const b = (dv * dx - du * dy) / norm;\n  const scale = Math.hypot(a, b);\n  if (!Number.isFinite(scale) || scale <= 0) return null;\n\n  // A separate, non-collinear check also catches an accidental axis reflection.\n  const cross = dx * (check.y - p.y) - dy * (check.x - p.x);\n  if (!Number.isFinite(cross) || Math.abs(cross) <= Math.sqrt(norm) * 1e-6) return null;\n\n  function project(x, y) {\n    return {\n      u: p.u + a * (x - p.x) - b * (y - p.y),\n      v: p.v - b * (x - p.x) - a * (y - p.y),\n    };\n  }\n  const projected = project(check.x, check.y);\n  const errorM = Math.hypot(projected.u - check.u, projected.v - check.v) / scale;\n  if (!(errorM <= maxErrorM)) return null;\n\n  return { project, rotationDeg: Math.atan2(b, a) * 180 / Math.PI };\n}\n\nconst robots = [\n  { key: 'MiR-.105', label: '.105', color: '#53E6AC', labelSide: -1 },\n  { key: 'MiR-.201', label: '.201', color: '#6CC9FF', labelSide: 1 },\n];\nconst now = Date.now();\nconst data = robots.map(robot => {\n  const s = flow.get('status:' + robot.key);\n  const error = flow.get('error:' + robot.key);\n  const fresh = s && !error && Number.isFinite(s.received) && now - s.received < 8000;\n  const transform = fresh ? calibrate(configuration[robot.key], s.map_id) : null;\n  const point = transform && transform.project(s.x, s.y);\n  const visible = point && inImage(point.u, point.v);\n  const heading = transform && Number.isFinite(s.orientation) ? -s.orientation - transform.rotationDeg : null;\n  const mapStatus = !fresh ? (error || 'Waiting for telemetry') :\n    !transform ? 'Awaiting calibration' :\n    !visible ? 'Position unavailable or outside map' : 'On reference map';\n  return { ...robot, s, fresh, visible, point, heading, mapStatus };\n});\n\nconst markers = data.filter(robot => robot.visible).map(robot => {\n  const { u, v } = robot.point;\n  const labelSide = u < 65 ? 1 : u > width - 65 ? -1 : robot.labelSide;\n  const labelOffset = labelSide * 18;\n  const textAnchor = labelOffset < 0 ? 'end' : 'start';\n  const direction = Number.isFinite(robot.heading) ?\n    '<path d=\"M10 -5 L22 0 L10 5 Z\" fill=\"' + robot.color + '\" stroke=\"#0e1725\" stroke-width=\"2\" transform=\"rotate(' + robot.heading.toFixed(2) + ')\"/>' : '';\n  return '<g transform=\"translate(' + u.toFixed(2) + ' ' + v.toFixed(2) + ')\"><title>' +\n    escape(robot.label + ' ' + (robot.s.serial || robot.key)) + '</title>' + direction +\n    '<circle r=\"11\" fill=\"#101a28\" stroke=\"' + robot.color + '\" stroke-width=\"3\"/>' +\n    '<circle r=\"4\" fill=\"' + robot.color + '\"/>' +\n    '<text x=\"' + labelOffset + '\" y=\"-9\" text-anchor=\"' + textAnchor + '\" fill=\"' + robot.color +\n    '\" stroke=\"#0e1725\" stroke-width=\"3\" paint-order=\"stroke\">' + robot.label + '</text></g>';\n}).join('');\n\nconst format = (value, digits = 2, suffix = '') => Number.isFinite(value) ? value.toFixed(digits) + suffix : '—';\nconst cards = data.map(robot => {\n  const s = robot.s;\n  const number = (key, digits, suffix) => format(robot.fresh ? s[key] : null, digits, suffix);\n  const serial = s?.serial || robot.key;\n  const onlineState = robot.fresh ? (s.state || 'Online') : 'Offline';\n  return '<article style=\"--robot:' + robot.color + '\"><header><span class=\"robot\">' + robot.label +\n    '</span><h2>' + escape(serial) + '</h2><span class=\"state\">' + escape(onlineState) + '</span></header>' +\n    '<p class=\"' + (robot.visible ? 'placed' : 'pending') + '\">' + escape(robot.mapStatus) + '</p>' +\n    '<dl><dt>Battery</dt><dd>' + number('battery', 0, '%') + '</dd>' +\n    '<dt>Robot X / Y</dt><dd>' + number('x') + ' / ' + number('y', 2, ' m') + '</dd>' +\n    '<dt>Heading</dt><dd>' + number('orientation', 1, '°') + '</dd>' +\n    '<dt>Active map ID</dt><dd class=\"map-id\">' + escape(s?.map_id || '—') + '</dd></dl></article>';\n}).join('');\nconst shown = data.filter(robot => robot.visible).length;\n\nmsg.headers = {\n  'Content-Type': 'text/html; charset=UTF-8',\n  'Cache-Control': 'no-store',\n  'Content-Security-Policy': \"default-src 'none'; img-src data:; style-src 'unsafe-inline'; frame-ancestors 'self' http://localhost:3000 http://127.0.0.1:3000\",\n};\nmsg.statusCode = 200;\nmsg.payload = `<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<meta http-equiv=\"refresh\" content=\"3\">\n<title>Floor 9 · AMR Live Map</title><style>\n:root{color-scheme:dark;font:14px system-ui,sans-serif;background:#0b121e;color:#e9f0f8}\n*{box-sizing:border-box}body{margin:0}main{max-width:1320px;margin:auto;padding:clamp(14px,3vw,32px)}\n.top,article header{display:flex;align-items:center;gap:12px}.top{justify-content:space-between;margin-bottom:13px}\nh1,h2,p{margin:0}h1{font-size:clamp(20px,3vw,29px);letter-spacing:-.025em}.count{color:#a5bdd1;text-align:right}\nfigure{margin:0;background:#0e1725;border:1px solid #2b4056;border-radius:14px;overflow:hidden}\nsvg{display:block;width:100%;height:auto}svg text{font:700 16px system-ui,sans-serif}\n.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr));gap:12px;margin-top:12px}\narticle{padding:13px;background:#121e2e;border:1px solid #273a50;border-radius:11px;min-width:0}\n.robot{border:1px solid var(--robot);border-radius:6px;padding:3px 6px;color:var(--robot);font-weight:700}\nh2{font-size:15px}.state{margin-left:auto;color:#b9cde0;text-align:right}\n.placed,.pending{margin:10px 0;color:#a5bdd1}.placed{color:#72e5b8}\ndl{margin:0;display:grid;gap:5px 10px;grid-template-columns:auto 1fr;color:#b9cde0}\ndd{margin:0;text-align:right;font-variant-numeric:tabular-nums}\n.map-id{font:11px ui-monospace,monospace;overflow-wrap:anywhere;align-self:center}\n</style></head><body><main><header class=\"top\"><h1>Floor 9 · AMR Live Map</h1>\n<p class=\"count\">${shown} / ${robots.length} on map</p></header><figure>\n<svg viewBox=\"0 0 ${width} ${height}\" role=\"img\" aria-label=\"Floor 9 reference map and calibrated AMR positions\">\n<image width=\"${width}\" height=\"${height}\" href=\"data:image/png;base64,${background}\"/>${markers}\n</svg></figure><section class=\"cards\" aria-label=\"AMR telemetry\">${cards}</section></main></body></html>`;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 310,
+        "wires": [
+            [
+                "sf_rebuild_response"
+            ]
+        ]
+    },
+    {
+        "id": "sf_rebuild_response",
+        "type": "http response",
+        "z": "sf_rebuild_telemetry",
+        "name": "Live map page",
+        "statusCode": "",
+        "headers": {},
+        "x": 1040,
+        "y": 310,
+        "wires": []
+    },
+    {
+        "id": "sf_rebuild_writer",
+        "type": "influxdb out",
+        "z": "sf_rebuild_telemetry",
+        "influxdb": "sf_rebuild_influx",
+        "name": "Write robot telemetry",
+        "measurement": "sf_device_health",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "senior_project",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "KU",
+        "bucket": "senior_project",
+        "x": 1220,
+        "y": 240,
+        "wires": []
+    }
+]

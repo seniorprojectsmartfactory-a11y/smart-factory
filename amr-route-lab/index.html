@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMR Route Lab | ชั้น 9</title>
+<style>
+  :root{color-scheme:dark;font:16px/1.5 "Segoe UI",Tahoma,sans-serif;background:#101924;color:#eef4fb}
+  *{box-sizing:border-box}
+  body{margin:0}
+  main{max-width:1440px;margin:auto;padding:clamp(16px,4vw,52px)}
+  h1,h2,p{margin:0}
+  h1{font-size:clamp(1.8rem,4vw,2.75rem)}
+  h2{font-size:1.05rem;margin-bottom:12px}
+  .subtitle,.help,small{color:#b7c9db}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(245px,300px);gap:20px;margin-top:24px}
+  section,aside{background:#172433;border:1px solid #30455b;border-radius:14px;padding:16px;min-width:0}
+  fieldset{padding:0;border:0;margin:0 0 12px}
+  legend{margin-bottom:8px}
+  .robots,.actions{display:flex;gap:8px;flex-wrap:wrap}
+  label.robot,button,input[type=text]{background:#223449;border:1px solid #435d76;color:inherit;border-radius:8px;padding:8px 12px;font:inherit}
+  button,label.robot{cursor:pointer}
+  label.robot{display:inline-flex;align-items:center;gap:8px;position:relative}
+  label.robot input{position:absolute;width:1px;height:1px;opacity:0}
+  label.robot:has(input:checked){border-color:var(--pin);background:#293e55}
+  label.robot:has(input:focus-visible){outline:2px solid var(--pin);outline-offset:3px}
+  .pin-icon{width:19px;height:22px;color:var(--pin)}
+  button.primary{background:#96dfff;color:#122439;border-color:#96dfff;font-weight:700}
+  button:disabled{opacity:.45;cursor:default}
+  :focus-visible{outline:2px solid #96dfff;outline-offset:3px}
+  .map{display:block;width:100%;height:auto;aspect-ratio:1196/583;background:#c7c7c7;border-radius:8px;cursor:crosshair;touch-action:none;user-select:none}
+  .map *{pointer-events:none}
+  .amr-marker{opacity:.7}
+  .amr-marker.selected{opacity:1}
+  .amr-marker .highlight{visibility:hidden}
+  .amr-marker.selected .highlight{visibility:visible}
+  .amr-marker text{font-weight:700;paint-order:stroke;stroke:#101924;stroke-width:4px}
+  .help{margin:10px 0}
+  aside input{width:100%;margin:4px 0 10px}
+  #status{min-height:1.5em;margin-top:10px}
+  #saved{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+  #saved .open-route{width:100%;text-align:left;overflow-wrap:anywhere}
+  #saved .actions{margin-top:6px}
+  #mission{margin:16px 0}
+  #mission-result{overflow-wrap:anywhere}
+  #saved small{display:block}
+  @media(max-width:800px){.layout{grid-template-columns:1fr}}
+</style>
+<main>
+  <h1>AMR Route Lab</h1>
+  <p class="subtitle">ผังชั้น 9 · วางเส้นทางและติดตาม AMR</p>
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="amr-pin" viewBox="-14 -14 28 34">
+      <path d="M0 18 5 9H-5Z" fill="currentColor" stroke="#101a28" stroke-width="2"/>
+      <circle r="11" fill="#101a28" stroke="currentColor" stroke-width="3"/>
+      <circle r="4" fill="currentColor"/>
+    </symbol>
+  </svg>
+  <div class="layout">
+    <section aria-label="วางเส้นทางบนผังชั้น 9">
+      <fieldset>
+        <legend>เลือก AMR</legend>
+        <div class="robots">
+          <label class="robot" style="--pin:#53e6ac"><input type="radio" name="robot" value=".105" checked>
+            <svg class="pin-icon" aria-hidden="true"><use href="#amr-pin" width="100%" height="100%"/></svg> MiR .105
+          </label>
+          <label class="robot" style="--pin:#6cc9ff"><input type="radio" name="robot" value=".201">
+            <svg class="pin-icon" aria-hidden="true"><use href="#amr-pin" width="100%" height="100%"/></svg> MiR .201
+          </label>
+        </div>
+      </fieldset>
+      <svg id="map" class="map" viewBox="0 0 1196 583" aria-label="ผังชั้น 9"
+           tabindex="0" aria-describedby="map-help">
+        <image href="floor9.png" width="1196" height="583"/>
+        <polyline id="trail" fill="none" stroke="#fef08a" stroke-width="4" stroke-dasharray="8 6" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline id="outline" fill="none" stroke="#172433" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline id="path" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle id="start" r="8" stroke="#172433" stroke-width="3" visibility="hidden"/>
+        <circle id="end" r="8" stroke="#172433" stroke-width="3" visibility="hidden"/>
+        <g id="amr105" class="amr-marker" transform="translate(867.24 358.29)" color="#53e6ac">
+          <circle class="highlight" r="17" fill="none" stroke="currentColor" stroke-width="2"/>
+          <use href="#amr-pin" x="-14" y="-14" width="28" height="34"/>
+          <text x="-22" y="-10" text-anchor="end" fill="currentColor">.105</text>
+        </g>
+        <g id="amr201" class="amr-marker" transform="translate(910.26 362.71)" color="#6cc9ff">
+          <circle class="highlight" r="17" fill="none" stroke="currentColor" stroke-width="2"/>
+          <use href="#amr-pin" x="-14" y="-14" width="28" height="34"/>
+          <text x="22" y="-10" fill="currentColor">.201</text>
+        </g>
+        <circle id="cursor" r="10" fill="none" stroke="#24344b" stroke-width="3" stroke-dasharray="3 3" visibility="hidden"/>
+      </svg>
+      <p><small id="position-status">หมุดอ้างอิง · <a href="http://127.0.0.1:1881/">เปิดหน้าที่รับตำแหน่งสด</a></small></p>
+      <small>เส้นทึบคือแผนที่วางไว้ · เส้นประสีเหลืองคือรอยวิ่งของคันที่เลือกนับตั้งแต่เปิดหน้า</small>
+      <p class="help" id="map-help">ลากจากจุดเริ่มไปยังจุดหมาย หรือแตะทีละจุด ใช้ปุ่มลูกศรและ Enter เพื่อเพิ่มจุดด้วยคีย์บอร์ด</p>
+      <button id="clear" type="button" disabled>ล้างเส้นทางบนผัง</button>
+    </section>
+    <aside aria-label="บันทึกและเปิดเส้นทาง">
+      <form id="save-form">
+        <label for="route-name">ชื่อเส้นทาง</label>
+        <input id="route-name" type="text" maxlength="80" placeholder="เช่น จากจุด A ไปจุด B">
+        <button id="save" class="primary" disabled>บันทึกเส้นทาง</button>
+        <button id="cancel-edit" type="button" hidden>ยกเลิกแก้ไข</button>
+      </form>
+      <p id="status" role="status"></p>
+      <section id="mission" aria-label="ภารกิจ MiR">
+        <p id="route-target" class="help" hidden></p>
+        <button id="send" type="button" disabled>ส่งภารกิจจริง</button>
+        <button id="export-b" type="button" hidden>ดาวน์โหลดเส้นเพื่อเตรียม Mission</button>
+        <p id="mission-result" class="help" role="status">กำลังตรวจการตั้งค่าการส่งภารกิจ</p>
+        <p id="last-mission" class="help" role="status" hidden></p>
+      </section>
+      <h2>เส้นทางที่บันทึกไว้</h2>
+      <p id="empty" class="help">ยังไม่มีเส้นทางในเบราว์เซอร์นี้</p>
+      <ul id="saved"></ul>
+    </aside>
+  </div>
+</main>
+<script>
+  const width = 1196;
+  const height = 583;
+  const storageKey = 'amr-route-lab:floor9:1196x583:v1';
+  const colors = { '.105': '#22ac69', '.201': '#ff942e' };
+  const map = document.querySelector('#map');
+  const robotInputs = Array.from(document.querySelectorAll('[name="robot"]'));
+  const amrMarkers = { '.105': document.querySelector('#amr105'), '.201': document.querySelector('#amr201') };
+  const trails = { '.105': [], '.201': [] };
+  const trail = document.querySelector('#trail');
+  const positionStatus = document.querySelector('#position-status');
+  const liveMode = location.protocol === 'http:' && location.port === '1881';
+  let livePositions = {};
+  let positionError = false;
+  const outline = document.querySelector('#outline');
+  const path = document.querySelector('#path');
+  const start = document.querySelector('#start');
+  const end = document.querySelector('#end');
+  const cursor = document.querySelector('#cursor');
+  const nameInput = document.querySelector('#route-name');
+  const save = document.querySelector('#save');
+  const cancelEdit = document.querySelector('#cancel-edit');
+  const send = document.querySelector('#send');
+  const exportB = document.querySelector('#export-b');
+  const missionResult = document.querySelector('#mission-result');
+  const lastMission = document.querySelector('#last-mission');
+  const routeTarget = document.querySelector('#route-target');
+  // .105 anchors from the Floor 9 handoff. Image V increases downward.
+  const calibration = { x: 46.820227, y: 95.039205, u: 130, v: 160,
+    dx: 114.392159 - 46.820227, dy: 92.047727 - 95.039205, du: 880, dv: 20 };
+  const clear = document.querySelector('#clear');
+  const status = document.querySelector('#status');
+  const savedList = document.querySelector('#saved');
+  const draftByRobot = { '.105': [], '.201': [] };
+  let robot = '.105';
+  let editing = null;
+  let missionEnabled = false;
+  let drawnMissions = false;
+  let approvedPoints = null;
+  let missionPending = false;
+  let missionAvailability = 'กำลังตรวจการตั้งค่าการส่งภารกิจ';
+  let lastSubmission = null;
+  let pointer = null;
+  let keyboardPoint = [width / 2, height / 2];
+
+  function clampPoint(x, y) {
+    return [Math.max(0, Math.min(width, Math.round(x))), Math.max(0, Math.min(height, Math.round(y)))];
+  }
+
+  function mapPoint(event) {
+    const transform = map.getScreenCTM().inverse();
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(transform);
+    return clampPoint(point.x, point.y);
+  }
+
+  function setMarker(marker, point) {
+    marker.setAttribute('visibility', point ? 'visible' : 'hidden');
+    if (point) {
+      marker.setAttribute('cx', point[0]);
+      marker.setAttribute('cy', point[1]);
+    }
+  }
+
+  function toMirPoint([u, v]) {
+    const { x, y, dx, dy, du, dv } = calibration;
+    const offsetU = u - calibration.u;
+    const offsetV = v - calibration.v;
+    const lengthSquared = du * du + dv * dv;
+    const along = (offsetU * du + offsetV * dv) / lengthSquared;
+    const right = (offsetV * du - offsetU * dv) / lengthSquared;
+    return [x + along * dx + right * dy, y + along * dy - right * dx];
+  }
+
+  function isRouteToB(points) {
+    if (robot !== '.105' || points.length < 2) return false;
+    const [x, y] = points.at(-1);
+    if (x !== 879 || y !== 295) return false;
+    const [startX, startY] = points[0];
+    if (Math.hypot(startX - 867.24, startY - 358.29) > 8) return false;
+    const dx = x - startX;
+    const dy = y - startY;
+    const length = Math.hypot(dx, dy);
+    let previous = -4;
+    return points.every(([u, v]) => {
+      const progress = ((u - startX) * dx + (v - startY) * dy) / length;
+      const deviation = Math.abs((u - startX) * dy - (v - startY) * dx) / length;
+      if (deviation > 5 || progress < previous - 4 || progress > length + 4) return false;
+      previous = Math.max(previous, progress);
+      return true;
+    });
+  }
+
+  function render() {
+    for (const [id, marker] of Object.entries(amrMarkers)) {
+      marker.classList.toggle('selected', id === robot);
+      if (liveMode) {
+        const point = livePositions[id];
+        marker.setAttribute('visibility', point ? 'visible' : 'hidden');
+        if (point) marker.setAttribute('transform', 'translate(' + point.join(' ') + ')');
+      }
+    }
+    trail.setAttribute('points', trails[robot].map(point => point.join(',')).join(' '));
+    if (liveMode) {
+      positionStatus.textContent = positionError ? 'ติดต่อ Live Map ไม่ได้'
+        : livePositions[robot] ? 'MiR ' + robot + ' · รับตำแหน่งสด'
+        : 'MiR ' + robot + ' · รอตำแหน่งที่ตรวจสอบแล้ว';
+    }
+    const points = draftByRobot[robot];
+    routeTarget.hidden = robot !== '.105' || points.length < 2;
+    if (!routeTarget.hidden) {
+      const [x, y] = toMirPoint(points.at(-1));
+      routeTarget.textContent = 'ปลายทางบนแผนที่ MiR โดยประมาณ X ' + x.toFixed(2) + ' / Y ' + y.toFixed(2) + ' ม.';
+    }
+    const geometry = points.map(point => point.join(',')).join(' ');
+    outline.setAttribute('points', geometry);
+    path.setAttribute('points', geometry);
+    path.setAttribute('stroke', colors[robot]);
+    start.setAttribute('fill', colors[robot]);
+    end.setAttribute('fill', '#fff');
+    setMarker(start, points[0]);
+    setMarker(end, points.length > 1 ? points.at(-1) : null);
+    save.disabled = pointer !== null || points.length < 2;
+    send.disabled = save.disabled || !missionEnabled || missionPending || robot !== '.105' || !livePositions[robot];
+    const routeKey = JSON.stringify({ robot, points });
+    const sameSubmission = lastSubmission?.routeKey === routeKey;
+    lastMission.hidden = !lastSubmission || sameSubmission;
+    if (!lastMission.hidden) lastMission.textContent = 'การส่งครั้งก่อน (' + lastSubmission.name + ') · ' + lastSubmission.message;
+    const matchesMission = drawnMissions || (approvedPoints
+      ? JSON.stringify(points) === JSON.stringify(approvedPoints)
+      : isRouteToB(points));
+    missionResult.textContent = sameSubmission ? lastSubmission.message
+      : robot === '.105' && points.length >= 2 && !matchesMission ? 'เส้นนี้ยังไม่ได้ส่ง · ต้องผูกกับ Mission ของเส้นนี้ก่อน'
+      : missionAvailability;
+    send.disabled ||= !matchesMission;
+    exportB.hidden = drawnMissions || save.disabled || robot !== '.105';
+    exportB.textContent = isRouteToB(points) ? 'ดาวน์โหลดการผูกเส้นไป B' : 'ดาวน์โหลดเส้นเพื่อเตรียม Mission';
+    save.textContent = editing ? 'บันทึกการแก้ไข' : 'บันทึกเส้นทาง';
+    cancelEdit.hidden = !editing;
+    clear.disabled = points.length === 0;
+  }
+
+  function append(points, point, minimumDistance = 1) {
+    const last = points.at(-1);
+    if (!last || Math.hypot(point[0] - last[0], point[1] - last[1]) >= minimumDistance) points.push(point);
+  }
+
+  map.addEventListener('pointerdown', event => {
+    if (pointer || event.button !== 0) return;
+    map.setPointerCapture(event.pointerId);
+    const origin = mapPoint(event);
+    pointer = { id: event.pointerId, robot, preceding: draftByRobot[robot], points: [origin], dragged: false };
+    render();
+  });
+
+  map.addEventListener('pointermove', event => {
+    if (pointer?.id !== event.pointerId) return;
+    const point = mapPoint(event);
+    append(pointer.points, point, 4);
+    if (pointer.points.length > 1) {
+      pointer.dragged = true;
+      draftByRobot[pointer.robot] = pointer.points;
+      render();
+    }
+  });
+
+  function finishPointer(event, canceled) {
+    if (pointer?.id !== event.pointerId) return;
+    const current = pointer;
+    pointer = null;
+    if (canceled) {
+      draftByRobot[current.robot] = current.preceding;
+    } else {
+      const endpoint = mapPoint(event);
+      append(current.points, endpoint);
+      if (current.dragged || current.points.length > 1) {
+        draftByRobot[current.robot] = current.points;
+      } else {
+        append(current.preceding, endpoint);
+      }
+      status.textContent = '';
+    }
+    render();
+  }
+
+  map.addEventListener('pointerup', event => finishPointer(event, false));
+  map.addEventListener('pointercancel', event => finishPointer(event, true));
+  map.addEventListener('lostpointercapture', event => finishPointer(event, true));
+  map.addEventListener('blur', () => setMarker(cursor, null));
+  map.addEventListener('keydown', event => {
+    const offsets = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const offset = offsets[event.key];
+    if (!offset && event.key !== 'Enter') return;
+    event.preventDefault();
+    if (pointer) return;
+    if (offset) {
+      const step = event.shiftKey ? 32 : 8;
+      keyboardPoint = clampPoint(keyboardPoint[0] + step * offset[0], keyboardPoint[1] + step * offset[1]);
+    } else {
+      append(draftByRobot[robot], keyboardPoint);
+      render();
+    }
+    setMarker(cursor, keyboardPoint);
+  });
+
+  robotInputs.forEach(input => input.addEventListener('change', () => {
+    cancelEditing();
+    robot = input.value;
+    nameInput.value = '';
+    status.textContent = '';
+    render();
+  }));
+
+  clear.addEventListener('click', () => {
+    if (pointer) return;
+    draftByRobot[robot] = [];
+    if (!editing) nameInput.value = '';
+    status.textContent = 'ล้างเส้นทางบนผังแล้ว';
+    render();
+  });
+
+  function cancelEditing() {
+    if (!editing) return;
+    draftByRobot[editing.route.robot] = editing.previousPoints;
+    nameInput.value = editing.previousName;
+    editing = null;
+  }
+
+  cancelEdit.addEventListener('click', () => {
+    if (pointer) return;
+    cancelEditing();
+    status.textContent = 'ยกเลิกการแก้ไขแล้ว';
+    render();
+  });
+
+  send.addEventListener('click', async () => {
+    const points = draftByRobot[robot];
+    if (send.disabled) return;
+    const selectedRobot = robot;
+    const name = nameInput.value.trim() || 'เส้นทาง MiR ' + robot;
+    const routeKey = JSON.stringify({ robot, points });
+    const [x, y] = points.at(-1);
+    const payload = JSON.stringify({ robot, points });
+    missionPending = true;
+    render();
+    let attempted = false;
+    try {
+      let waypointText = '';
+      if (drawnMissions) {
+        const preview = await fetch('/mission-preview', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload,
+          signal: AbortSignal.timeout(5000),
+        });
+        const plan = await preview.json();
+        if (!preview.ok) {
+          lastSubmission = { routeKey, name, message: plan.message };
+          return;
+        }
+        waypointText = '\n' + plan.waypoints.map((point, i) =>
+          (i + 1) + '. X ' + point.pos_x + ' / Y ' + point.pos_y + ' ม. · ' + point.orientation + '°').join('\n');
+        if (JSON.stringify({ robot, points: draftByRobot[robot] }) !== routeKey) return;
+      }
+      if (!window.confirm('ส่งภารกิจจริงให้ MiR ' + selectedRobot + '\nเส้นทาง ' + name
+        + '\nปลายทางบนผัง (' + x + ', ' + y + ') px' + waypointText
+        + '\nยืนยันว่าตรวจจุดผ่านบนแผนที่ MiR และผู้ควบคุมอยู่หน้างาน')) return;
+      attempted = true;
+      const response = await fetch('/mission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        signal: AbortSignal.timeout(150000),
+      });
+      lastSubmission = { routeKey, name, message: (await response.json()).message };
+      if (response.status === 502) await checkMissionAvailability();
+    } catch {
+      if (attempted) missionEnabled = false;
+      lastSubmission = { routeKey, name, message: attempted
+        ? 'ยังยืนยันผลการส่งไม่ได้ กรุณาตรวจ Mission Queue บนหน้า MiR'
+        : 'โหลดจุดผ่านสำหรับตรวจสอบไม่ได้' };
+    } finally {
+      missionPending = false;
+      render();
+    }
+  });
+
+  exportB.addEventListener('click', () => {
+    const points = draftByRobot[robot];
+    if (pointer || robot !== '.105' || points.length < 2) return;
+    const toB = isRouteToB(points);
+    const record = {
+      mapId: '15b69c6d-9e08-11f0-92e7-0001299a3e90',
+      points,
+    };
+    if (toB) record.missionId = 'd12806db-e366-11f1-81dc-0001299a3e90';
+    else record.name = nameInput.value.trim();
+    const url = URL.createObjectURL(new Blob([JSON.stringify(record, null, 2)], { type: 'application/json' }));
+    const download = document.createElement('a');
+    download.href = url;
+    download.download = toB ? 'AMR105-Route-B.json' : 'AMR105-Route-Draft.json';
+    download.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  async function checkMissionAvailability() {
+    if (!liveMode) {
+      missionAvailability = 'เปิด Route Lab ที่ http://127.0.0.1:1881/ เพื่อส่งภารกิจ';
+      render();
+      return;
+    }
+    try {
+      const response = await fetch('/mission');
+      if (!response.ok) throw new Error('Mission endpoint unavailable');
+      const config = await response.json();
+      missionEnabled = config.enabled === true;
+      drawnMissions = config.drawn === true;
+      approvedPoints = config.points ?? null;
+      missionAvailability = missionEnabled
+        ? drawnMissions ? 'ลากจากตำแหน่งรถ แล้วกดส่งเพื่อดูจุดผ่านก่อนยืนยัน' : 'รองรับเส้นทางที่ตรวจแล้วของ MiR .105'
+        : 'ปิดการส่งจริงจนกว่าจะตั้งค่า Mission ที่ตรวจแล้วและสิทธิ์ส่งของ MiR .105 หรือตรวจคิวหลังส่ง';
+    } catch {
+      missionAvailability = 'บริการส่งภารกิจยังไม่พร้อม';
+    }
+    render();
+  }
+
+  function readRoutes() {
+    const raw = localStorage.getItem(storageKey);
+    if (raw === null) return [];
+    const routes = JSON.parse(raw);
+    if (!Array.isArray(routes) || !routes.every(route => route && typeof route.name === 'string'
+      && Object.hasOwn(colors, route.robot) && Array.isArray(route.points) && route.points.length >= 2
+      && route.points.every(point => Array.isArray(point) && point.length === 2
+        && Number.isInteger(point[0]) && Number.isInteger(point[1])
+        && point[0] >= 0 && point[0] <= width && point[1] >= 0 && point[1] <= height))) {
+      throw new Error('Invalid saved routes');
+    }
+    return routes;
+  }
+
+  function renderSaved(routes) {
+    savedList.replaceChildren();
+    document.querySelector('#empty').hidden = routes.length > 0;
+    routes.forEach((route, index) => {
+      const item = document.createElement('li');
+      const button = document.createElement('button');
+      const details = document.createElement('small');
+      const actions = document.createElement('div');
+      const edit = document.createElement('button');
+      const remove = document.createElement('button');
+      button.type = 'button';
+      button.className = 'open-route';
+      actions.className = 'actions';
+      edit.type = remove.type = 'button';
+      button.textContent = route.name;
+      edit.textContent = 'แก้ไข';
+      remove.textContent = 'ลบ';
+      edit.setAttribute('aria-label', 'แก้ไข ' + route.name);
+      remove.setAttribute('aria-label', 'ลบ ' + route.name);
+      details.textContent = 'MiR ' + route.robot;
+      button.append(details);
+      function openRoute(forEdit) {
+        if (pointer) return;
+        robot = route.robot;
+        cancelEditing();
+        const previousName = nameInput.value;
+        const previousPoints = draftByRobot[robot];
+        robotInputs.forEach(input => { input.checked = input.value === robot; });
+        draftByRobot[robot] = route.points.slice();
+        nameInput.value = route.name;
+        if (forEdit) editing = { route, index, previousName, previousPoints };
+        status.textContent = forEdit ? 'เปลี่ยนชื่อหรือลากเส้นใหม่ แล้วกดบันทึกการแก้ไข' : 'เปิดเส้นทางแล้ว';
+        render();
+      }
+      button.addEventListener('click', () => openRoute(false));
+      edit.addEventListener('click', () => openRoute(true));
+      remove.addEventListener('click', () => {
+        if (pointer || !window.confirm('ลบเส้นทาง “' + route.name + '” หรือไม่?')) return;
+        try {
+          const current = readRoutes();
+          verifyRecord(current, index, route);
+          current.splice(index, 1);
+          storeRoutes(current);
+          if (editing?.index === index) cancelEditing();
+          else if (editing?.index > index) editing.index -= 1;
+          status.textContent = 'ลบเส้นทางแล้ว';
+          render();
+        } catch (error) {
+          status.textContent = error.message;
+        }
+      });
+      actions.append(edit, remove);
+      item.append(button, actions);
+      savedList.append(item);
+    });
+  }
+
+  function verifyRecord(routes, index, route) {
+    if (JSON.stringify(routes[index]) !== JSON.stringify(route)) {
+      throw new Error('รายการเปลี่ยนแล้ว กรุณารีเฟรชหน้าและเลือกเส้นทางใหม่');
+    }
+  }
+
+  function storeRoutes(routes) {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(routes));
+    } catch {
+      throw new Error('บันทึกข้อมูลในเบราว์เซอร์นี้ไม่ได้');
+    }
+    renderSaved(routes);
+  }
+
+  document.querySelector('#save-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const points = draftByRobot[robot];
+    if (pointer || points.length < 2) return;
+    try {
+      const routes = readRoutes();
+      const name = nameInput.value.trim() || 'เส้นทาง MiR ' + robot + ' · ' + (routes.length + 1);
+      const record = { name, robot, points };
+      if (editing) {
+        verifyRecord(routes, editing.index, editing.route);
+        routes[editing.index] = record;
+      } else {
+        routes.unshift(record);
+      }
+      storeRoutes(routes);
+      nameInput.value = name;
+      status.textContent = editing ? 'บันทึกการแก้ไขแล้ว' : 'บันทึกในเบราว์เซอร์นี้แล้ว';
+      editing = null;
+      render();
+    } catch (error) {
+      status.textContent = error.message;
+    }
+  });
+
+  try {
+    renderSaved(readRoutes());
+  } catch {
+    document.querySelector('#empty').hidden = true;
+    status.textContent = 'เปิดข้อมูลที่บันทึกไว้ในเบราว์เซอร์นี้ไม่ได้';
+  }
+  render();
+
+  async function refreshPositions() {
+    try {
+      const result = await fetch('/positions', { signal: AbortSignal.timeout(4000) });
+      if (!result.ok) throw new Error('Positions unavailable');
+      livePositions = await result.json();
+      positionError = false;
+    } catch {
+      livePositions = {};
+      positionError = true;
+    }
+    for (const id of Object.keys(trails)) {
+      const point = livePositions[id];
+      if (!point) {
+        trails[id] = [];
+        continue;
+      }
+      append(trails[id], point, 2);
+      if (trails[id].length > 300) trails[id].shift();
+    }
+    render();
+    setTimeout(refreshPositions, 3000);
+  }
+
+  if (liveMode) refreshPositions();
+  checkMissionAvailability();
+</script>
+</html>

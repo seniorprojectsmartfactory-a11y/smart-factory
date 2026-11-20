@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.npm/
+__pycache__/
+data/
+flows_cred.json
+.config.*.json
+*.bolt
+*.sqlite*
+*.db
+*.log
