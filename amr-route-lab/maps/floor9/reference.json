@@ -1,0 +1,959 @@
+{
+  "schemaVersion": 1,
+  "id": "floor9-clean-plan-v1",
+  "validation": {
+    "status": "traced_from_image",
+    "fieldVerified": false,
+    "navigationEnabled": false,
+    "defaultForUnclassifiedSpace": "unknown"
+  },
+  "image": {
+    "filename": "floor9-clean-plan.png",
+    "width": 2048,
+    "height": 980,
+    "sha256": "b02776a8ab85edba848d5485f1da648024e42bd1dc6672fd976c6f7f834a0f81"
+  },
+  "coordinates": {
+    "units": "image_px",
+    "origin": "top_left",
+    "xAxis": "right",
+    "yAxis": "down",
+    "segmentOrder": [
+      "x1",
+      "y1",
+      "x2",
+      "y2"
+    ],
+    "rectOrder": [
+      "left",
+      "top",
+      "right",
+      "bottom"
+    ],
+    "transformsByRobot": {}
+  },
+  "doors": [
+    {
+      "id": "D-01",
+      "opening": [292, 184, 318, 184],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-02",
+      "opening": [360, 184, 389, 184],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-03",
+      "opening": [591, 184, 621, 184],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-04",
+      "opening": [660, 184, 693, 184],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-05",
+      "opening": [932, 367, 932, 402],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-06",
+      "opening": [1144, 367, 1144, 402],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-07",
+      "opening": [1244, 367, 1244, 402],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-08",
+      "opening": [1384, 358, 1417, 358],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-09",
+      "opening": [1552, 358, 1585, 358],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-10",
+      "opening": [1620, 358, 1653, 358],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-11",
+      "opening": [1840, 359, 1840, 405],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-12",
+      "opening": [1384, 406, 1417, 406],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-13",
+      "opening": [1556, 406, 1589, 406],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-14",
+      "opening": [1624, 406, 1657, 406],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-15",
+      "opening": [932, 485, 932, 537],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-16",
+      "opening": [1132, 485, 1132, 537],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-17",
+      "opening": [1184, 616, 1221, 616],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-18",
+      "opening": [292, 664, 321, 664],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-19",
+      "opening": [359, 664, 389, 664],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-20",
+      "opening": [1388, 720, 1421, 720],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-21",
+      "opening": [1556, 720, 1589, 720],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-22",
+      "opening": [1624, 720, 1657, 720],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-23",
+      "opening": [1840, 721, 1840, 765],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-24",
+      "opening": [840, 772, 865, 772],
+      "swing": "single",
+      "passability": "unverified",
+      "initialState": "unknown"
+    },
+    {
+      "id": "D-25",
+      "opening": [1616, 771, 1665, 771],
+      "swing": "double",
+      "passability": "unverified",
+      "initialState": "unknown"
+    }
+  ],
+  "walls": [
+    {
+      "id": "W-01",
+      "centerline": [176, 56, 835, 56],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-02",
+      "centerline": [176, 56, 176, 257],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-03",
+      "centerline": [340, 56, 340, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-04",
+      "centerline": [648, 56, 648, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-05",
+      "centerline": [176, 184, 292, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-06",
+      "centerline": [318, 184, 360, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-07",
+      "centerline": [389, 184, 591, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-08",
+      "centerline": [621, 184, 660, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-09",
+      "centerline": [693, 184, 820, 184],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-10",
+      "centerline": [820, 184, 820, 260],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-11",
+      "centerline": [835, 56, 835, 223],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-12",
+      "centerline": [835, 223, 932, 223],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-13",
+      "centerline": [932, 223, 932, 367],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-14",
+      "centerline": [176, 257, 202, 257],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-15",
+      "centerline": [202, 257, 202, 596],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-16",
+      "centerline": [164, 596, 202, 596],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-17",
+      "centerline": [164, 596, 164, 912],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-18",
+      "centerline": [164, 664, 292, 664],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-19",
+      "centerline": [321, 664, 359, 664],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-20",
+      "centerline": [389, 664, 516, 664],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-21",
+      "centerline": [346, 664, 346, 912],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-22",
+      "centerline": [516, 664, 516, 849],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-23",
+      "centerline": [570, 664, 570, 849],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-24",
+      "centerline": [164, 912, 1930, 900],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-25",
+      "centerline": [652, 725, 652, 772],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-26",
+      "centerline": [652, 772, 840, 772],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-27",
+      "centerline": [865, 772, 952, 772],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-28",
+      "centerline": [756, 772, 756, 910],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-29",
+      "centerline": [952, 772, 952, 909],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-30",
+      "centerline": [952, 816, 1132, 816],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-31",
+      "centerline": [1132, 770, 1132, 908],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-32",
+      "centerline": [1132, 770, 1252, 770],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-33",
+      "centerline": [1252, 770, 1252, 905],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-34",
+      "centerline": [932, 402, 932, 485],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-35",
+      "centerline": [932, 537, 932, 616],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-36",
+      "centerline": [932, 406, 1135, 406],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-37",
+      "centerline": [1132, 406, 1132, 485],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-38",
+      "centerline": [1132, 537, 1132, 616],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-39",
+      "centerline": [912, 616, 1184, 616],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-40",
+      "centerline": [1221, 616, 1244, 616],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-41",
+      "centerline": [912, 616, 912, 726],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-42",
+      "centerline": [912, 726, 1152, 726],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-43",
+      "centerline": [1152, 616, 1152, 726],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-44",
+      "centerline": [1144, 223, 1144, 367],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-45",
+      "centerline": [1144, 402, 1144, 414],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-46",
+      "centerline": [1144, 223, 1244, 223],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-47",
+      "centerline": [1244, 64, 1840, 64],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-48",
+      "centerline": [1244, 64, 1244, 367],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-49",
+      "centerline": [1436, 64, 1436, 357],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-50",
+      "centerline": [1602, 64, 1602, 357],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-51",
+      "centerline": [1840, 64, 1840, 359],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-52",
+      "centerline": [1244, 358, 1384, 358],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-53",
+      "centerline": [1417, 358, 1552, 358],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-54",
+      "centerline": [1585, 358, 1620, 358],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-55",
+      "centerline": [1653, 358, 1840, 358],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-56",
+      "centerline": [1244, 406, 1384, 406],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-57",
+      "centerline": [1417, 406, 1556, 406],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-58",
+      "centerline": [1589, 406, 1624, 406],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-59",
+      "centerline": [1657, 406, 1840, 406],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-60",
+      "centerline": [1244, 402, 1244, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-61",
+      "centerline": [1436, 406, 1436, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-62",
+      "centerline": [1602, 406, 1602, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-63",
+      "centerline": [1840, 405, 1840, 721],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-64",
+      "centerline": [1602, 596, 1776, 596],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-65",
+      "centerline": [1776, 596, 1776, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-66",
+      "centerline": [1244, 720, 1388, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-67",
+      "centerline": [1421, 720, 1556, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-68",
+      "centerline": [1589, 720, 1624, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-69",
+      "centerline": [1657, 720, 1840, 720],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-70",
+      "centerline": [1840, 180, 1908, 180],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-71",
+      "centerline": [1908, 180, 1908, 244],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-72",
+      "centerline": [1880, 244, 1924, 244],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-73",
+      "centerline": [1880, 244, 1880, 725],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-74",
+      "centerline": [1924, 244, 1924, 767],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-75",
+      "centerline": [1264, 770, 1616, 770],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-76",
+      "centerline": [1665, 770, 1930, 770],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-77",
+      "centerline": [1264, 770, 1264, 905],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-78",
+      "centerline": [1316, 770, 1316, 824],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-79",
+      "centerline": [1356, 770, 1356, 824],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-80",
+      "centerline": [1440, 770, 1440, 904],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-81",
+      "centerline": [1500, 770, 1500, 902],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-82",
+      "centerline": [1784, 770, 1784, 901],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    },
+    {
+      "id": "W-83",
+      "centerline": [1930, 766, 1930, 901],
+      "nominalWidthPx": 8,
+      "passability": "blocked"
+    }
+  ],
+  "areas": [
+    {
+      "id": "E-01",
+      "type": "elevator",
+      "label": "ลิฟต์ฝั่งเหนือ",
+      "rect": [948, 410, 1061, 476],
+      "permission": "requires_integration"
+    },
+    {
+      "id": "E-02",
+      "type": "elevator",
+      "label": "ลิฟต์ฝั่งใต้",
+      "rect": [948, 547, 1061, 613],
+      "permission": "requires_integration"
+    },
+    {
+      "id": "S-01",
+      "type": "stairs",
+      "label": "บันไดกลาง",
+      "rect": [948, 222, 1132, 362],
+      "permission": "blocked"
+    },
+    {
+      "id": "V-01",
+      "type": "void",
+      "label": "โถงเปิด / พื้นที่ว่าง",
+      "rect": [205, 257, 784, 596],
+      "permission": "blocked"
+    },
+    {
+      "id": "X-01",
+      "type": "unverified_area",
+      "label": "พื้นที่แรเงาที่ยังไม่ระบุประเภท",
+      "rect": [574, 664, 840, 726],
+      "permission": "unverified"
+    },
+    {
+      "id": "X-02",
+      "type": "unverified_area",
+      "label": "พื้นที่แรเงาที่ยังไม่ระบุประเภท",
+      "rect": [465, 847, 571, 908],
+      "permission": "unverified"
+    },
+    {
+      "id": "X-03",
+      "type": "unverified_area",
+      "label": "พื้นที่แรเงาที่ยังไม่ระบุประเภท",
+      "rect": [1316, 824, 1413, 899],
+      "permission": "unverified"
+    },
+    {
+      "id": "X-04",
+      "type": "unverified_area",
+      "label": "พื้นที่แรเงาที่ยังไม่ระบุประเภท",
+      "rect": [1444, 824, 1496, 898],
+      "permission": "unverified"
+    },
+    {
+      "id": "C-01",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [328, 229, 345, 252],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-02",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [500, 229, 518, 252],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-03",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [640, 229, 656, 252],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-04",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [823, 407, 837, 434],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-05",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [332, 600, 348, 625],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-06",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [500, 601, 517, 625],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-07",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [640, 601, 656, 625],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-08",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [823, 596, 837, 622],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-09",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1237, 408, 1251, 432],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-10",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1237, 589, 1251, 614],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-11",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1429, 408, 1443, 432],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-12",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1596, 408, 1610, 432],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-13",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1833, 408, 1848, 432],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-14",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1595, 589, 1610, 613],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-15",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1833, 589, 1847, 613],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-16",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 258, 1903, 271],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-17",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 298, 1903, 311],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-18",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 338, 1903, 351],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-19",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 378, 1903, 391],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-20",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 418, 1903, 431],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-21",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 458, 1903, 471],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-22",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 498, 1903, 511],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-23",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 538, 1903, 551],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-24",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 578, 1903, 591],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-25",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 618, 1903, 631],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-26",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 658, 1903, 671],
+      "permission": "blocked"
+    },
+    {
+      "id": "C-27",
+      "type": "pillar",
+      "label": "เสา",
+      "rect": [1894, 698, 1903, 711],
+      "permission": "blocked"
+    }
+  ]
+}

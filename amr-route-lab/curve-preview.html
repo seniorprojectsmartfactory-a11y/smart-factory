@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMR Route Lab · ทดลองวางเส้นทาง</title>
+<style>
+  :root{color-scheme:dark;font:15px/1.55 "Segoe UI",Tahoma,sans-serif;background:#0e1621;color:#e9f3fc}
+  *{box-sizing:border-box}
+  body{margin:0}
+  main{max-width:1450px;margin:auto;padding:clamp(16px,3vw,40px)}
+  h1,h2,p{margin:0}
+  h1{font-size:clamp(1.65rem,3vw,2.45rem);line-height:1.2}
+  h2{font-size:1.02rem}
+  header,.bar,.actions,.legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header{margin-bottom:20px}
+  .sub,.hint,.legend{color:#adc1d3}
+  .sub{margin-top:6px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 284px;gap:14px;align-items:start}
+  .panel{background:#172433;border:1px solid #30455b;border-radius:14px;min-width:0;overflow:hidden}
+  .bar,.legend,.controls{padding:13px 15px}
+  .legend{justify-content:flex-start;font-size:.88rem;border-top:1px solid #30455b}
+  .legend b{color:#71ebcf}
+  button{background:#24384c;color:inherit;border:1px solid #405c73;border-radius:8px;padding:7px 11px;font:inherit;cursor:pointer}
+  button:hover{background:#304b63}
+  button:disabled{opacity:.5;cursor:default}
+  :focus-visible{outline:2px solid #78efd5;outline-offset:3px}
+  button[aria-selected="true"],button[aria-pressed="true"]{background:#164a4b;border-color:#71ebcf}
+  .accent{background:#72e8cf;color:#102d2c;border-color:#72e8cf;font-weight:700}
+  .accent:hover{background:#a2f5e4}
+  .actions{justify-content:flex-start;margin-top:10px}
+  .map{display:block;width:100%;height:auto;background:#111b28;touch-action:none;user-select:none;cursor:crosshair}
+  .map [data-index]{cursor:grab;outline:none}
+  .map [data-index]:focus-visible circle{stroke:#fff;stroke-width:5}
+  .map.dragging,.map.dragging [data-index]{cursor:grabbing}
+  .map text{font-weight:700;fill:#eefbff;pointer-events:none;paint-order:stroke;stroke:#142636;stroke-width:4px}
+  #robot-reference text{fill:#ffd184}
+  .controls + .controls{border-top:1px solid #30455b}
+  .hint{font-size:.9rem;margin-top:6px}
+  #point-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px;max-height:240px;overflow:auto}
+  #point-list button{width:100%;text-align:left}
+  #radius-panel{margin-top:10px}
+  input[type=range]{display:block;width:100%;margin:8px 0;accent-color:#72e8cf}
+  [hidden]{display:none!important}
+  @media(max-width:780px){.layout{grid-template-columns:1fr}}
+</style>
+<main>
+  <header>
+    <div>
+      <h1>วางเส้นทาง AMR</h1>
+      <p class="sub">ต้นแบบหน้าจอ · ผังชั้น 9 · MiR .105 จำลอง</p>
+    </div>
+    <button id="example" class="accent" type="button">เปิดตัวอย่างเลี้ยวซ้าย</button>
+  </header>
+  <div class="layout">
+    <section class="panel" aria-labelledby="map-title">
+      <div class="bar">
+        <h2 id="map-title">ผังภารกิจ</h2>
+        <button id="clear" type="button">เริ่มเส้นทางใหม่</button>
+      </div>
+      <svg id="map" class="map" viewBox="0 0 2048 980" aria-label="ผังอ้างอิงชั้น 9 สำหรับวางจุดเส้นทาง">
+        <image href="maps/floor9/floor9-clean-plan.png" width="2048" height="980" pointer-events="none"/>
+        <path id="guide" fill="none" stroke="#52677e" stroke-width="3" stroke-dasharray="8 8" opacity=".8" pointer-events="none"/>
+        <path id="outline" fill="none" stroke="#f5fffc" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+        <path id="route" fill="none" stroke="#137b66" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+        <g id="robot-reference" pointer-events="none" hidden>
+          <circle r="9" fill="#162432" stroke="#ffd184" stroke-width="3"/>
+          <circle r="3" fill="#ffd184"/>
+          <text x="14" y="15">MiR .105</text>
+        </g>
+        <g id="markers"></g>
+      </svg>
+      <div class="legend"><span><b>เส้นทึบ</b> เส้นทางที่วาง</span><span>เส้นประ แนวเส้นก่อนทำโค้ง</span></div>
+    </section>
+    <aside class="panel" aria-label="เครื่องมือแก้เส้นทาง">
+      <section class="controls" aria-labelledby="points-title">
+        <h2 id="points-title">จุดในเส้นทาง</h2>
+        <p class="hint">คลิกบนแผนที่เพื่อเพิ่มจุด คลิกค้างแล้วลากหมุดจุดเริ่ม จุดกลาง หรือปลายทาง</p>
+        <ol id="point-list"></ol>
+      </section>
+      <section class="controls" aria-labelledby="point-title">
+        <h2 id="point-title">เลือกจุดเพื่อแก้ไข</h2>
+        <p id="point-hint" class="hint"></p>
+        <div id="corner-actions" class="actions" hidden>
+          <button id="straight" type="button" aria-pressed="false">มุมหัก</button>
+          <button id="curve" type="button" aria-pressed="false">ทำโค้ง</button>
+        </div>
+        <div id="radius-panel" hidden>
+          <label for="radius">รัศมีบนผัง <output id="radius-value" for="radius"></output></label>
+          <input id="radius" type="range" min="4" max="60" value="24">
+        </div>
+        <div class="actions">
+          <button id="reset-start" type="button" hidden>ใช้ตำแหน่งรถเป็นจุดเริ่ม</button>
+          <button id="remove" type="button" hidden>ลบจุดนี้</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+<script>
+  const map = document.querySelector('#map');
+  const markers = document.querySelector('#markers');
+  const robotReference = document.querySelector('#robot-reference');
+  const route = document.querySelector('#route');
+  const outline = document.querySelector('#outline');
+  const guide = document.querySelector('#guide');
+  const pointList = document.querySelector('#point-list');
+  const pointTitle = document.querySelector('#point-title');
+  const pointHint = document.querySelector('#point-hint');
+  const cornerActions = document.querySelector('#corner-actions');
+  const straight = document.querySelector('#straight');
+  const curve = document.querySelector('#curve');
+  const radiusPanel = document.querySelector('#radius-panel');
+  const radius = document.querySelector('#radius');
+  const radiusValue = document.querySelector('#radius-value');
+  const remove = document.querySelector('#remove');
+  const resetStart = document.querySelector('#reset-start');
+  const clear = document.querySelector('#clear');
+  const start = { x: 1740, y: 336, radius: 0 };
+  const { width: mapWidth, height: mapHeight } = map.viewBox.baseVal;
+  const svgNamespace = 'http://www.w3.org/2000/svg';
+  let points = [];
+  let selected = 0;
+  let gesture = null;
+  robotReference.setAttribute('transform', 'translate(' + start.x + ' ' + start.y + ')');
+
+  function startIsAtRobot() {
+    return points[0].x === start.x && points[0].y === start.y;
+  }
+
+  function pointName(index) {
+    if (index === 0) return startIsAtRobot() ? 'จุดเริ่ม · MiR .105' : 'จุดเริ่มภารกิจ';
+    if (index === points.length - 1) return 'ปลายทาง';
+    return 'จุด ' + index + (points[index].radius ? ' · โค้ง' : '');
+  }
+
+  function cornerGeometry(index) {
+    const previous = points[index - 1];
+    const point = points[index];
+    const next = points[index + 1];
+    if (!previous || !next) return null;
+    const entering = { x: point.x - previous.x, y: point.y - previous.y };
+    const leaving = { x: next.x - point.x, y: next.y - point.y };
+    const before = Math.hypot(entering.x, entering.y);
+    const after = Math.hypot(leaving.x, leaving.y);
+    if (Math.min(before, after) < 1) return null;
+    entering.x /= before;
+    entering.y /= before;
+    leaving.x /= after;
+    leaving.y /= after;
+    const cosine = entering.x * leaving.x + entering.y * leaving.y;
+    const angle = Math.acos(Math.max(-1, Math.min(1, cosine)));
+    if (angle < Math.PI / 36 || angle > 35 * Math.PI / 36) return null;
+    const tangent = Math.tan(angle / 2);
+    const maxRadius = Math.min(200, Math.floor(Math.min(before, after) * 0.48 / tangent));
+    if (maxRadius < 4) return null;
+    return { entering, leaving, maxRadius, tangent };
+  }
+
+  function renderMap() {
+    const coordinates = point => point.x + ' ' + point.y;
+    const raw = 'M ' + points.map(coordinates).join(' L ');
+    const rounded = points.reduce((path, point, index) => {
+      if (index === 0) return 'M ' + coordinates(point);
+      const geometry = point.radius && cornerGeometry(index);
+      if (!geometry) return path + ' L ' + coordinates(point);
+      const { entering, leaving, maxRadius, tangent } = geometry;
+      const actualRadius = Math.min(point.radius, maxRadius);
+      const offset = actualRadius * tangent;
+      const entry = { x: point.x - entering.x * offset, y: point.y - entering.y * offset };
+      const exit = { x: point.x + leaving.x * offset, y: point.y + leaving.y * offset };
+      const sweep = entering.x * leaving.y - entering.y * leaving.x > 0 ? 1 : 0;
+      return path + ' L ' + coordinates(entry) + ' A ' + actualRadius + ' ' + actualRadius
+        + ' 0 0 ' + sweep + ' ' + coordinates(exit);
+    }, '');
+    guide.setAttribute('d', raw);
+    route.setAttribute('d', rounded);
+    outline.setAttribute('d', rounded);
+    robotReference.toggleAttribute('hidden', startIsAtRobot());
+    const nextMarkers = points.map((point, index) => {
+      const marker = document.createElementNS(svgNamespace, 'g');
+      marker.setAttribute('transform', 'translate(' + coordinates(point) + ')');
+      marker.setAttribute('data-index', index);
+      marker.setAttribute('role', 'button');
+      marker.setAttribute('aria-label', pointName(index));
+      const hit = document.createElementNS(svgNamespace, 'circle');
+      hit.setAttribute('r', '17');
+      hit.setAttribute('fill', 'transparent');
+      const dot = document.createElementNS(svgNamespace, 'circle');
+      dot.setAttribute('r', index === selected ? '9' : '7');
+      dot.setAttribute('fill', index === selected ? '#71ebcf' : '#122a39');
+      dot.setAttribute('stroke', '#71ebcf');
+      dot.setAttribute('stroke-width', '3');
+      const label = document.createElementNS(svgNamespace, 'text');
+      label.setAttribute('x', '14');
+      label.setAttribute('y', '-12');
+      label.textContent = index === 0 ? (startIsAtRobot() ? 'เริ่ม · .105' : 'จุดเริ่ม')
+        : index === points.length - 1 ? 'ปลายทาง' : index;
+      marker.append(hit, dot, label);
+      return marker;
+    });
+    markers.replaceChildren(...nextMarkers);
+  }
+
+  function renderControls() {
+    const point = points[selected];
+    const geometry = cornerGeometry(selected);
+    const canCurve = Boolean(geometry);
+    const curved = canCurve && point.radius > 0;
+    clear.disabled = points.length === 1;
+    remove.hidden = selected === 0;
+    resetStart.hidden = startIsAtRobot();
+    cornerActions.hidden = selected === 0 || selected === points.length - 1;
+    curve.disabled = !canCurve;
+    straight.disabled = !point.radius;
+    straight.setAttribute('aria-pressed', String(!point.radius));
+    curve.setAttribute('aria-pressed', String(curved));
+    radiusPanel.hidden = !curved;
+    if (curved) {
+      radius.max = geometry.maxRadius;
+      radius.value = Math.min(point.radius, geometry.maxRadius);
+      radiusValue.textContent = radius.value + ' px';
+    }
+    pointTitle.textContent = pointName(selected);
+    pointHint.textContent = selected === 0 ? 'คลิกค้างที่หมุดจุดเริ่มบนแผนที่แล้วลากไปตำแหน่งที่ต้องการ'
+      : selected === points.length - 1 ? 'ลากหมุดเพื่อขยับปลายทาง หรือคลิกเพื่อเพิ่มจุดถัดไป'
+      : !canCurve ? 'ขยับจุดให้เกิดมุมและมีช่วงเส้นเพียงพอสำหรับโค้ง'
+      : curved ? 'ปรับรัศมีให้พอดีกับมุมบนแผนที่'
+      : 'กดทำโค้งเพื่อใช้รัศมีเริ่มต้น แล้วปรับได้ตามต้องการ';
+  }
+
+  function render() {
+    renderMap();
+    renderControls();
+    const focusedIndex = document.activeElement?.dataset.point;
+    const items = points.map((point, index) => {
+      const item = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.point = index;
+      button.setAttribute('aria-pressed', String(index === selected));
+      button.textContent = pointName(index);
+      item.append(button);
+      return item;
+    });
+    pointList.replaceChildren(...items);
+    if (focusedIndex !== undefined) pointList.querySelector('[data-point="' + focusedIndex + '"]')?.focus();
+  }
+
+  function positionOnMap(event) {
+    const position = new DOMPoint(event.clientX, event.clientY).matrixTransform(map.getScreenCTM().inverse());
+    return { x: Math.max(0, Math.min(mapWidth, Math.round(position.x))),
+      y: Math.max(0, Math.min(mapHeight, Math.round(position.y))) };
+  }
+
+  map.addEventListener('pointerdown', event => {
+    if (gesture || event.button !== 0) return;
+    const marker = event.target.closest('[data-index]');
+    const index = marker ? Number(marker.dataset.index) : null;
+    const from = positionOnMap(event);
+    const point = points[index];
+    const offset = point ? { x: point.x - from.x, y: point.y - from.y } : null;
+    gesture = { id: event.pointerId, index, from, offset, moved: false };
+    map.setPointerCapture(event.pointerId);
+    if (index !== null) {
+      selected = index;
+      render();
+    }
+  });
+  map.addEventListener('pointermove', event => {
+    if (gesture?.id !== event.pointerId) return;
+    const position = positionOnMap(event);
+    if (!gesture.moved && Math.hypot(position.x - gesture.from.x, position.y - gesture.from.y) < 3) return;
+    gesture.moved = true;
+    if (gesture.index === null) return;
+    const point = points[gesture.index];
+    point.x = Math.max(0, Math.min(mapWidth, position.x + gesture.offset.x));
+    point.y = Math.max(0, Math.min(mapHeight, position.y + gesture.offset.y));
+    map.classList.add('dragging');
+    renderMap();
+    renderControls();
+  });
+  function endGesture(event) {
+    if (gesture?.id !== event.pointerId) return;
+    if (event.type === 'pointerup' && gesture.index === null && !gesture.moved) {
+      points.push({ ...positionOnMap(event), radius: 0 });
+      selected = points.length - 1;
+    }
+    gesture = null;
+    map.classList.remove('dragging');
+    render();
+  }
+  map.addEventListener('pointerup', endGesture);
+  map.addEventListener('pointercancel', endGesture);
+  map.addEventListener('lostpointercapture', endGesture);
+  pointList.addEventListener('click', event => {
+    const point = event.target.closest('[data-point]');
+    if (!point) return;
+    selected = Number(point.dataset.point);
+    render();
+  });
+  curve.addEventListener('click', () => {
+    const geometry = cornerGeometry(selected);
+    if (!geometry || points[selected].radius) return;
+    points[selected].radius = Math.min(24, geometry.maxRadius);
+    render();
+    radius.focus();
+  });
+  straight.addEventListener('click', () => {
+    points[selected].radius = 0;
+    render();
+    curve.focus();
+  });
+  radius.addEventListener('input', () => {
+    points[selected].radius = Number(radius.value);
+    renderMap();
+    radiusValue.textContent = radius.value + ' px';
+  });
+  remove.addEventListener('click', () => {
+    if (selected === 0) return;
+    points.splice(selected, 1);
+    selected = Math.min(selected, points.length - 1);
+    render();
+    pointList.querySelector('[data-point="' + selected + '"]').focus();
+  });
+  resetStart.addEventListener('click', () => {
+    points[0] = { ...start };
+    selected = 0;
+    render();
+    pointList.querySelector('[data-point="0"]').focus();
+  });
+  clear.addEventListener('click', () => {
+    points = [{ ...start }];
+    selected = 0;
+    render();
+  });
+  function showExample() {
+    points = [{ ...start }, { x: 1740, y: 182, radius: 28 }, { x: 1662, y: 182, radius: 0 }];
+    selected = 1;
+    render();
+  }
+  document.querySelector('#example').addEventListener('click', showExample);
+  showExample();
+</script>
+</html>

@@ -1,0 +1,12 @@
+{
+  "mapId": "REPLACE_WITH_ACTIVE_MIR_MAP_ID",
+  "coordinateFrame": "mir-map-meters",
+  "revision": "REPLACE_WITH_LAB_REVIEWED_MAP_AND_ZONE_REVISION",
+  "verifiedAt": "REPLACE_WITH_REVIEW_TIME_ISO_8601",
+  "forbiddenZones": [
+    {
+      "name": "EXAMPLE_ONLY_REPLACE_WITH_REAL_ZONE",
+      "polygon": [[0, 0], [1, 0], [1, 1], [0, 1]]
+    }
+  ]
+}

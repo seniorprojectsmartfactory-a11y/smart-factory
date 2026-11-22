@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ผังอ้างอิง AMR ชั้น 9</title>
+<style>
+  :root{font:16px/1.5 "Segoe UI",Tahoma,sans-serif;background:#101a27;color:#eef5fc}
+  body{max-width:1620px;margin:auto;padding:clamp(12px,3vw,36px)}
+  h1{font-size:clamp(1.4rem,3vw,2rem);margin:0}
+  p{margin:6px 0 12px;color:#adc2d7}
+  fieldset{display:flex;flex-wrap:wrap;gap:8px 16px;border:1px solid #3a526a;border-radius:8px;margin:0 0 10px}
+  label{white-space:nowrap}
+  input{accent-color:var(--color)}
+  label::after{content:"";display:inline-block;width:8px;height:8px;margin-left:5px;border-radius:2px;background:var(--color)}
+  a{color:#95e5ff}
+  svg{display:block;width:100%;background:white}
+  .plan{overflow:auto;border-radius:8px}
+  .plan svg{min-width:740px}
+  svg text{font:700 18px "Segoe UI",Tahoma,sans-serif;paint-order:stroke;stroke:white;stroke-width:5;stroke-linejoin:round;fill:#172639}
+  .feature{cursor:help}
+  .feature:hover > :first-child{stroke:#0e1722;stroke-width:11}
+  [hidden]{display:none!important}
+</style>
+<main>
+  <h1>ผังอ้างอิง AMR ชั้น 9</h1>
+  <p>ตรวจตำแหน่งจากภาพต้นฉบับ · พิกัดยังรอตรวจหน้างาน</p>
+  <fieldset id="layers" hidden><legend>ชั้นข้อมูลบนผัง</legend></fieldset>
+  <p id="summary" role="status">กำลังโหลดข้อมูลผัง</p>
+  <div class="plan">
+    <svg id="plan" role="img" aria-label="ผังชั้น 9 พร้อมตำแหน่งประตู กำแพง ลิฟต์และบันได">
+      <image id="background"></image>
+    </svg>
+  </div>
+</main>
+<script>
+  const svg = document.querySelector('#plan');
+  const summary = document.querySelector('#summary');
+  const layerControls = document.querySelector('#layers');
+  const ns = 'http://www.w3.org/2000/svg';
+  const dataUrl = './reference.json';
+
+  function graphic(tag, attributes) {
+    const element = document.createElementNS(ns, tag);
+    for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+    return element;
+  }
+
+  function feature(layer, item, geometry, labelAt) {
+    const group = graphic('g', { class: 'feature' });
+    const title = graphic('title', {});
+    title.textContent = item.label ? item.id + ' · ' + item.label : item.id;
+    group.append(geometry, title);
+    if (labelAt) {
+      const label = graphic('text', { x: labelAt[0], y: labelAt[1], 'text-anchor': 'middle' });
+      label.textContent = item.id;
+      group.append(label);
+    }
+    layer.append(group);
+  }
+
+  function lineLayer(items, field, color, labelItems) {
+    const group = graphic('g', {});
+    for (const item of items) {
+      const [x1, y1, x2, y2] = item[field];
+      const line = graphic('line', { x1, y1, x2, y2, stroke: color,
+        'stroke-width': labelItems ? 9 : item.nominalWidthPx, 'stroke-opacity': labelItems ? 1 : 0.64 });
+      feature(group, item, line, labelItems ? [(x1 + x2) / 2, (y1 + y2) / 2 - 9] : null);
+    }
+    return group;
+  }
+
+  function areaLayer(areas, color, labelItems) {
+    const group = graphic('g', {});
+    for (const item of areas) {
+      const [left, top, right, bottom] = item.rect;
+      const box = graphic('rect', { x: left, y: top, width: right - left, height: bottom - top,
+        fill: color, 'fill-opacity': 0.22, stroke: color, 'stroke-width': 3 });
+      feature(group, item, box, labelItems ? [(left + right) / 2, top + 21] : null);
+    }
+    return group;
+  }
+
+  function addLayer(name, color, group, visible) {
+    svg.append(group);
+    const label = document.createElement('label');
+    label.style.setProperty('--color', color);
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = visible;
+    const update = () => group.toggleAttribute('hidden', !checkbox.checked);
+    checkbox.addEventListener('change', update);
+    update();
+    label.append(checkbox, ' ' + name);
+    layerControls.append(label);
+  }
+
+  async function render() {
+    const response = await fetch(dataUrl);
+    if (!response.ok) throw new Error('floor reference unavailable');
+    const data = await response.json();
+    const { image, doors, walls, areas } = data;
+    svg.setAttribute('viewBox', '0 0 ' + image.width + ' ' + image.height);
+    const background = document.querySelector('#background');
+    background.setAttribute('width', image.width);
+    background.setAttribute('height', image.height);
+    background.setAttribute('href', image.dataUrl || image.filename);
+    addLayer('กำแพง', '#d63648', lineLayer(walls, 'centerline', '#d63648', false), true);
+    addLayer('ประตู', '#007f6c', lineLayer(doors, 'opening', '#007f6c', true), true);
+    addLayer('ลิฟต์', '#2159c7', areaLayer(areas.filter(area => area.type === 'elevator'), '#2159c7', true), true);
+    addLayer('บันได', '#ab6500', areaLayer(areas.filter(area => area.type === 'stairs'), '#ab6500', true), true);
+    addLayer('เสา โถงเปิด และพื้นที่รอตรวจ', '#7c459f', areaLayer(
+      areas.filter(area => area.type !== 'elevator' && area.type !== 'stairs'), '#7c459f', false), false);
+    summary.textContent = 'ประตู ' + doors.length + ' จุด · แนวกำแพง ' + walls.length + ' ช่วง · ลิฟต์และบันได '
+      + areas.filter(area => area.type === 'elevator' || area.type === 'stairs').length + ' ตำแหน่ง';
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.textContent = 'เปิดข้อมูล JSON';
+    summary.append(' · ', link);
+    layerControls.hidden = false;
+  }
+  render().catch(() => {
+    summary.textContent = 'โหลดข้อมูลอ้างอิงไม่ได้ กรุณาเปิดผ่าน Node-RED หรือเว็บเซิร์ฟเวอร์ของโปรเจกต์';
+  });
+</script>
+</html>

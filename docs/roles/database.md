@@ -5,6 +5,8 @@
 
 ดูแล schema, ประวัติข้อมูล, สิทธิ์เข้าถึง และ query ที่ Node-RED กับ Grafana ใช้ร่วมกัน
 
+งานรับช่วง AMR และขั้นตอนทดสอบ MATLAB, ML, LLM และกู้คืนแผนที่อยู่ใน [AMR Handoff](amr-handoff.md)
+
 ## งานหลัก
 
 - ดูแลฐานหลัก `KU/senior_project` ที่ [localhost:8086](http://localhost:8086) โดย flow ปัจจุบันเขียน `object_detection`, `object_detection_event` และ `sf_device_health`

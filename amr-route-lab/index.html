@@ -364,14 +364,14 @@
       if (drawnMissions) {
         const preview = await fetch('/mission-preview', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload,
-          signal: AbortSignal.timeout(5000),
+          signal: AbortSignal.timeout(10000),
         });
         const plan = await preview.json();
         if (!preview.ok) {
           lastSubmission = { routeKey, name, message: plan.message };
           return;
         }
-        waypointText = '\n' + plan.waypoints.map((point, i) =>
+        waypointText = '\nตรวจจุดผ่านกับ snapshot Forbidden Zone · ' + plan.validation?.verifiedAt + '\n' + plan.waypoints.map((point, i) =>
           (i + 1) + '. X ' + point.pos_x + ' / Y ' + point.pos_y + ' ม. · ' + point.orientation + '°').join('\n');
         if (JSON.stringify({ robot, points: draftByRobot[robot] }) !== routeKey) return;
       }

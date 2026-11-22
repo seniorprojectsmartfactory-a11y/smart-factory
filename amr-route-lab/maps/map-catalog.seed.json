@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "defaultMapId": "floor9",
+  "maps": [
+    {
+      "id": "floor9",
+      "name": "Floor 9",
+      "labelTh": "ชั้น 9",
+      "floor": 9,
+      "defaultReferenceId": "floor9-clean-plan-v1",
+      "references": [
+        {
+          "id": "floor9-clean-plan-v1",
+          "role": "floor_reference",
+          "status": "traced_from_image",
+          "fieldVerified": false,
+          "navigationEnabled": false,
+          "imagePath": "floor9/floor9-clean-plan.png",
+          "geometryPath": "floor9/reference.json",
+          "legacyNavigationImageBackupPath": "floor9/backup/floor9-navigation-legacy.png",
+          "referenceUrl": "/amr/floor9/reference.json",
+          "previewUrl": "/amr/floor9/map"
+        }
+      ]
+    }
+  ]
+}

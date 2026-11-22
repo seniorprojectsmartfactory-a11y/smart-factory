@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMR Route Lab · แตะจุดหมาย</title>
+<style>
+  :root{color-scheme:dark;font:15px/1.55 "Segoe UI",Tahoma,sans-serif;background:#0d1622;color:#eef6ff;--panel:#172638;--line:#31495e;--muted:#b3c8d8;--mint:#85ead2}
+  *{box-sizing:border-box}
+  body{margin:0}
+  main{max-width:1440px;margin:auto;padding:clamp(12px,3vw,40px)}
+  h1,h2,p{margin:0}
+  h1{font-size:clamp(1.65rem,4vw,2.45rem)}
+  h2{font-size:1rem}
+  header,.bar,.buttons,.robot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  header{margin-bottom:18px}
+  header p,.hint,output{color:var(--muted)}
+  .mode{background:#183735;color:#a7f1d9;border:1px solid #42695d;border-radius:6px;padding:4px 9px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 318px;gap:14px;align-items:start}
+  .panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .bar,.pane{padding:12px 15px}
+  .pane+.pane,.footer{border-top:1px solid var(--line)}
+  .footer{font-size:.9rem;color:var(--muted)}
+  button{font:inherit;cursor:pointer;color:inherit;border:1px solid #466077;border-radius:7px;padding:7px 11px;background:#23394c}
+  button:hover{background:#345369}
+  button:disabled{opacity:.5;cursor:default}
+  button[aria-pressed=true]{background:#1d5150;border-color:#78e8d1}
+  .primary{background:var(--mint);border-color:var(--mint);color:#082a21;font-weight:750}
+  .primary:hover{background:#b4f6e7}
+  :focus-visible{outline:2px solid #89efd4;outline-offset:3px}
+  .buttons{justify-content:flex-start;margin-top:9px}
+  .robots{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .robot{justify-content:flex-start;font-weight:700}
+  .robot::before{content:"";background:var(--color);width:8px;height:8px;border-radius:50%}
+  #map{width:100%;height:auto;display:block;background:#edf2f6;cursor:crosshair;touch-action:manipulation}
+  #map text{font:700 22px "Segoe UI",Tahoma,sans-serif;paint-order:stroke;stroke:#fff;stroke-width:6;fill:#172638;pointer-events:none}
+  #route-shadow,#path,#goal,#doors{pointer-events:none}
+  .door-control{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+  .hint{font-size:.87rem;margin-top:6px}
+  #result{min-height:2.6em;margin-top:5px}
+  #result[data-error=true]{color:#ffb8b8}
+  @media(max-width:800px){.layout{grid-template-columns:1fr}}
+</style>
+<main>
+  <header>
+    <div><h1>เลือกจุดหมาย AMR</h1><p>AMR Route Lab · Floor 9</p></div>
+    <span class="mode">โหมดจำลอง</span>
+  </header>
+  <div class="layout">
+    <section class="panel" aria-labelledby="map-title">
+      <div class="bar"><h2 id="map-title">ผังเส้นทาง</h2><output id="distance"></output></div>
+      <svg id="map" viewBox="0 0 2048 980" aria-label="ผังชั้น 9 สำหรับแตะเลือกจุดหมาย">
+        <image id="background" width="2048" height="980" pointer-events="none"/>
+        <g id="doors"></g>
+        <polyline id="route-shadow" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline id="path" fill="none" stroke="#007a65" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <g id="goal" visibility="hidden"><circle r="15" fill="#d63d59" stroke="#fff" stroke-width="4"/><text x="20" y="-10">ปลายทาง</text></g>
+        <g id="robots-on-map"></g>
+      </svg>
+      <div class="bar footer"><span>เส้นสีเขียว · เส้นทางจำลองที่ Node-RED คำนวณ</span><span>ขีดสีแดง · ประตูที่จำลองว่าปิด</span></div>
+    </section>
+    <aside class="panel" aria-label="เลือกและทดลองส่ง AMR">
+      <section class="pane">
+        <h2>เลือก AMR</h2>
+        <div id="robots" class="robots"></div>
+        <p class="hint">เลือกคันแล้วแตะจุดหมายบนผัง หรือใช้ปลายทางตัวอย่าง</p>
+        <div class="buttons"><button id="example" type="button" disabled>ใช้ปลายทางตัวอย่าง</button></div>
+      </section>
+      <section class="pane">
+        <h2>สถานะการเดินทาง</h2>
+        <p id="result" role="status">กำลังโหลดผัง…</p>
+        <div class="buttons">
+          <button id="send" type="button" class="primary" disabled>ให้รถจำลองไป</button>
+          <button id="stop" type="button" disabled>หยุด</button>
+        </div>
+      </section>
+      <section class="pane" id="conditions">
+        <h2>จำลองประตูปิด</h2>
+        <p class="hint">ปิด D-11 เพื่อทดสอบทางอ้อม หรือปิดทั้งสองจุดเพื่อทดสอบกรณีไปไม่ได้</p>
+      </section>
+    </aside>
+  </div>
+</main>
+<script>
+  const namespace = 'http://www.w3.org/2000/svg';
+  const robots = [
+    { id: 1, position: [1468,380], color: '#007966' },
+    { id: 2, position: [1575,379], color: '#ad6214' },
+    { id: 3, position: [1725,389], color: '#2469b7' },
+  ];
+  const map = document.querySelector('#map');
+  const doorLayer = document.querySelector('#doors');
+  const doorsPanel = document.querySelector('#conditions');
+  const robotLayer = document.querySelector('#robots-on-map');
+  const list = document.querySelector('#robots');
+  const goalMarker = document.querySelector('#goal');
+  const routeLine = document.querySelector('#path');
+  const routeShadow = document.querySelector('#route-shadow');
+  const distance = document.querySelector('#distance');
+  const result = document.querySelector('#result');
+  const example = document.querySelector('#example');
+  const send = document.querySelector('#send');
+  const stop = document.querySelector('#stop');
+  const closedDoors = new Set();
+  let reference = null;
+  let selected = null;
+  let goal = null;
+  let plan = null;
+  let requestId = 0;
+  let motion = null;
+  let frame = null;
+  let resumeAfterPlan = false;
+
+  function status(message, error = false) {
+    result.textContent = message;
+    result.dataset.error = String(error);
+  }
+
+  function plotLine(path = []) {
+    const value = path.map(point => point.join(',')).join(' ');
+    routeLine.setAttribute('points', value);
+    routeShadow.setAttribute('points', value);
+  }
+
+  function controls() {
+    example.disabled = !reference || !selected || Boolean(motion);
+    send.disabled = !plan || Boolean(motion) || resumeAfterPlan;
+    stop.disabled = !motion && !resumeAfterPlan;
+  }
+
+  function stopMotion() {
+    if (frame !== null) cancelAnimationFrame(frame);
+    frame = null;
+    motion = null;
+  }
+
+  function select(robot) {
+    if (robot === selected) return;
+    stopMotion();
+    requestId++;
+    resumeAfterPlan = false;
+    selected = robot;
+    goal = null;
+    plan = null;
+    plotLine();
+    distance.textContent = '';
+    goalMarker.setAttribute('visibility', 'hidden');
+    for (const unit of robots) unit.button.setAttribute('aria-pressed', String(unit === selected));
+    status('เลือก AMR ' + robot.id + ' แล้ว · แตะจุดหมาย');
+    controls();
+  }
+
+  function moveMarker(robot) {
+    robot.pin.setAttribute('transform', 'translate(' + robot.position.join(' ') + ')');
+  }
+
+  for (const robot of robots) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'robot';
+    button.style.setProperty('--color', robot.color);
+    button.textContent = 'AMR ' + robot.id;
+    button.setAttribute('aria-pressed', 'false');
+    button.disabled = true;
+    button.addEventListener('click', () => select(robot));
+    list.append(button);
+    robot.button = button;
+
+    const pin = document.createElementNS(namespace, 'g');
+    pin.style.cursor = 'pointer';
+    pin.setAttribute('role', 'button');
+    pin.setAttribute('tabindex', '0');
+    pin.setAttribute('aria-label', 'เลือก AMR ' + robot.id + ' บนผัง');
+    pin.innerHTML = '<circle r="28" fill="transparent"/><circle r="14" fill="' + robot.color + '" stroke="white" stroke-width="4"/>'
+      + '<text x="0" y="-22" text-anchor="middle">AMR ' + robot.id + '</text>';
+    pin.addEventListener('click', event => { event.stopPropagation(); if (reference) select(robot); });
+    pin.addEventListener('keydown', event => {
+      if (reference && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); select(robot); }
+    });
+    robot.pin = pin;
+    moveMarker(robot);
+    robotLayer.append(pin);
+  }
+
+  async function requestPlan(nextGoal, replan = false) {
+    const id = ++requestId;
+    const robot = selected;
+    goal = nextGoal;
+    plan = null;
+    plotLine();
+    distance.textContent = '';
+    goalMarker.setAttribute('transform', 'translate(' + goal.join(' ') + ')');
+    goalMarker.setAttribute('visibility', 'visible');
+    status(replan ? 'หยุดรถจำลองเพื่อคำนวณทางอ้อม' : 'กำลังตรวจจุดหมายและคำนวณเส้นทาง…');
+    controls();
+    try {
+      const response = await fetch('/amr/tap-to-go/plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referenceId: reference.id, robotId: robot.id,
+          start: robot.position, goal, closedDoors: [...closedDoors] }),
+        signal: AbortSignal.timeout(7000),
+      });
+      const data = await response.json();
+      if (id !== requestId) return;
+      if (!response.ok) {
+        resumeAfterPlan = false;
+        status(data.message || 'คำนวณเส้นทางไม่ได้', true);
+        controls();
+        return;
+      }
+      plan = data;
+      plotLine(plan.path);
+      distance.textContent = 'ระยะบนผัง ' + plan.distancePx + ' px';
+      if (resumeAfterPlan) {
+        resumeAfterPlan = false;
+        beginMotion(true);
+      } else {
+        status('ตรวจเส้นทางของ AMR ' + robot.id + ' แล้ว · กดให้รถจำลองไป');
+        controls();
+      }
+    } catch {
+      if (id !== requestId) return;
+      resumeAfterPlan = false;
+      status('อ่านเส้นทางจาก Node-RED ไม่สำเร็จ กรุณาลองแตะจุดหมายใหม่', true);
+      controls();
+    }
+  }
+
+  function tick(time) {
+    if (!motion) return;
+    const active = motion;
+    let budget = active.last === null ? 0 : Math.min(time - active.last, 50) * 0.13;
+    active.last = time;
+    while (budget > 0 && active.next < active.path.length) {
+      const [x, y] = active.robot.position;
+      const [tx, ty] = active.path[active.next];
+      const remaining = Math.hypot(tx - x, ty - y);
+      if (remaining <= budget) {
+        budget -= remaining;
+        active.robot.position = [tx, ty];
+        active.next++;
+      } else {
+        active.robot.position = [x + (tx - x) * budget / remaining, y + (ty - y) * budget / remaining];
+        budget = 0;
+      }
+    }
+    moveMarker(active.robot);
+    if (active.next === active.path.length) {
+      stopMotion();
+      plan = null;
+      status('AMR ' + active.robot.id + ' ถึงปลายทางในโหมดจำลองแล้ว');
+      controls();
+      return;
+    }
+    frame = requestAnimationFrame(tick);
+  }
+
+  function beginMotion(replanned = false) {
+    if (!plan || !selected) return;
+    motion = { path: plan.path, robot: selected, next: 1, last: null };
+    status('AMR ' + selected.id + (replanned ? ' กำลังอ้อมทางเดิมที่ถูกบล็อก' : ' กำลังไปยังปลายทางในโหมดจำลอง'));
+    frame = requestAnimationFrame(tick);
+    controls();
+  }
+
+  map.addEventListener('click', event => {
+    if (!reference || !selected || motion || resumeAfterPlan) return;
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(map.getScreenCTM().inverse());
+    requestPlan([Math.round(point.x), Math.round(point.y)]);
+  });
+  example.addEventListener('click', () => requestPlan([1860,650]));
+  send.addEventListener('click', () => beginMotion());
+  stop.addEventListener('click', () => {
+    requestId++;
+    stopMotion();
+    resumeAfterPlan = false;
+    plan = null;
+    plotLine();
+    distance.textContent = '';
+    status('หยุดรถจำลองแล้ว · แตะจุดหมายเพื่อคำนวณใหม่');
+    controls();
+  });
+
+  function addDoor(door, label) {
+    const [x1,y1,x2,y2] = door.opening;
+    const line = document.createElementNS(namespace, 'line');
+    for (const [key, value] of Object.entries({ x1,y1,x2,y2,stroke:'#d63d59','stroke-width':11,visibility:'hidden' })) {
+      line.setAttribute(key, value);
+    }
+    doorLayer.append(line);
+    const row = document.createElement('div');
+    row.className = 'door-control';
+    const text = document.createElement('span');
+    text.textContent = door.id + ' · ' + label;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute('aria-label', 'จำลองปิดประตู ' + door.id);
+    button.setAttribute('aria-pressed', 'false');
+    button.textContent = 'เปิดอยู่';
+    button.addEventListener('click', () => {
+      if (!closedDoors.delete(door.id)) closedDoors.add(door.id);
+      const closed = closedDoors.has(door.id);
+      button.setAttribute('aria-pressed', String(closed));
+      button.textContent = closed ? 'ปิดอยู่' : 'เปิดอยู่';
+      line.setAttribute('visibility', closed ? 'visible' : 'hidden');
+      if (!selected || !goal) return;
+      resumeAfterPlan ||= Boolean(motion);
+      stopMotion();
+      requestPlan(goal, resumeAfterPlan);
+    });
+    row.append(text, button);
+    doorsPanel.append(row);
+  }
+
+  async function loadMap() {
+    const catalogResponse = await fetch('/amr/maps');
+    if (!catalogResponse.ok) throw Error('Map catalog unavailable');
+    const catalog = await catalogResponse.json();
+    const entry = catalog.maps.find(item => item.id === 'floor9');
+    const revision = entry?.references.find(item => item.id === entry.defaultReferenceId);
+    if (!revision) throw Error('Floor 9 missing');
+    const response = await fetch(revision.referenceUrl);
+    if (!response.ok) throw Error('Floor 9 unavailable');
+    const data = await response.json();
+    const directDoor = data.doors.find(door => door.id === 'D-11');
+    const bypassDoor = data.doors.find(door => door.id === 'D-23');
+    if (!directDoor || !bypassDoor || data.id !== revision.id) throw Error('Simulation map version mismatch');
+    reference = data;
+    document.querySelector('#background').setAttribute('href', reference.image.dataUrl);
+    addDoor(directDoor, 'ทางตรง');
+    addDoor(bypassDoor, 'ทางอ้อม');
+    for (const robot of robots) robot.button.disabled = false;
+    status('เลือก AMR เพื่อเริ่ม');
+  }
+  loadMap().catch(() => status('โหลด Floor 9 ไม่สำเร็จ กรุณาตรวจรายการแผนที่ใน Node-RED', true));
+</script>
+</html>

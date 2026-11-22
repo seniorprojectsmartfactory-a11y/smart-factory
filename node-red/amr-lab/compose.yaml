@@ -1,0 +1,37 @@
+name: capstone-amr
+
+services:
+  node-red:
+    image: nodered/node-red:5.0.8
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        if ! cmp -s /opt/github/package-lock.json /data/.installed-package-lock.json || [ ! -d /data/node_modules ]; then
+          cp /opt/github/package.json /data/package.json
+          cp /opt/github/package-lock.json /data/package-lock.json
+          npm ci --prefix /data --omit=dev --no-audit --no-fund
+          cp /opt/github/package-lock.json /data/.installed-package-lock.json
+        fi
+        node /opt/amr/seed-flow.cjs
+        exec ./entrypoint.sh
+    environment:
+      TZ: Asia/Bangkok
+      FLOWS: capstone-amr-flows.json
+    ports:
+      - "127.0.0.1:1884:1880"
+    volumes:
+      - node-red-data:/data
+      - ./seed-flow.cjs:/opt/amr/seed-flow.cjs:ro
+      - ./amr-route-editor.flow.json:/opt/amr/amr-route-editor.flow.json:ro
+      - ./amr-joystick.flow.json:/opt/amr/amr-joystick.flow.json:ro
+      - ./floor9-reference.flow.json:/opt/amr/floor9-reference.flow.json:ro
+      - ./amr-tap-to-go.flow.json:/opt/amr/amr-tap-to-go.flow.json:ro
+      - ../flows.json:/opt/github/flows.json:ro
+      - ../package.json:/opt/github/package.json:ro
+      - ../package-lock.json:/opt/github/package-lock.json:ro
+      - ../../amr-route-lab/floor9.png:/opt/amr/floor9.png:ro
+
+volumes:
+  node-red-data:
