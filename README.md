@@ -4,6 +4,8 @@
 
 เริ่มส่งต่องาน AMR ที่ [Handoff สำหรับ Database และ Dashboard](docs/roles/amr-handoff.md) มีสถานะฟีเจอร์ 1–6, Node-RED flows, อุปกรณ์รายฟีเจอร์, แผนทดสอบ MATLAB และ Map Reference Backup
 
+ดู [คู่มืออ่านโค้ดและทดสอบระบบ AMR](docs/amr-system-guide.md) สำหรับวิธีเปิด MATLAB ด้วยตัวเอง ผลทดสอบ D-11 บทสรุปจากคลิปอ้างอิง และแผนจองทางร่วมหลายคัน
+
 - `node-red/` มี flow ที่ใช้งานอยู่ รวมหน้า Live Map ที่ route `/smart-factory/live-map` และไฟล์ล็อกสำหรับติดตั้งแพ็กเกจด้วย `npm ci`
 - `grafana/dashboards/` มีไฟล์ dashboard resource ของ Grafana 13 ที่ export จากชุดที่ใช้งานอยู่ โดย datasource ของ dashboard ใช้ UID `cg4kftkp6p88wd`
 - `amr-route-lab/` มีเว็บ แผนที่ และสคริปต์สำหรับใช้งานกับ MiR เมื่อเครื่องเข้าถึงเครือข่ายแล็บได้
