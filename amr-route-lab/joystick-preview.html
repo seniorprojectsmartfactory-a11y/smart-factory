@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMR Route Lab · ทดลอง Joystick</title>
+<style>
+  :root{color-scheme:dark;font:15px/1.5 "Segoe UI",Tahoma,sans-serif;background:#0d1622;color:#edf5fc;--muted:#aabfd1;--line:#2a4055;--surface:#142435;--mint:#7ce9cd}
+  *{box-sizing:border-box}
+  body{margin:0}
+  main{max-width:1350px;margin:auto;padding:clamp(14px,3vw,42px)}
+  h1,h2,p{margin:0}
+  h1{font-size:clamp(1.55rem,4vw,2.5rem);line-height:1.2}
+  h2{font-size:1.05rem}
+  header,.panel-head,.control-head,.status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header{margin-bottom:20px}
+  .sub{margin-top:5px;color:var(--muted)}
+  .mode{padding:5px 10px;border:1px solid #4e695e;border-radius:6px;color:#b2eed9;background:#1b3434;font-size:.82rem}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}
+  .panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .panel-head,.pane,.status-row{padding:13px 15px}
+  .pane+.pane,.status-row{border-top:1px solid var(--line)}
+  .status-row,.help{color:var(--muted);font-size:.87rem}
+  .help{margin-top:7px}
+  button{font:inherit;color:inherit;cursor:pointer;border:1px solid #3a5268;background:#1d3144;border-radius:8px;padding:7px 11px}
+  button:hover{background:#2a445a}
+  button:disabled{opacity:.48;cursor:default}
+  :focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+  .primary{background:var(--mint);border-color:var(--mint);color:#102822;font-weight:700}
+  .primary:hover{background:#a9f5e1}
+  .robots{display:grid;gap:6px;margin-top:10px}
+  .robot{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;text-align:left}
+  .robot[aria-pressed="true"]{border-color:var(--robot);background:#284253}
+  .swatch{width:8px;height:8px;border-radius:100%;background:var(--robot)}
+  .robot small{font-size:.78rem;color:var(--muted)}
+  #open-control{width:100%;margin-top:10px}
+  #map{display:block;width:100%;height:auto;background:#0e1928}
+  .map-marker{cursor:pointer}
+  .map-marker text{font-weight:700;fill:#f1f8ff;paint-order:stroke;stroke:#101a26;stroke-width:5px;pointer-events:none}
+  .map-marker:focus-visible .ring,.map-marker[aria-pressed="true"] .ring{visibility:visible}
+  .ring{visibility:hidden}
+  #pad{position:relative;width:min(100%,184px);aspect-ratio:1;margin:14px auto 10px;border:1px solid #496279;border-radius:50%;background:radial-gradient(circle,#1c3547 14%,transparent 15%,transparent 40%,#182e40 41%),#122333;touch-action:none;user-select:none;cursor:grab}
+  #pad.active{cursor:grabbing;border-color:var(--mint)}
+  #pad::before,#pad::after{content:"";position:absolute;pointer-events:none;background:#486173}
+  #pad::before{left:15%;right:15%;top:50%;height:1px}
+  #pad::after{top:15%;bottom:15%;left:50%;width:1px}
+  #knob{position:absolute;z-index:1;left:50%;top:50%;width:32%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:#7ce9cd;border:3px solid #b1f4e3;box-shadow:0 3px 8px #071e27;pointer-events:none}
+  .axis{position:absolute;color:#d8e6ef;font-size:1rem;pointer-events:none}
+  .up{top:3%;left:50%;translate:-50% 0}.down{bottom:3%;left:50%;translate:-50% 0}
+  .left{left:5%;top:50%;translate:0 -50%}.right{right:5%;top:50%;translate:0 -50%}
+  #control-state{min-height:1.5em;text-align:center;color:var(--mint);font-weight:600}
+  [hidden]{display:none!important}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}.robots{grid-template-columns:repeat(3,minmax(0,1fr))}.robot{grid-template-columns:8px 1fr}.robot small{grid-column:2}}
+  @media(max-width:560px){
+    .layout{display:block}
+    .map-panel{position:sticky;top:0;z-index:2}
+    .map-panel .panel-head,.map-panel .status-row{padding:7px 10px}
+    .layout aside{margin-top:12px}
+    :is(.robot,#open-control,#close-control,#pad){scroll-margin-top:clamp(175px,56vw,290px)}
+  }
+  @media(max-width:400px){.robot{font-size:.86rem;padding:6px}.control-head h2{font-size:.92rem}}
+</style>
+<main>
+  <header>
+    <div><h1>ควบคุม AMR ด้วย Joystick</h1><p class="sub">AMR Route Lab · ผังชั้น 9</p></div>
+    <span class="mode">โหมดจำลอง</span>
+  </header>
+  <div class="layout">
+    <section class="panel map-panel" aria-labelledby="map-title">
+      <div class="panel-head"><h2 id="map-title">ตำแหน่งรถบนผัง</h2></div>
+      <svg id="map" viewBox="0 0 1196 583" aria-label="ผังชั้น 9 พร้อมตำแหน่ง AMR สามคัน">
+        <image href="floor9.png" width="1196" height="583" opacity=".86"/>
+        <g id="markers"></g>
+      </svg>
+      <div class="status-row"><span id="map-hint">เลือกคันจากหมุดบนผังหรือรายการรถ</span></div>
+    </section>
+    <aside class="panel" aria-label="เลือกและควบคุมรถ">
+      <section class="pane" aria-labelledby="fleet-title">
+        <h2 id="fleet-title">เลือก AMR</h2>
+        <div class="robots" id="robot-list"></div>
+        <button id="open-control" class="primary" type="button" aria-controls="control" aria-expanded="false" disabled>Joystick</button>
+      </section>
+      <section id="control" class="pane" aria-labelledby="control-title" hidden>
+        <div class="control-head">
+          <h2 id="control-title">Joystick</h2>
+          <button id="close-control" type="button">ปิด</button>
+        </div>
+        <p id="pad-help" class="help">กดค้างแล้วดันขึ้นหรือลงเพื่อเดินหน้าและถอย ดันซ้ายหรือขวาเพื่อหมุน แล้วปล่อยเพื่อหยุด ใช้ปุ่มลูกศรได้เมื่อเลือกแป้น</p>
+        <div id="pad" role="group" tabindex="0" aria-label="แป้นควบคุมทิศทาง" aria-describedby="pad-help">
+          <span class="axis up" aria-hidden="true">↑</span><span class="axis down" aria-hidden="true">↓</span>
+          <span class="axis left" aria-hidden="true">↶</span><span class="axis right" aria-hidden="true">↷</span>
+          <span id="knob"></span>
+        </div>
+        <p id="control-state" role="status">พร้อมขยับในโหมดจำลอง</p>
+      </section>
+    </aside>
+  </div>
+</main>
+<script>
+  const robots = [
+    { id: 1, x: 190, y: 205, heading: 0, color: '#78ebc6' },
+    { id: 2, x: 345, y: 265, heading: Math.PI, color: '#ffd184' },
+    { id: 3, x: 235, y: 319, heading: -Math.PI / 2, color: '#91c9ff' },
+  ];
+  const svgNamespace = 'http://www.w3.org/2000/svg';
+  const robotList = document.querySelector('#robot-list');
+  const markers = document.querySelector('#markers');
+  const mapHint = document.querySelector('#map-hint');
+  const openControl = document.querySelector('#open-control');
+  const closeControl = document.querySelector('#close-control');
+  const panel = document.querySelector('#control');
+  const controlTitle = document.querySelector('#control-title');
+  const controlState = document.querySelector('#control-state');
+  const pad = document.querySelector('#pad');
+  const knob = document.querySelector('#knob');
+  const keys = new Set();
+  const arrowKeys = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
+  let selected = null;
+  let controlled = null;
+  let pointerId = null;
+  let input = { turn: 0, drive: 0 };
+  let frame = null;
+  let lastFrame = null;
+
+  function moveMarker(robot) {
+    robot.marker.setAttribute('transform', 'translate(' + robot.x.toFixed(2) + ' ' + robot.y.toFixed(2) + ')');
+    robot.headingMarker.setAttribute('transform', 'rotate(' + (robot.heading * 180 / Math.PI).toFixed(2) + ')');
+  }
+
+  function selectRobot(robot) {
+    if (selected === robot) return;
+    closeJoystick();
+    selected = robot;
+    openControl.disabled = false;
+    renderMapHint();
+    for (const item of robots) {
+      const active = String(item === robot);
+      item.button.setAttribute('aria-pressed', active);
+      item.marker.setAttribute('aria-pressed', active);
+    }
+  }
+
+  function renderMapHint() {
+    mapHint.textContent = controlled ? 'แผง Joystick ผูกกับ AMR ' + controlled.id
+      : selected ? 'เลือก AMR ' + selected.id + ' แล้ว · กด Joystick เพื่อเปิดแผง'
+      : 'เลือกคันจากหมุดบนผังหรือรายการรถ';
+  }
+
+  for (const robot of robots) {
+    const label = 'AMR ' + robot.id;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'robot';
+    button.style.setProperty('--robot', robot.color);
+    button.setAttribute('aria-pressed', 'false');
+    button.innerHTML = '<span class="swatch"></span><strong>' + label + '</strong><small>พร้อม</small>';
+    button.addEventListener('click', () => selectRobot(robot));
+    robot.button = button;
+    robotList.append(button);
+
+    const marker = document.createElementNS(svgNamespace, 'g');
+    marker.setAttribute('class', 'map-marker');
+    marker.setAttribute('role', 'button');
+    marker.setAttribute('tabindex', '0');
+    marker.setAttribute('aria-label', 'เลือก ' + label + ' บนผัง');
+    marker.setAttribute('aria-pressed', 'false');
+    marker.setAttribute('color', robot.color);
+    marker.innerHTML = '<circle r="29" fill="transparent"/><circle class="ring" r="23" fill="none" stroke="currentColor" stroke-width="3"/>'
+      + '<g><path d="M-12 -11H10L18 0L10 11H-12Z" fill="currentColor" stroke="#102233" stroke-width="2"/></g>'
+      + '<text x="0" y="-30" text-anchor="middle" font-size="21">' + label + '</text>';
+    marker.addEventListener('click', () => selectRobot(robot));
+    marker.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      selectRobot(robot);
+    });
+    robot.marker = marker;
+    robot.headingMarker = marker.querySelector('g');
+    moveMarker(robot);
+    markers.append(marker);
+  }
+
+  function stopInput() {
+    const captured = pointerId;
+    pointerId = null;
+    keys.clear();
+    if (captured !== null && pad.hasPointerCapture(captured)) pad.releasePointerCapture(captured);
+    setInput(0, 0);
+  }
+
+  function closeJoystick() {
+    stopInput();
+    controlled = null;
+    panel.hidden = true;
+    openControl.setAttribute('aria-expanded', 'false');
+    renderMapHint();
+  }
+
+  openControl.addEventListener('click', () => {
+    if (!selected) return;
+    if (controlled) {
+      closeJoystick();
+      return;
+    }
+    controlled = selected;
+    controlTitle.textContent = 'Joystick · AMR ' + controlled.id;
+    panel.hidden = false;
+    openControl.setAttribute('aria-expanded', 'true');
+    renderMapHint();
+    pad.focus();
+  });
+  closeControl.addEventListener('click', () => {
+    closeJoystick();
+    openControl.focus();
+  });
+
+  function animate(now) {
+    frame = null;
+    if (!controlled || (!input.turn && !input.drive)) return;
+    const dt = lastFrame === null ? 0 : Math.min((now - lastFrame) / 1000, 0.05);
+    lastFrame = now;
+    const robot = controlled;
+    robot.heading = (robot.heading + input.turn * 2.1 * dt) % (2 * Math.PI);
+    robot.x = Math.max(24, Math.min(1172, robot.x + Math.cos(robot.heading) * input.drive * 112 * dt));
+    robot.y = Math.max(24, Math.min(559, robot.y + Math.sin(robot.heading) * input.drive * 112 * dt));
+    moveMarker(robot);
+    frame = requestAnimationFrame(animate);
+  }
+
+  function setInput(turn, drive) {
+    const moving = Boolean(controlled && (turn || drive));
+    input = { turn: moving ? turn : 0, drive: moving ? drive : 0 };
+    knob.style.left = 50 + input.turn * 30 + '%';
+    knob.style.top = 50 - input.drive * 30 + '%';
+    pad.classList.toggle('active', moving);
+    const status = moving ? 'กำลังขยับในโหมดจำลอง' : 'พร้อมขยับในโหมดจำลอง';
+    if (controlState.textContent !== status) controlState.textContent = status;
+    if (moving && frame === null) frame = requestAnimationFrame(animate);
+    if (!moving) {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+      lastFrame = null;
+    }
+  }
+
+  function readPointer(event) {
+    const bounds = pad.getBoundingClientRect();
+    const turn = (event.clientX - bounds.left - bounds.width / 2) / (bounds.width * 0.3);
+    const drive = (bounds.top + bounds.height / 2 - event.clientY) / (bounds.height * 0.3);
+    const magnitude = Math.hypot(turn, drive);
+    const scale = Math.max(1, magnitude);
+    setInput(magnitude < 0.1 ? 0 : turn / scale, magnitude < 0.1 ? 0 : drive / scale);
+  }
+
+  pad.addEventListener('pointerdown', event => {
+    if (!controlled || pointerId !== null || event.button !== 0) return;
+    event.preventDefault();
+    pad.focus();
+    keys.clear();
+    pointerId = event.pointerId;
+    pad.setPointerCapture(pointerId);
+    readPointer(event);
+  });
+  pad.addEventListener('pointermove', event => {
+    if (event.pointerId === pointerId) readPointer(event);
+  });
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    pad.addEventListener(type, event => {
+      if (event.pointerId === pointerId) stopInput();
+    });
+  }
+
+  function readKeys() {
+    const turn = Number(keys.has('ArrowRight')) - Number(keys.has('ArrowLeft'));
+    const drive = Number(keys.has('ArrowUp')) - Number(keys.has('ArrowDown'));
+    const scale = Math.max(1, Math.hypot(turn, drive));
+    setInput(turn / scale, drive / scale);
+  }
+
+  pad.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      closeJoystick();
+      openControl.focus();
+      return;
+    }
+    if (!controlled || pointerId !== null || !arrowKeys.has(event.key)) return;
+    event.preventDefault();
+    keys.add(event.key);
+    readKeys();
+  });
+  pad.addEventListener('keyup', event => {
+    if (!keys.delete(event.key)) return;
+    event.preventDefault();
+    readKeys();
+  });
+  pad.addEventListener('blur', stopInput);
+  window.addEventListener('blur', stopInput);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopInput();
+  });
+</script>
+</html>
