@@ -1,0 +1,58 @@
+[
+  {
+    "id": "capstone-amr-route",
+    "type": "tab",
+    "label": "Capstone AMR Route Editor",
+    "disabled": false,
+    "info": "ต้นแบบวางเส้นทางบนผังชั้น 9 ใช้ข้อมูล AMR จำลอง"
+  },
+  {
+    "id": "amr-editor-request",
+    "type": "http in",
+    "z": "capstone-amr-route",
+    "name": "เปิดหน้าวางเส้นทาง",
+    "url": "/amr/route-editor",
+    "method": "get",
+    "upload": false,
+    "x": 180,
+    "y": 100,
+    "wires": [
+      [
+        "amr-editor-template"
+      ]
+    ]
+  },
+  {
+    "id": "amr-editor-template",
+    "type": "template",
+    "z": "capstone-amr-route",
+    "name": "หน้าวางเส้นทาง AMR",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "plain",
+    "template": "",
+    "output": "str",
+    "x": 430,
+    "y": 100,
+    "wires": [
+      [
+        "amr-editor-response"
+      ]
+    ]
+  },
+  {
+    "id": "amr-editor-response",
+    "type": "http response",
+    "z": "capstone-amr-route",
+    "name": "ตอบ HTML",
+    "statusCode": "200",
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store"
+    },
+    "x": 660,
+    "y": 100,
+    "wires": []
+  }
+]

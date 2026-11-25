@@ -9,17 +9,17 @@
 1. หาก Node-RED ยังไม่เปิด ให้เปิด Docker แล้วรันคำสั่งนี้จากโฟลเดอร์หลักของ repo ใน PowerShell
 
    ```powershell
-   docker compose -f node-red/amr-lab/compose.yaml up -d
+   docker compose -f database/node-red/amr-lab/compose.yaml up -d
    ```
 
-2. เปิด MATLAB จากไอคอน เลือกโฟลเดอร์ `node-red/amr-lab` ของ repo ในแถบ **Current Folder** หรือใช้ `cd` ใน **Command Window** โดยใส่พาธจริงของ repo บนเครื่องนั้น
+2. เปิด MATLAB จากไอคอน เลือกโฟลเดอร์ `simulation/amr` ของ repo ในแถบ **Current Folder** หรือใช้ `cd` ใน **Command Window** โดยใส่พาธจริงของ repo บนเครื่องนั้น
 
    ```matlab
-   cd('C:/path/to/smart-factory/node-red/amr-lab')
+   cd('C:/path/to/smart-factory/simulation/amr')
    check_matlab_node_red
    ```
 
-   ถ้า Current Folder อยู่ที่ `node-red/amr-lab` แล้ว ให้พิมพ์ `check_matlab_node_red` ได้เลย ชื่อในคำสั่งใช้โดยไม่ใส่นามสกุล `.m` หากเรียก API ไม่ได้ ให้เปิด [Node-RED Editor](http://127.0.0.1:1884/) และตรวจว่ามีแท็บ **Capstone Floor 9 Reference** กับ **Capstone AMR Tap to Go** อยู่ใน runtime เดียวกัน
+   ถ้า Current Folder อยู่ที่ `simulation/amr` แล้ว ให้พิมพ์ `check_matlab_node_red` ได้เลย ชื่อในคำสั่งใช้โดยไม่ใส่นามสกุล `.m` หากเรียก API ไม่ได้ ให้เปิด [Node-RED Editor](http://127.0.0.1:1884/) และตรวจว่ามีแท็บ **Capstone Floor 9 Reference** กับ **Capstone AMR Tap to Go** อยู่ใน runtime เดียวกัน
 
 3. ผลที่ยืนยันบน MATLAB R2026b กับ `floor9-clean-plan-v1` เป็นการจำลอง AMR 1 คัน ทั้งสองคำขอใช้ต้นทางและปลายทางเดียวกัน
 
@@ -42,10 +42,10 @@ flowchart LR
 
 | ไฟล์ | หน้าที่ |
 |---|---|
-| [check_matlab_node_red.m](../node-red/amr-lab/check_matlab_node_red.m) | `webread` อ่าน `/amr/maps` และรุ่นอ้างอิง `webwrite` ส่งคำขอทั้งสองกรณีไปยัง `/amr/tap-to-go/plan` `assert` ตรวจรุ่นแผนที่ โหมดจำลอง รถที่ตอบกลับ และระยะทางอ้อม `fprintf` พิมพ์ผล |
-| [amr-tap-to-go.flow.json](../node-red/amr-lab/amr-tap-to-go.flow.json) | Node-RED รับคำขอ อ่านข้อมูล Floor 9 เรียกตัววางแผน แล้วคืนเส้นทางและระยะทาง |
-| [tap-to-go-planner.cjs](../amr-route-lab/tap-to-go-planner.cjs) | JavaScript ใช้ A* หาเส้นทางจากตำแหน่งเริ่มถึงปลายทางบนกริด คำนวณทางผ่านจากกำแพง พื้นที่กีดขวาง และประตูที่ปิดในโจทย์ |
-| [ข้อมูล Floor 9](../amr-route-lab/maps/floor9/README.md) | ภาพต้นฉบับ ชุดข้อมูลพิกัดประตู กำแพง ลิฟต์ บันได และภาพนำทางเก่าที่สำรองไว้ สำหรับการใช้กับรถจริงยังต้องสอบเทียบพิกัดแยกตามรถ |
+| [check_matlab_node_red.m](../simulation/amr/check_matlab_node_red.m) | `webread` อ่าน `/amr/maps` และรุ่นอ้างอิง `webwrite` ส่งคำขอทั้งสองกรณีไปยัง `/amr/tap-to-go/plan` `assert` ตรวจรุ่นแผนที่ โหมดจำลอง รถที่ตอบกลับ และระยะทางอ้อม `fprintf` พิมพ์ผล |
+| [amr-tap-to-go.flow.json](../database/node-red/amr-lab/amr-tap-to-go.flow.json) | Node-RED รับคำขอ อ่านข้อมูล Floor 9 เรียกตัววางแผน แล้วคืนเส้นทางและระยะทาง |
+| [tap-to-go-planner.cjs](../robotics/amr/route-lab/tap-to-go-planner.cjs) | JavaScript ใช้ A* หาเส้นทางจากตำแหน่งเริ่มถึงปลายทางบนกริด คำนวณทางผ่านจากกำแพง พื้นที่กีดขวาง และประตูที่ปิดในโจทย์ |
+| [ข้อมูล Floor 9](../robotics/amr/route-lab/maps/floor9/README.md) | ภาพต้นฉบับ ชุดข้อมูลพิกัดประตู กำแพง ลิฟต์ บันได และภาพนำทางเก่าที่สำรองไว้ สำหรับการใช้กับรถจริงยังต้องสอบเทียบพิกัดแยกตามรถ |
 
 ## ปรับระบบจากผลศึกษา 5 คลิป
 

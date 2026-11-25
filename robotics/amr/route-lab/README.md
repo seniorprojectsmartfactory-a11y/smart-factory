@@ -18,6 +18,6 @@ Preflight checks the Move target points, including polygon boundaries. MiR plans
 
 ## Offline verification
 
-Run `node --test amr-route-lab/route-zones.test.cjs` from the repository root. HTTP tests use a stub MiR API and an ephemeral local Route Lab server. No robot credentials or robot access are needed.
+Run `node --test robotics/amr/route-lab/route-zones.test.cjs` from the repository root. HTTP tests use a stub MiR API and an ephemeral local Route Lab server. No robot credentials or robot access are needed.
 
 For the original Lab failure, collect the original drawn points, the generated P1 coordinates, the active map GUID/revision and zone boundaries, and compare the P1 marker on MiR with the drawn target. Then check a valid route and confirm a forbidden target is rejected before creating any MiR objects.

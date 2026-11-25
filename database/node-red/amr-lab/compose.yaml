@@ -31,7 +31,7 @@ services:
       - ../flows.json:/opt/github/flows.json:ro
       - ../package.json:/opt/github/package.json:ro
       - ../package-lock.json:/opt/github/package-lock.json:ro
-      - ../../amr-route-lab/floor9.png:/opt/amr/floor9.png:ro
+      - ../../../robotics/amr/route-lab/floor9.png:/opt/amr/floor9.png:ro
 
 volumes:
   node-red-data:

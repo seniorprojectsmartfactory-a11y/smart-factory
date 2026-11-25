@@ -1,7 +1,7 @@
 const { readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 
-const mapsDirectory = join(__dirname, '../../amr-route-lab/maps');
+const mapsDirectory = join(__dirname, '../../../robotics/amr/route-lab/maps');
 const mapDirectory = join(mapsDirectory, 'floor9');
 const catalog = JSON.parse(readFileSync(join(mapsDirectory, 'map-catalog.seed.json'), 'utf8'));
 const reference = JSON.parse(readFileSync(join(mapDirectory, 'reference.json'), 'utf8'));

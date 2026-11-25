@@ -16,7 +16,7 @@
 
 ## ไฟล์ที่ใช้
 
-- ตัวอย่างไฟล์แดชบอร์ด (`grafana/dashboards/`) และ บันทึกการทำ Live Map เดิม (`Progress-2026-11-14.md`)
+- ตัวอย่างไฟล์แดชบอร์ด (`dashboard/grafana/dashboards/`) และ บันทึกการทำ Live Map เดิม (`Progress-2026-11-14.md`)
 - สำเนาของ dashboard ที่ใช้งานบน Grafana 13.2.3 อยู่ในฐาน Grafana ของ Docker ให้ export JSON ของ dashboard ที่แก้เพื่อส่งรีวิว
 
 ## ส่งมอบเมื่อ

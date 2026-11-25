@@ -14,7 +14,7 @@
 
 ## ไฟล์ที่ใช้
 
-- หน้าเว็บ AMR Route Lab (`amr-route-lab/index.html`), เซิร์ฟเวอร์ Route Lab (`amr-route-lab/server.cjs`) และ ภาพแผนที่ Route Lab (`amr-route-lab/floor9.png`)
+- หน้าเว็บ AMR Route Lab (`robotics/amr/route-lab/index.html`), เซิร์ฟเวอร์ Route Lab (`robotics/amr/route-lab/server.cjs`) และ ภาพแผนที่ Route Lab (`robotics/amr/route-lab/floor9.png`)
 - โค้ด UR และ Robotiq (`ur-gripper/`) และ เอกสารส่งต่อ Lab (`2026-11-16_amr-dashboard-lab-handoff woray.md`)
 
 ## ส่งมอบเมื่อ

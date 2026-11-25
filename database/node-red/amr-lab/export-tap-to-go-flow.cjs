@@ -1,9 +1,10 @@
 const { readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 
-const sourceDir = join(__dirname, '../../amr-route-lab');
-const page = readFileSync(join(sourceDir, 'tap-to-go.html'), 'utf8');
-const planner = readFileSync(join(sourceDir, 'tap-to-go-planner.cjs'), 'utf8')
+const routeLab = join(__dirname, '../../../robotics/amr/route-lab');
+const webApp = join(__dirname, '../../../dashboard/web-app');
+const page = readFileSync(join(webApp, 'tap-to-go.html'), 'utf8');
+const planner = readFileSync(join(routeLab, 'tap-to-go-planner.cjs'), 'utf8')
   .replace(/\s+module\.exports = \{ planTapToGo, scenario \};\s*$/, '');
 const tabId = 'capstone-amr-tap-to-go';
 const flow = [

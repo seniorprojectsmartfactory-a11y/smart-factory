@@ -15,14 +15,14 @@
 
 ก่อนใช้คำนวณเส้นทาง ให้ทีมตรวจช่องประตูจริงและความกว้างสำหรับ AMR แต่ละคัน ตรวจพื้นที่แรเงาที่ไม่มีป้าย และวัดจุดอ้างอิงสำหรับแปลงพิกัด ส่วนสถานะประตูขณะวิ่งให้มาจากข้อมูลหน้างาน ลิฟต์ต้องมีระบบเชื่อมต่อที่รองรับก่อนใช้เป็นเส้นทาง บันไดและโถงเปิดเป็นพื้นที่ห้ามใช้เป็นเป้าหมาย
 
-แอปบน Node-RED อ่าน [JSON ที่มีข้อมูลและภาพฝังมาด้วย](http://127.0.0.1:1884/amr/floor9/reference.json) ได้ เพื่อนำไปทดสอบในเครื่องอื่น ให้ Import [Node-RED flow ของผังอ้างอิง](../../../node-red/amr-lab/floor9-reference.flow.json)
+แอปบน Node-RED อ่าน [JSON ที่มีข้อมูลและภาพฝังมาด้วย](http://127.0.0.1:1884/amr/floor9/reference.json) ได้ เพื่อนำไปทดสอบในเครื่องอื่น ให้ Import [Node-RED flow ของผังอ้างอิง](../../../../../database/node-red/amr-lab/floor9-reference.flow.json)
 
 Floor 9 เป็นรายการเริ่มต้นใน [รายการแผนที่](../map-catalog.seed.json) รหัส `floor9` ใช้เลือกแผนที่ ส่วน `floor9-clean-plan-v1` ระบุรุ่นของภาพและข้อมูลวัตถุ แอปใช้ [รายการแผนที่บน Node-RED](http://127.0.0.1:1884/amr/maps) เพื่ออ่าน `referenceUrl` ก่อนโหลดรายละเอียด พาธในไฟล์ seed ใช้อ้างอิงไฟล์ใน repo โดยเริ่มจากโฟลเดอร์ `maps/`
 
 เมื่อแก้ภาพหรือข้อมูล ให้สร้าง flow ใหม่จาก root ของ repo ด้วยคำสั่งต่อไปนี้
 
 ```sh
-node node-red/amr-lab/export-map-flow.cjs
-node node-red/amr-lab/export-flow.cjs
-node node-red/amr-lab/export-flow.cjs --joystick
+node database/node-red/amr-lab/export-map-flow.cjs
+node database/node-red/amr-lab/export-flow.cjs
+node database/node-red/amr-lab/export-flow.cjs --joystick
 ```
