@@ -6,7 +6,7 @@
 
 | ตำแหน่ง | ผู้รับผิดชอบ | ผลงานหลัก |
 |---|---|---|
-| [Automation / Node-RED](automation.md) | — | Flow อ่านอุปกรณ์ แปลงค่า และส่ง telemetry |
+| [Automation / Node-RED](automation.md) | Woray (กล้อง QC สถานี A) | Flow อ่านอุปกรณ์ ส่ง telemetry และตรวจกล่องก่อนปิดฝาด้วย RealSense / OpenCV |
 | [IIoT / อุปกรณ์และเครือข่าย](iiot.md) | — | การเชื่อมต่ออุปกรณ์จริงและตาราง Modbus ที่ตรวจแล้ว |
 | [SIM / Simulation](simulation.md) | — | ข้อมูลจำลองและสถานการณ์ทดสอบที่ทำซ้ำได้ |
 | [Database / InfluxDB](database.md) | — | Schema, query, token ตามสิทธิ์ และแผนสำรองข้อมูล |
