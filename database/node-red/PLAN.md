@@ -12,7 +12,7 @@ Flow หรือ API ไหนต้องปรับก่อน และจ
 
 | งาน | ผู้ทำ | สถานะ | ลิงก์ไฟล์งาน | ผลที่ใช้ตรวจรับ |
 |---|---|---|---|---|
-| กล้องตรวจ QC ที่สถานี A | Woray | มีแผนทดสอบ | [Handoff สถานี A](https://github.com/seniorprojectsmartfactory-a11y/smart-factory/blob/22326ce2c9ffe41babadb2e468daa036d1fd5aa0/docs/roles/amr-kitting-station-a-handoff.md) | ผล Set A/B และกรณีของขาด ผิดชนิด หรือกล้องอ่านไม่ได้ |
+| กล้องตรวจ QC ที่สถานี A | Woray | มีแผนทดสอบ | [Handoff สถานี A](../../docs/roles/amr-kitting-station-a-handoff.md) | ผล Set A/B และกรณีของขาด ผิดชนิด หรือกล้องอ่านไม่ได้ |
 
 ## จุดส่งต่อและผลทดสอบ
 

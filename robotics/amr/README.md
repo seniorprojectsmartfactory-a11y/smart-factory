@@ -5,4 +5,4 @@
 - [AMR System Guide](../../docs/amr-system-guide.md) รวมผลทดสอบ Tap-to-Go ด้วย MATLAB และแผนทดสอบการใช้ทางร่วม
 - [AMR Web App](../../dashboard/web-app/README.md) ดูแลหน้าควบคุม ส่วน [Database](../../database/database.md) ดูแล API และข้อมูลภารกิจ
 
-อัปเดต Station A ที่ทีมบันทึกไว้ครอบคลุมไลน์แพ็ก การตรวจด้วยกล้อง และการส่งกล่องให้ AMR ติด UR ดู [เอกสาร Station A บน GitHub ของทีม](https://github.com/seniorprojectsmartfactory-a11y/smart-factory/blob/22326ce2c9ffe41babadb2e468daa036d1fd5aa0/docs/roles/amr-kitting-station-a-handoff.md)
+อัปเดต Station A ที่ทีมบันทึกไว้ครอบคลุมไลน์แพ็ก การตรวจด้วยกล้อง และการส่งกล่องให้ AMR ติด UR ดู [เอกสาร Station A ของทีม](../../docs/roles/amr-kitting-station-a-handoff.md)

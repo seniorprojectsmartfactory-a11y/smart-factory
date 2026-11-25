@@ -8,7 +8,7 @@
 
 | ตำแหน่ง | แผนของฝ่าย | ผลงานหลัก |
 |---|---|---|
-| [Automation / Node-RED](automation.md) | [แผน](../../database/node-red/PLAN.md) | Flow อ่านอุปกรณ์ แปลงค่า และส่ง telemetry |
+| [Automation / Node-RED](automation.md) | [แผน](../../database/node-red/PLAN.md) | Flow อ่านอุปกรณ์ ส่ง telemetry และ [กล้อง QC สถานี A ของ Woray](amr-kitting-station-a-handoff.md) |
 | [IIoT / อุปกรณ์และเครือข่าย](iiot.md) | [แผน](../../iiot/PLAN.md) | การเชื่อมต่ออุปกรณ์จริงและตาราง Modbus ที่ตรวจแล้ว |
 | [SIM / Simulation](simulation.md) | [แผน](../../simulation/PLAN.md) | ข้อมูลจำลองและสถานการณ์ทดสอบที่ทำซ้ำได้ |
 | [Database / InfluxDB](database.md) | [แผน](../../database/PLAN.md) | Schema, query, token ตามสิทธิ์ และแผนสำรองข้อมูล |
