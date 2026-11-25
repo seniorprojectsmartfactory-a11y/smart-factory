@@ -1,6 +1,6 @@
 # Smart Factory AMR — คู่มืออ่านโค้ดและทดสอบระบบ
 
-สำหรับผู้ดูแล Database และ Dashboard เริ่มจากกรณีทดสอบ MATLAB ที่รันได้แล้ว แล้วใช้แผนทดสอบหลายคันด้านล่างประกอบงานรอบถัดไป รายการฟีเจอร์ 1–6 ซอร์ส Node-RED อุปกรณ์รายฟีเจอร์ และ Map Backup อยู่ใน [AMR Handoff](roles/amr-handoff.md)
+เอกสารนี้เก็บผลทดสอบและแผนทางเทคนิคเดิมให้ Database กับ Dashboard อ้างอิง [งาน MATLAB อยู่กับ Database และพักไว้](../database/matlab/README.md) จนกว่า Woray จะกำหนดขอบเขตรอบถัดไป รายการฟีเจอร์ 1–6 ซอร์ส Node-RED อุปกรณ์รายฟีเจอร์ และ Map Backup อยู่ใน [AMR Handoff](roles/amr-handoff.md)
 
 ## เปิด MATLAB และทดสอบด้วยตัวเอง
 
@@ -12,14 +12,14 @@
    docker compose -f database/node-red/amr-lab/compose.yaml up -d
    ```
 
-2. เปิด MATLAB จากไอคอน เลือกโฟลเดอร์ `simulation/amr` ของ repo ในแถบ **Current Folder** หรือใช้ `cd` ใน **Command Window** โดยใส่พาธจริงของ repo บนเครื่องนั้น
+2. เปิด MATLAB จากไอคอน เลือกโฟลเดอร์ `database/matlab` ของ repo ในแถบ **Current Folder** หรือใช้ `cd` ใน **Command Window** โดยใส่พาธจริงของ repo บนเครื่องนั้น
 
    ```matlab
-   cd('C:/path/to/smart-factory/simulation/amr')
+   cd('C:/path/to/smart-factory/database/matlab')
    check_matlab_node_red
    ```
 
-   ถ้า Current Folder อยู่ที่ `simulation/amr` แล้ว ให้พิมพ์ `check_matlab_node_red` ได้เลย ชื่อในคำสั่งใช้โดยไม่ใส่นามสกุล `.m` หากเรียก API ไม่ได้ ให้เปิด [Node-RED Editor](http://127.0.0.1:1884/) และตรวจว่ามีแท็บ **Capstone Floor 9 Reference** กับ **Capstone AMR Tap to Go** อยู่ใน runtime เดียวกัน
+   ถ้า Current Folder อยู่ที่ `database/matlab` แล้ว ให้พิมพ์ `check_matlab_node_red` ได้เลย ชื่อในคำสั่งใช้โดยไม่ใส่นามสกุล `.m` หากเรียก API ไม่ได้ ให้เปิด [Node-RED Editor](http://127.0.0.1:1884/) และตรวจว่ามีแท็บ **Capstone Floor 9 Reference** กับ **Capstone AMR Tap to Go** อยู่ใน runtime เดียวกัน
 
 3. ผลที่ยืนยันบน MATLAB R2026b กับ `floor9-clean-plan-v1` เป็นการจำลอง AMR 1 คัน ทั้งสองคำขอใช้ต้นทางและปลายทางเดียวกัน
 
@@ -42,7 +42,7 @@ flowchart LR
 
 | ไฟล์ | หน้าที่ |
 |---|---|
-| [check_matlab_node_red.m](../simulation/amr/check_matlab_node_red.m) | `webread` อ่าน `/amr/maps` และรุ่นอ้างอิง `webwrite` ส่งคำขอทั้งสองกรณีไปยัง `/amr/tap-to-go/plan` `assert` ตรวจรุ่นแผนที่ โหมดจำลอง รถที่ตอบกลับ และระยะทางอ้อม `fprintf` พิมพ์ผล |
+| [check_matlab_node_red.m](../database/matlab/check_matlab_node_red.m) | `webread` อ่าน `/amr/maps` และรุ่นอ้างอิง `webwrite` ส่งคำขอทั้งสองกรณีไปยัง `/amr/tap-to-go/plan` `assert` ตรวจรุ่นแผนที่ โหมดจำลอง รถที่ตอบกลับ และระยะทางอ้อม `fprintf` พิมพ์ผล |
 | [amr-tap-to-go.flow.json](../database/node-red/amr-lab/amr-tap-to-go.flow.json) | Node-RED รับคำขอ อ่านข้อมูล Floor 9 เรียกตัววางแผน แล้วคืนเส้นทางและระยะทาง |
 | [tap-to-go-planner.cjs](../robotics/amr/route-lab/tap-to-go-planner.cjs) | JavaScript ใช้ A* หาเส้นทางจากตำแหน่งเริ่มถึงปลายทางบนกริด คำนวณทางผ่านจากกำแพง พื้นที่กีดขวาง และประตูที่ปิดในโจทย์ |
 | [ข้อมูล Floor 9](../robotics/amr/route-lab/maps/floor9/README.md) | ภาพต้นฉบับ ชุดข้อมูลพิกัดประตู กำแพง ลิฟต์ บันได และภาพนำทางเก่าที่สำรองไว้ สำหรับการใช้กับรถจริงยังต้องสอบเทียบพิกัดแยกตามรถ |

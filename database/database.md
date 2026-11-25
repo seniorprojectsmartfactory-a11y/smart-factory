@@ -3,6 +3,7 @@
 [Node-RED](node-red/automation.md) ดูแลการรับ แปลง และส่งข้อมูลผ่าน flow และ API ส่วน [InfluxDB](influxdb/README.md) ดูแล schema, query, สิทธิ์ และการสำรองข้อมูล
 
 - [แผนและผู้รับผิดชอบ](PLAN.md)
+- [MATLAB และผลเดิม](matlab/README.md) · รอกำหนดงานรอบถัดไป
 - [รายละเอียดหน้าที่และเกณฑ์ส่งมอบ](../docs/roles/database.md)
 
 ## ไฟล์งานและแหล่งอ้างอิง

@@ -7,7 +7,7 @@
 
 ## ไฟล์งานและแหล่งอ้างอิง
 
-[AMR Simulation และผล MATLAB](amr/README.md) · [Node-RED AMR Lab](../database/node-red/amr-lab/) · [AMR System Guide](../docs/amr-system-guide.md)
+[กรณี AMR Simulation](amr/README.md) · [Node-RED AMR Lab](../database/node-red/amr-lab/) · [AMR System Guide](../docs/amr-system-guide.md)
 
 ## จุดส่งต่องาน
 
