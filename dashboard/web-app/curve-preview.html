@@ -1,105 +1,280 @@
 <!doctype html>
 <html lang="th">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AMR Route Lab · ทดลองวางเส้นทาง</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171b1b">
+<title>แผนเส้นทาง · AMR Route Lab</title>
 <style>
-  :root{color-scheme:dark;font:15px/1.55 "Segoe UI",Tahoma,sans-serif;background:#0e1621;color:#e9f3fc}
-  *{box-sizing:border-box}
-  body{margin:0}
-  main{max-width:1450px;margin:auto;padding:clamp(16px,3vw,40px)}
-  h1,h2,p{margin:0}
-  h1{font-size:clamp(1.65rem,3vw,2.45rem);line-height:1.2}
-  h2{font-size:1.02rem}
-  header,.bar,.actions,.legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  header{margin-bottom:20px}
-  .sub,.hint,.legend{color:#adc1d3}
-  .sub{margin-top:6px}
-  .layout{display:grid;grid-template-columns:minmax(0,1fr) 284px;gap:14px;align-items:start}
-  .panel{background:#172433;border:1px solid #30455b;border-radius:14px;min-width:0;overflow:hidden}
-  .bar,.legend,.controls{padding:13px 15px}
-  .legend{justify-content:flex-start;font-size:.88rem;border-top:1px solid #30455b}
-  .legend b{color:#71ebcf}
-  button{background:#24384c;color:inherit;border:1px solid #405c73;border-radius:8px;padding:7px 11px;font:inherit;cursor:pointer}
-  button:hover{background:#304b63}
-  button:disabled{opacity:.5;cursor:default}
-  :focus-visible{outline:2px solid #78efd5;outline-offset:3px}
-  button[aria-selected="true"],button[aria-pressed="true"]{background:#164a4b;border-color:#71ebcf}
-  .accent{background:#72e8cf;color:#102d2c;border-color:#72e8cf;font-weight:700}
-  .accent:hover{background:#a2f5e4}
-  .actions{justify-content:flex-start;margin-top:10px}
-  .map{display:block;width:100%;height:auto;background:#111b28;touch-action:none;user-select:none;cursor:crosshair}
-  .map [data-index]{cursor:grab;outline:none}
-  .map [data-index]:focus-visible circle{stroke:#fff;stroke-width:5}
+  :root{color-scheme:dark;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:#171b1b;color:#f6f8f7;--mint:#85efcd;--muted:#bbc6c3}
+  *,*::before,*::after{box-sizing:border-box}
+  body,h1,h2,p{margin:0}
+  main{height:100vh;height:100dvh;min-height:360px;display:flex;flex-direction:column}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(16px,3vw,42px);z-index:2}
+  .brand,.badges,.sheet-head,.actions{display:flex;align-items:center;gap:10px}
+  h1{font-size:clamp(1.4rem,2.6vw,2rem);font-weight:730;letter-spacing:-.035em;line-height:1.2}
+  h2{font-size:1rem}
+  .brand-icon{display:grid;place-items:center;width:43px;height:43px;background:#263c35;color:var(--mint);border-radius:14px;flex:none}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid #48514f;border-radius:999px;font-size:.8rem;white-space:nowrap;color:#e7eeec}
+  .badge.sim{border-color:#365e51;background:#234238;color:#a1f3d8}
+  .badge.sim::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint)}
+  .layout{--tray:clamp(285px,28vw,348px);position:relative;min-height:0;flex:1;display:grid;grid-template-columns:minmax(0,1fr) var(--tray);gap:16px;background:#e8ede9;border-radius:24px 24px 0 0;padding:14px}
+  .map-frame{position:relative;display:flex;flex-direction:column;min-height:0;min-width:0;isolation:isolate}
+  .map-surface{flex:1;min-height:0;position:relative;border-radius:16px;overflow:hidden;background:#edf1ed}
+  .map{display:block;width:100%;height:100%;touch-action:none;user-select:none;cursor:crosshair}
+  .map[data-work="missions"]{cursor:crosshair}.map{cursor:grab}.map [data-index]{cursor:grab;outline:none}.map [data-index] svg,.map [data-index] text{pointer-events:none}
   .map.dragging,.map.dragging [data-index]{cursor:grabbing}
-  .map text{font-weight:700;fill:#eefbff;pointer-events:none;paint-order:stroke;stroke:#142636;stroke-width:4px}
-  #robot-reference text{fill:#ffd184}
-  .controls + .controls{border-top:1px solid #30455b}
-  .hint{font-size:.9rem;margin-top:6px}
-  #point-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px;max-height:240px;overflow:auto}
-  #point-list button{width:100%;text-align:left}
-  #radius-panel{margin-top:10px}
-  input[type=range]{display:block;width:100%;margin:8px 0;accent-color:#72e8cf}
+  .map-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 1px 8px;color:#162620}
+  .floor,.zoom{display:flex;align-items:center;gap:6px;background:#fcfefc;border:1px solid #d6ded9;box-shadow:0 2px 6px #19352b12;border-radius:13px}
+  .floor{padding:8px 11px;font-weight:730}
+  .zoom{gap:0;overflow:hidden}
+  .zoom button{background:transparent;color:#23352d;border:none;border-radius:0;width:44px;height:44px;padding:0;display:grid;place-items:center}
+  .zoom button+button{border-left:1px solid #e2e8e3}
+  .zoom button:hover{background:#edf7f0}
+  .zoom button:focus-visible{outline-offset:-4px}
+  .sheet{min-height:0;display:flex;flex-direction:column;align-self:start;max-height:100%;background:#252a29f5;border:1px solid #4c5551;border-radius:21px;box-shadow:0 10px 28px #18272033;backdrop-filter:blur(14px);overflow:hidden}
+  .sheet-head{justify-content:space-between;padding:12px 14px 8px}
+  .sheet-head h2{font-size:1.12rem}
+  .sheet-toggle{display:none}
+  .sheet-body{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:0 13px}
+  .sheet-footer{padding:10px 13px 13px;border-top:1px solid #ffffff18}
+  .hint{color:var(--muted);font-size:.81rem}
+  .controls{padding:7px 0 10px}
+  .controls+.controls{border-top:1px solid #ffffff18;padding-top:10px}
+  .hint:not(:empty){margin-top:4px}
+  #point-list{position:relative;list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px;max-height:clamp(110px,32vh,290px);overflow:auto;scrollbar-width:thin}
+  button,summary{font:inherit;color:inherit;cursor:pointer; -webkit-tap-highlight-color:transparent}
+  button{border:1px solid #596360;background:#363e3b;border-radius:11px;padding:7px 10px;min-height:40px}
+  button:hover{background:#444f4a}
+  button:disabled{opacity:.47;cursor:default}
+  button[aria-pressed="true"]{background:#325247;border-color:#83e3c1;color:#ccffed}
+  :focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+  .point-button{position:relative;min-height:44px;display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:#303735;border-color:#495450}
+  .point-symbol{display:grid;place-items:center;width:26px;height:26px;flex:none;border:1px solid #70c2a6;border-radius:50%;color:#c8fbea;font-size:.78rem;font-weight:750}
+  .point-button[aria-pressed="true"] .point-symbol{background:var(--mint);color:#12271f;border-color:var(--mint)}
+  .point-button .chevron{margin-left:auto;color:#a4b8b0}
+  .actions{flex-wrap:wrap;margin-top:7px;gap:6px}
+  .actions button{font-size:.82rem;min-height:36px}
+  #radius-panel{margin-top:7px;font-size:.82rem}
+  input[type=range]{width:100%;display:block;accent-color:var(--mint);height:24px;margin:0}
+  output{color:var(--mint);font-variant-numeric:tabular-nums}
+  .primary{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;min-height:48px;background:var(--mint);border-color:var(--mint);color:#132b22;font-weight:750;border-radius:13px}
+  .primary:hover{background:#a7f8dd;color:#132b22}
+  .icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;flex:none}
+  .point-symbol .icon{width:16px;height:16px}
+  .overflow{position:relative}
+  .overflow summary{list-style:none;display:grid;place-items:center;width:42px;height:42px;border:1px solid #59635f;border-radius:12px;background:#363e3b}
+  .overflow summary::-webkit-details-marker{display:none}
+  .overflow-menu{position:absolute;right:0;top:48px;z-index:5;padding:5px;min-width:190px;border-radius:13px;background:#29332f;border:1px solid #65746c;box-shadow:0 8px 20px #0006}
+  .overflow-menu button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;white-space:nowrap;border:none;background:transparent;min-height:44px}
+  .overflow-menu button:hover{background:#42534b}
+  .marker-shape{fill:#203b32;stroke:#96f0d4;stroke-width:1.8}
+  .marker-icon{color:#e3fff4;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .marker-number{fill:#ebfff7;font:750 12px "Segoe UI",sans-serif;text-anchor:middle;dominant-baseline:central}
+  .marker-ring{fill:none;stroke:#229775;stroke-width:2;visibility:hidden}
+  .map [aria-pressed="true"] .marker-ring,.map [data-index]:focus-visible .marker-ring{visibility:visible}
+  .map [aria-pressed="true"] .marker-shape{fill:#86efce;stroke:#175e4b}
+  .map [aria-pressed="true"] :is(.marker-icon,.marker-number){color:#113426}
+  .map [aria-pressed="true"] .marker-number{fill:#113426}
+  .map-label{fill:#203c33;font:750 11px "Segoe UI",sans-serif;paint-order:stroke;stroke:#f6fcf8;stroke-width:3;stroke-linejoin:round}
+  .fleet-editor{display:grid;gap:8px;padding-bottom:12px}
+  .fleet-editor label{display:grid;gap:3px;font-size:.84rem}
+  .fleet-editor select,.fleet-editor input[type=text]{width:100%;min-height:38px;padding:5px 9px;background:#343d39;color:inherit;border:1px solid #626d67;border-radius:9px;font:inherit}
+  .fleet-editor fieldset{margin:0;padding:4px 8px 7px;border:1px solid #626d67;border-radius:9px;min-width:0}
+  .fleet-editor fieldset label{display:flex;align-items:center;min-height:28px}
+  .fleet-editor input[type=checkbox]{accent-color:var(--mint);margin-right:8px}
+  #dependency-list{max-height:115px;overflow:auto}
+  .mission-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .fleet-buttons{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .fleet-buttons button{font-size:.84rem}
+  .fleet-buttons .primary{font-size:.88rem;min-height:44px}
+  .fleet-pin{cursor:pointer}
+  .fleet-pin :is(text,svg){pointer-events:none}
+  .fleet-pin:focus-visible .marker-shape{stroke:#123d31;stroke-width:3}
+  .amr-run-id{fill:#fff;stroke:#203b32;stroke-width:2px;paint-order:stroke;font:750 10px "Segoe UI",sans-serif;text-anchor:middle;dominant-baseline:central}
+  #flow-progress{max-height:96px;overflow:auto;margin:5px 0 0;padding-left:20px;font-size:.78rem;color:var(--muted)}
+  #flow-progress [data-state=running]{color:var(--mint)}
+  #flow-progress [data-state=done]{color:#e1f0e9}
+  #map[data-preview=true] .preview-selected,
+  #map[data-flow=true] #fleet-pins,
+  #map:not([data-work=missions]) :is(#markers,#guide,#outline,#route){visibility:hidden}
+  .work-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 12px 9px}
+  .work-nav button{padding:5px 3px;font-size:.82rem;white-space:nowrap;min-width:0}
+  .sheet-footer .fleet-buttons{grid-template-columns:1fr}
+  .robot-picker{display:grid;gap:6px}
+  .robot-picker button{text-align:left;border-left:4px solid var(--robot-color);min-height:37px}
+  .fleet-pin[aria-pressed=true] circle{stroke:#9bffe0;stroke-width:3}
+  .map-help{margin-right:auto;font-size:.78rem;color:#4b645a}
+  .flow-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .flow-step,.delete-confirm{background:#2e3734;border:1px solid #53615a;border-radius:10px;padding:8px}
+  .flow-step h3{margin:0 0 5px;font-size:.9rem}
+  .step-fields{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:6px}
+  .flow-step details{margin-top:6px;padding:4px 0;font-size:.82rem;color:#c7f2e2}
+  .flow-step details label{display:flex;align-items:center;padding-top:4px;color:#dfece7}
+  .step-actions{display:flex;gap:5px;margin-top:5px}
+  .step-actions button{min-height:33px;padding:4px 8px;font-size:.78rem}
+  button.danger{color:#ffceca;border-color:#a36b64}
+  .delete-confirm{display:grid;gap:8px}
+  @media(max-width:700px){.map-help{display:none}.work-nav{padding-bottom:6px}.work-nav button{min-height:38px}}
   [hidden]{display:none!important}
-  @media(max-width:780px){.layout{grid-template-columns:1fr}}
+  @media(max-width:700px){
+    header{padding:10px 12px;gap:6px}.brand{gap:7px}.brand-icon{width:33px;height:33px;border-radius:11px}.badges{gap:4px}.badge{padding:4px 6px;font-size:.72rem}
+    .layout{grid-template-columns:1fr;grid-template-rows:minmax(140px,1fr) auto;gap:5px;padding:8px 8px 0;border-radius:17px 17px 0 0}
+    .map-surface{border-radius:12px}.map-bar{padding-bottom:4px}.floor{padding:6px 8px}.zoom,.floor{border-radius:10px}
+    .sheet{align-self:end;max-height:none;border-radius:21px 21px 0 0;transition:background .2s ease}
+    .sheet-head{padding:0 11px 5px;gap:6px}.sheet-head h2{display:none}
+    .sheet-toggle{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:45px;background:transparent;border:0;touch-action:none;padding:4px;color:#f3f9f6;font-weight:650}
+    .sheet-toggle::before{content:"";width:34px;height:4px;border-radius:9px;background:#aab9b2}
+    .sheet-body{max-height:0;visibility:hidden;padding:0 11px;transition:max-height .22s ease,visibility .22s}
+    .sheet[data-expanded="true"] .sheet-body{max-height:min(38dvh,340px,max(0px,calc(100dvh - 305px)));visibility:visible}
+    .sheet-footer{padding:7px 11px max(9px,env(safe-area-inset-bottom));}
+    #point-list{max-height:130px}
+    .overflow summary{width:42px;height:39px}.overflow-menu{top:auto;bottom:45px}
+  }
+  @media(max-width:350px){.brand-icon{display:none}.badge{font-size:.67rem}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
 </style>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-robot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M9 5h6m-3 0v3M8 19v2m8-2v2M8 13h.01m8-.01h.01m-5 3h2"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h8a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h8"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4m0 1c5-4 9 4 14 0v10c-5 4-9-4-14 0"/></symbol>
+    <symbol id="i-floor" viewBox="0 0 24 24"><path d="m3 8 9-5 9 5-9 5-9-5Zm0 4 9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/><rect x="9" y="9" width="6" height="6" rx="1"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7V5Z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 5v6h6M4.5 11a8 8 0 1 1 1.5 6"/></symbol>
+  </defs>
+</svg>
 <main>
   <header>
-    <div>
-      <h1>วางเส้นทาง AMR</h1>
-      <p class="sub">ต้นแบบหน้าจอ · ผังชั้น 9 · MiR .105 จำลอง</p>
-    </div>
-    <button id="example" class="accent" type="button">เปิดตัวอย่างเลี้ยวซ้าย</button>
+    <div class="brand"><span class="brand-icon"><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg></span><h1>แผนเส้นทาง</h1></div>
+    <div class="badges"><button id="focus-robot" class="badge" aria-label="ซูมไปที่ MiR .105" title="ซูมไปที่ MiR .105">MiR .105</button><span class="badge sim">โหมดจำลอง</span></div>
   </header>
   <div class="layout">
-    <section class="panel" aria-labelledby="map-title">
-      <div class="bar">
-        <h2 id="map-title">ผังภารกิจ</h2>
-        <button id="clear" type="button">เริ่มเส้นทางใหม่</button>
+    <section class="map-frame" aria-label="แผนที่ชั้น 9">
+      <div class="map-bar">
+        <span class="floor"><svg class="icon" aria-hidden="true"><use href="#i-floor"/></svg>ชั้น 9</span><span class="map-help">กลิ้งเมาส์เพื่อซูม</span>
+        <div class="zoom" role="group" aria-label="ปรับมุมมองแผนที่">
+          <button id="zoom-in" type="button" aria-label="ซูมเข้า" title="ซูมเข้า"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          <button id="zoom-out" type="button" aria-label="ซูมออก" title="ซูมออก"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+          <button id="fit" type="button" aria-label="พอดีหน้าจอ" title="พอดีหน้าจอ"><svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg></button>
+        </div>
       </div>
-      <svg id="map" class="map" viewBox="0 0 2048 980" aria-label="ผังอ้างอิงชั้น 9 สำหรับวางจุดเส้นทาง">
-        <image href="../../robotics/amr/route-lab/maps/floor9/floor9-clean-plan.png" width="2048" height="980" pointer-events="none"/>
-        <path id="guide" fill="none" stroke="#52677e" stroke-width="3" stroke-dasharray="8 8" opacity=".8" pointer-events="none"/>
-        <path id="outline" fill="none" stroke="#f5fffc" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-        <path id="route" fill="none" stroke="#137b66" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-        <g id="robot-reference" pointer-events="none" hidden>
-          <circle r="9" fill="#162432" stroke="#ffd184" stroke-width="3"/>
-          <circle r="3" fill="#ffd184"/>
-          <text x="14" y="15">MiR .105</text>
-        </g>
-        <g id="markers"></g>
-      </svg>
-      <div class="legend"><span><b>เส้นทึบ</b> เส้นทางที่วาง</span><span>เส้นประ แนวเส้นก่อนทำโค้ง</span></div>
+      <div class="map-surface">
+        <svg id="map" class="map" viewBox="0 0 2048 980" preserveAspectRatio="none" role="group" aria-label="ผังชั้น 9 สำหรับวางจุดเส้นทาง">
+          <image href="../../robotics/amr/route-lab/maps/floor9/floor9-clean-plan.png" width="2048" height="980" pointer-events="none"/>
+          <g id="flow-routes" pointer-events="none"></g>
+          <path id="guide" fill="none" stroke="#4e7167" stroke-width="1.5" stroke-dasharray="4 5" opacity=".75" vector-effect="non-scaling-stroke" pointer-events="none"/>
+          <path id="outline" fill="none" stroke="#f4fffb" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>
+          <path id="route" fill="none" stroke="#43c9a5" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>
+          <path id="preview-path" fill="none" stroke="#259c80" stroke-width="4" stroke-linecap="round" vector-effect="non-scaling-stroke" pointer-events="none" hidden/>
+          <g id="fleet-pins"></g>
+          <g id="markers"></g>
+          <g id="flow-robots" pointer-events="none"></g>
+          <g id="preview-robot" pointer-events="none" hidden>
+            <g id="preview-icon" class="map-icon"><rect class="marker-shape" x="-15" y="-12" width="30" height="24" rx="7"/><path d="M7-5l5 5-5 5" fill="none" stroke="#e3fff4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><text id="preview-amr-id" class="amr-run-id" x="-5"></text></g>
+          </g>
+        </svg>
+      </div>
     </section>
-    <aside class="panel" aria-label="เครื่องมือแก้เส้นทาง">
-      <section class="controls" aria-labelledby="points-title">
-        <h2 id="points-title">จุดในเส้นทาง</h2>
-        <p class="hint">คลิกบนแผนที่เพื่อเพิ่มจุด คลิกค้างแล้วลากหมุดจุดเริ่ม จุดกลาง หรือปลายทาง</p>
-        <ol id="point-list"></ol>
-      </section>
-      <section class="controls" aria-labelledby="point-title">
-        <h2 id="point-title">เลือกจุดเพื่อแก้ไข</h2>
-        <p id="point-hint" class="hint"></p>
-        <div id="corner-actions" class="actions" hidden>
-          <button id="straight" type="button" aria-pressed="false">มุมหัก</button>
-          <button id="curve" type="button" aria-pressed="false">ทำโค้ง</button>
+    <aside class="sheet" aria-label="เครื่องมือแก้เส้นทาง" data-expanded="false">
+      <div class="sheet-head">
+        <h2>แผงควบคุม</h2>
+        <button id="sheet-toggle" class="sheet-toggle" type="button" aria-expanded="false" aria-controls="sheet-body">จุดในเส้นทาง</button>
+        <details id="overflow" class="overflow">
+          <summary aria-label="ตัวเลือกเส้นทาง" title="ตัวเลือกเส้นทาง"><svg class="icon" aria-hidden="true"><use href="#i-more"/></svg></summary>
+          <div class="overflow-menu">
+            <button id="example" type="button"><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg>ตัวอย่างเลี้ยวซ้าย</button>
+            <button id="clear" type="button"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg>เริ่มเส้นทางใหม่</button>
+          </div>
+        </details>
+      </div>
+      <nav class="work-nav" aria-label="ส่วนการทำงาน">
+        <button type="button" data-work="amr" aria-controls="work-amr" aria-pressed="true">AMR</button>
+        <button type="button" data-work="missions" aria-controls="work-missions" aria-pressed="false">คลัง Mission</button>
+        <button type="button" data-work="flows" aria-controls="work-flows" aria-pressed="false">System Flow</button>
+      </nav>
+      <div id="sheet-body" class="sheet-body">
+        <section id="work-amr" class="controls fleet-editor" aria-labelledby="amr-heading">
+          <h2 id="amr-heading">ทดลองวิ่งทีละคัน</h2>
+          <div id="robot-picker" class="robot-picker" aria-label="เลือก AMR"></div>
+          <label>เส้นทางที่จะทดลอง<select id="preview-mission"></select></label>
+          <p class="hint">เลือก AMR และเส้นทางได้อิสระ รถจำลองเริ่มจากจุดแรกของเส้นทาง</p>
+        </section>
+        <section id="work-missions" hidden aria-label="คลัง Mission">
+          <div class="controls fleet-editor">
+            <label>เส้นทางที่บันทึกไว้<select id="mission-select"></select></label>
+            <button id="blank-mission" type="button">+ วาดเส้นทางใหม่</button>
+            <label>ชื่อ Mission<input id="mission-name" type="text" maxlength="50" required></label>
+            <div class="fleet-buttons">
+              <button id="save-mission" type="button">บันทึกทับ</button>
+              <button id="new-mission" class="primary" type="button">บันทึกเป็น Mission ใหม่</button>
+            </div>
+            <button id="delete-mission" class="danger" type="button">ลบ Mission นี้</button>
+            <div id="delete-confirm" class="delete-confirm" hidden>
+              <p id="delete-prompt"></p>
+              <div class="fleet-buttons">
+                <button id="cancel-delete" type="button">ยกเลิก</button>
+                <button id="confirm-delete" class="danger" type="button">ยืนยันการลบ</button>
+              </div>
+            </div>
+            <p id="save-status" class="hint" role="status"></p>
+            <button id="undo-delete" type="button" hidden>คืน Mission ที่เพิ่งลบ</button>
+          </div>
+          <section class="controls" aria-label="รายการจุดในเส้นทาง">
+            <p class="hint">คลิกบนผังเพื่อวางจุด ลากหมุดเพื่อปรับจุด หรือลากพื้นผังเพื่อเลื่อนแผนที่</p>
+            <ol id="point-list"></ol>
+          </section>
+          <section class="controls" aria-labelledby="point-title">
+            <h2 id="point-title"></h2>
+            <p id="point-hint" class="hint"></p>
+            <div id="corner-actions" class="actions" hidden>
+              <button id="straight" type="button" aria-pressed="false">มุมหัก</button>
+              <button id="curve" type="button" aria-pressed="false">ทำโค้ง</button>
+            </div>
+            <div id="radius-panel" hidden>
+              <label for="radius">รัศมีบนผัง <output id="radius-value" for="radius"></output></label>
+              <input id="radius" type="range" min="4" max="60" value="24">
+            </div>
+            <div class="actions" id="point-actions">
+              <button id="reset-start" type="button" hidden>คืนจุดเริ่มเดิม</button>
+              <button id="remove" type="button" hidden>ลบจุดนี้</button>
+            </div>
+          </section>
+        </section>
+        <section id="work-flows" class="controls fleet-editor" hidden aria-label="จัดลำดับ System Flow">
+          <label>System Flow<select id="flow-select"></select></label>
+          <div class="fleet-buttons">
+            <button id="order-sequence" type="button">ต่อกันตามรายการ</button>
+            <button id="order-parallel" type="button">ขนานหลังขั้นแรก</button>
+          </div>
+          <p class="hint">ใช้ ↑ ↓ จัดลำดับใน Flow แบบต่อกันหรือแบบขนาน หรือเปิดเงื่อนไขเพื่อระบุว่าต้องรอขั้นไหน</p>
+          <p id="flow-edit-status" class="hint" role="status"></p>
+          <ol id="flow-steps" class="flow-steps"></ol>
+          <button id="add-step" type="button">+ เพิ่มขั้น</button>
+        </section>
+      </div>
+      <div class="sheet-footer">
+        <div class="fleet-buttons">
+          <button id="preview" class="primary" type="button"><span>ทดลองวิ่ง AMR</span></button>
+          <button id="run-flow" class="primary" type="button" hidden>จำลองทั้ง Flow</button>
         </div>
-        <div id="radius-panel" hidden>
-          <label for="radius">รัศมีบนผัง <output id="radius-value" for="radius"></output></label>
-          <input id="radius" type="range" min="4" max="60" value="24">
-        </div>
-        <div class="actions">
-          <button id="reset-start" type="button" hidden>ใช้ตำแหน่งรถเป็นจุดเริ่ม</button>
-          <button id="remove" type="button" hidden>ลบจุดนี้</button>
-        </div>
-      </section>
+        <p id="preview-status" class="hint" role="status"></p>
+        <p id="flow-message" class="hint" role="status"></p>
+        <ol id="flow-progress" aria-label="สถานะ Mission" hidden></ol>
+      </div>
     </aside>
   </div>
 </main>
+
 <script>
   const map = document.querySelector('#map');
   const markers = document.querySelector('#markers');
-  const robotReference = document.querySelector('#robot-reference');
+  const previewPath = document.querySelector('#preview-path');
   const route = document.querySelector('#route');
   const outline = document.querySelector('#outline');
   const guide = document.querySelector('#guide');
@@ -115,28 +290,252 @@
   const remove = document.querySelector('#remove');
   const resetStart = document.querySelector('#reset-start');
   const clear = document.querySelector('#clear');
-  const start = { x: 1740, y: 336, radius: 0 };
+  let start = { x: 1740, y: 336, radius: 0 };
   const { width: mapWidth, height: mapHeight } = map.viewBox.baseVal;
   const svgNamespace = 'http://www.w3.org/2000/svg';
   let points = [];
   let selected = 0;
   let gesture = null;
-  robotReference.setAttribute('transform', 'translate(' + start.x + ' ' + start.y + ')');
+
+  const zoomIn = document.querySelector('#zoom-in');
+  const zoomOut = document.querySelector('#zoom-out');
+  const preview = document.querySelector('#preview');
+  const previewRobot = document.querySelector('#preview-robot');
+  const previewStatus = document.querySelector('#preview-status');
+  const sheet = document.querySelector('.sheet');
+  const sheetToggle = document.querySelector('#sheet-toggle');
+  const overflow = document.querySelector('#overflow');
+  const camera = { x: mapWidth / 2, y: mapHeight / 2, zoom: 1, scale: 1, iconScale: 1 };
+  let animation = 0;
+  let sheetGesture = null;
+  let lastWidth = 0;
+  let lastHeight = 0;
+
+  function clamp(value, minimum, maximum) {
+    return Math.max(minimum, Math.min(maximum, value));
+  }
+
+  function constrainCenter(center, size, world, padding) {
+    return size >= world + padding * 2
+      ? world / 2
+      : clamp(center, size / 2 - padding, world - size / 2 + padding);
+  }
+
+  function updateCamera() {
+    const { width, height } = map.getBoundingClientRect();
+    if (!width || !height) return;
+    const base = Math.min((width - 44) / mapWidth, (height - 44) / mapHeight);
+    camera.scale = base * camera.zoom;
+    camera.iconScale = (camera.zoom === 1 && width < 600 ? .6 : 1) / camera.scale;
+    const viewWidth = width / camera.scale;
+    const viewHeight = height / camera.scale;
+    const padding = 22 / camera.scale;
+    camera.x = constrainCenter(camera.x, viewWidth, mapWidth, padding);
+    camera.y = constrainCenter(camera.y, viewHeight, mapHeight, padding);
+    map.setAttribute('viewBox', [
+      camera.x - viewWidth / 2, camera.y - viewHeight / 2, viewWidth, viewHeight
+    ].join(' '));
+    for (const icon of map.querySelectorAll('.map-icon')) {
+      icon.setAttribute('transform', 'scale(' + camera.iconScale + ')');
+    }
+    zoomIn.disabled = camera.zoom >= 12;
+    zoomOut.disabled = camera.zoom <= 1;
+  }
+
+  function fitMap() {
+    Object.assign(camera, { x: mapWidth / 2, y: mapHeight / 2, zoom: 1 });
+    updateCamera();
+  }
+
+  function changeZoom(factor, anchor = camera) {
+    const next = clamp(camera.zoom * factor, 1, 12);
+    if (next === camera.zoom) return;
+    if (next === 1) {
+      fitMap();
+      return;
+    }
+    const ratio = camera.zoom / next;
+    camera.x = anchor.x + (camera.x - anchor.x) * ratio;
+    camera.y = anchor.y + (camera.y - anchor.y) * ratio;
+    camera.zoom = next;
+    updateCamera();
+  }
+
+  map.addEventListener('wheel', event => {
+    event.preventDefault();
+    if (gesture || !event.deltaY) return;
+    const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? map.clientHeight : 1);
+    changeZoom(Math.exp(clamp(-pixels * .0025, -.5, .5)), positionOnMap(event));
+  }, { passive: false });
+
+  function symbol(name, className) {
+    const icon = document.createElementNS(svgNamespace, 'svg');
+    icon.setAttribute('class', className);
+    icon.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS(svgNamespace, 'use');
+    use.setAttribute('href', '#i-' + name);
+    icon.append(use);
+    return icon;
+  }
+
+  function markerFor(point, index, coordinates) {
+    const marker = document.createElementNS(svgNamespace, 'g');
+    marker.setAttribute('transform', 'translate(' + coordinates(point) + ')');
+    marker.setAttribute('data-index', index);
+    marker.setAttribute('role', 'button');
+    marker.setAttribute('tabindex', '0');
+    marker.setAttribute('aria-label', pointName(index));
+    marker.setAttribute('aria-pressed', String(index === selected));
+    const icon = document.createElementNS(svgNamespace, 'g');
+    icon.classList.add('map-icon');
+    icon.setAttribute('transform', 'scale(' + camera.iconScale + ')');
+    const hit = document.createElementNS(svgNamespace, 'circle');
+    hit.setAttribute('r', '22');
+    hit.setAttribute('fill', 'transparent');
+    const ring = document.createElementNS(svgNamespace, 'circle');
+    ring.setAttribute('r', '16');
+    ring.classList.add('marker-ring');
+    const dot = document.createElementNS(svgNamespace, 'circle');
+    dot.setAttribute('r', '12');
+    dot.classList.add('marker-shape');
+    icon.append(hit, ring, dot);
+    if (index === 0 || index === points.length - 1) {
+      const glyph = symbol(index === 0 ? 'robot' : 'flag', 'marker-icon');
+      for (const [attribute, value] of Object.entries({ x: -8, y: -8, width: 16, height: 16 })) {
+        glyph.setAttribute(attribute, value);
+      }
+      icon.append(glyph);
+      if (index === 0 && points[1]) {
+        const next = points.find((other, position) => position > 0 && (other.x !== point.x || other.y !== point.y));
+        if (next) {
+          const arrow = document.createElementNS(svgNamespace, 'path');
+          arrow.setAttribute('d', 'M14-4 20 0 14 4Z');
+          arrow.setAttribute('fill', '#17775d');
+          const heading = Math.atan2(next.y - point.y, next.x - point.x) * 180 / Math.PI;
+          arrow.setAttribute('transform', 'rotate(' + heading + ')');
+          icon.append(arrow);
+        }
+      }
+    } else {
+      const label = document.createElementNS(svgNamespace, 'text');
+      label.classList.add('marker-number');
+      label.textContent = index;
+      icon.append(label);
+    }
+    marker.append(icon);
+    return marker;
+  }
+
+  function setPreviewButton(running) {
+    preview.querySelector('span').textContent = running ? 'หยุดตัวอย่าง'
+      : work === 'missions' ? 'ทดลองเส้นทางที่กำลังแก้' : 'ทดลองวิ่ง AMR';
+  }
+
+  function stopPreview(message = '') {
+    cancelAnimationFrame(animation);
+    animation = 0;
+    previewRobot.setAttribute('hidden', '');
+    previewPath.setAttribute('hidden', '');
+    setPreviewButton(false);
+    previewStatus.textContent = message;
+    if (!fleetRun) resetFlowMap();
+  }
+
+  function updatePreviewControl() {
+    preview.disabled = Boolean(fleetRun) || (work === 'missions'
+      ? !validRoute(points) : !findMission(previewMission.value));
+  }
+
+  function runPreview() {
+    if (animation) {
+      stopPreview();
+      return;
+    }
+    const routePoints = work === 'missions' ? points : findMission(previewMission.value)?.points;
+    if (!validRoute(routePoints)) return;
+    previewPath.setAttribute('d', routePath(routePoints));
+    const length = previewPath.getTotalLength();
+    if (length < 1) return;
+    resetFlowMap();
+    if (work === 'amr') previewPath.removeAttribute('hidden');
+    map.dataset.preview = 'true';
+    const duration = travelDuration(length);
+    let started;
+    setPreviewButton(true);
+    previewStatus.textContent = 'กำลังจำลองการเคลื่อนที่';
+    previewRobot.removeAttribute('hidden');
+    function advance(now) {
+      started ??= now;
+      const distance = Math.min(length, length * (now - started) / duration);
+      drawVehicle(previewRobot, previewPath, length, distance);
+      if (distance < length) {
+        animation = requestAnimationFrame(advance);
+      } else {
+        animation = 0;
+        setPreviewButton(false);
+        previewStatus.textContent = 'ถึงปลายทางแล้ว';
+      }
+    }
+    animation = requestAnimationFrame(advance);
+  }
+
+  function setSheet(open) {
+    sheet.dataset.expanded = String(open);
+    sheetToggle.setAttribute('aria-expanded', String(open));
+  }
+
+  zoomIn.addEventListener('click', () => changeZoom(1.5));
+  zoomOut.addEventListener('click', () => changeZoom(1 / 1.5));
+  document.querySelector('#fit').addEventListener('click', fitMap);
+  preview.addEventListener('click', runPreview);
+  sheetToggle.addEventListener('click', () => {
+    if (sheetGesture?.swiped) return;
+    setSheet(sheet.dataset.expanded !== 'true');
+  });
+  sheetToggle.addEventListener('pointerdown', event => {
+    sheetGesture = { y: event.clientY, swiped: false };
+    sheetToggle.setPointerCapture(event.pointerId);
+  });
+  sheetToggle.addEventListener('pointermove', event => {
+    if (!sheetGesture || !sheetToggle.hasPointerCapture(event.pointerId)) return;
+    const delta = event.clientY - sheetGesture.y;
+    if (Math.abs(delta) < 20 || sheetGesture.swiped) return;
+    sheetGesture.swiped = true;
+    setSheet(delta < 0);
+  });
+  for (const type of ['pointerup', 'pointercancel']) {
+    sheetToggle.addEventListener(type, () => setTimeout(() => { sheetGesture = null; }, 0));
+  }
+  document.addEventListener('click', event => {
+    if (!overflow.contains(event.target)) overflow.open = false;
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !overflow.open) return;
+    overflow.open = false;
+    overflow.querySelector('summary').focus();
+  });
+  new ResizeObserver(() => {
+    const { width, height } = map.getBoundingClientRect();
+    if (width === lastWidth && height === lastHeight) return;
+    lastWidth = width;
+    lastHeight = height;
+    updateCamera();
+  }).observe(map);
 
   function startIsAtRobot() {
     return points[0].x === start.x && points[0].y === start.y;
   }
 
   function pointName(index) {
-    if (index === 0) return startIsAtRobot() ? 'จุดเริ่ม · MiR .105' : 'จุดเริ่มภารกิจ';
+    if (index === 0) return 'จุดเริ่ม Mission';
     if (index === points.length - 1) return 'ปลายทาง';
     return 'จุด ' + index + (points[index].radius ? ' · โค้ง' : '');
   }
 
-  function cornerGeometry(index) {
-    const previous = points[index - 1];
-    const point = points[index];
-    const next = points[index + 1];
+  function cornerGeometry(index, routePoints = points) {
+    const previous = routePoints[index - 1];
+    const point = routePoints[index];
+    const next = routePoints[index + 1];
     if (!previous || !next) return null;
     const entering = { x: point.x - previous.x, y: point.y - previous.y };
     const leaving = { x: next.x - point.x, y: next.y - point.y };
@@ -156,12 +555,12 @@
     return { entering, leaving, maxRadius, tangent };
   }
 
-  function renderMap() {
-    const coordinates = point => point.x + ' ' + point.y;
-    const raw = 'M ' + points.map(coordinates).join(' L ');
-    const rounded = points.reduce((path, point, index) => {
+  const coordinates = point => point.x + ' ' + point.y;
+
+  function routePath(routePoints) {
+    return routePoints.reduce((path, point, index) => {
       if (index === 0) return 'M ' + coordinates(point);
-      const geometry = point.radius && cornerGeometry(index);
+      const geometry = point.radius && cornerGeometry(index, routePoints);
       if (!geometry) return path + ' L ' + coordinates(point);
       const { entering, leaving, maxRadius, tangent } = geometry;
       const actualRadius = Math.min(point.radius, maxRadius);
@@ -172,33 +571,20 @@
       return path + ' L ' + coordinates(entry) + ' A ' + actualRadius + ' ' + actualRadius
         + ' 0 0 ' + sweep + ' ' + coordinates(exit);
     }, '');
+  }
+
+  function renderMap() {
+    const raw = 'M ' + points.map(coordinates).join(' L ');
+    const rounded = routePath(points);
     guide.setAttribute('d', raw);
     route.setAttribute('d', rounded);
     outline.setAttribute('d', rounded);
-    robotReference.toggleAttribute('hidden', startIsAtRobot());
-    const nextMarkers = points.map((point, index) => {
-      const marker = document.createElementNS(svgNamespace, 'g');
-      marker.setAttribute('transform', 'translate(' + coordinates(point) + ')');
-      marker.setAttribute('data-index', index);
-      marker.setAttribute('role', 'button');
-      marker.setAttribute('aria-label', pointName(index));
-      const hit = document.createElementNS(svgNamespace, 'circle');
-      hit.setAttribute('r', '17');
-      hit.setAttribute('fill', 'transparent');
-      const dot = document.createElementNS(svgNamespace, 'circle');
-      dot.setAttribute('r', index === selected ? '9' : '7');
-      dot.setAttribute('fill', index === selected ? '#71ebcf' : '#122a39');
-      dot.setAttribute('stroke', '#71ebcf');
-      dot.setAttribute('stroke-width', '3');
-      const label = document.createElementNS(svgNamespace, 'text');
-      label.setAttribute('x', '14');
-      label.setAttribute('y', '-12');
-      label.textContent = index === 0 ? (startIsAtRobot() ? 'เริ่ม · .105' : 'จุดเริ่ม')
-        : index === points.length - 1 ? 'ปลายทาง' : index;
-      marker.append(hit, dot, label);
-      return marker;
-    });
-    markers.replaceChildren(...nextMarkers);
+    const focusedMarker = document.activeElement?.dataset.index;
+    const nextMarkers = points.map((point, index) => markerFor(point, index, coordinates));
+    const selectedMarker = nextMarkers.splice(selected, 1)[0];
+    markers.replaceChildren(...nextMarkers, selectedMarker);
+    if (focusedMarker !== undefined) markers.querySelector('[data-index="' + focusedMarker + '"]')?.focus();
+    updatePreviewControl();
   }
 
   function renderControls() {
@@ -206,7 +592,9 @@
     const geometry = cornerGeometry(selected);
     const canCurve = Boolean(geometry);
     const curved = canCurve && point.radius > 0;
-    clear.disabled = points.length === 1;
+    clear.disabled = points.length === 1 && startIsAtRobot();
+    document.querySelector('#point-actions').hidden = selected === 0 && startIsAtRobot();
+    sheetToggle.textContent = work === 'missions' ? 'เครื่องมือวาดเส้นทาง' : work === 'flows' ? 'ขั้นตอน System Flow' : 'เลือก AMR และเส้นทาง';
     remove.hidden = selected === 0;
     resetStart.hidden = startIsAtRobot();
     cornerActions.hidden = selected === 0 || selected === points.length - 1;
@@ -232,34 +620,69 @@
     renderMap();
     renderControls();
     const focusedIndex = document.activeElement?.dataset.point;
+    const scrollTop = pointList.scrollTop;
     const items = points.map((point, index) => {
       const item = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';
       button.dataset.point = index;
       button.setAttribute('aria-pressed', String(index === selected));
-      button.textContent = pointName(index);
+      button.className = 'point-button';
+      const glyph = document.createElement('span');
+      glyph.className = 'point-symbol';
+      glyph.setAttribute('aria-hidden', 'true');
+      if (index === 0 || index === points.length - 1) {
+        glyph.append(symbol(index === 0 ? 'robot' : 'flag', 'icon'));
+      } else {
+        glyph.textContent = index;
+      }
+      const label = document.createElement('span');
+      label.textContent = pointName(index);
+      button.append(glyph, label, symbol('next', 'icon chevron'));
       item.append(button);
       return item;
     });
     pointList.replaceChildren(...items);
+    pointList.scrollTop = scrollTop;
+    const selectedRow = items[selected];
+    if (selectedRow.offsetTop < scrollTop) pointList.scrollTop = selectedRow.offsetTop;
+    if (selectedRow.offsetTop + selectedRow.offsetHeight > scrollTop + pointList.clientHeight) {
+      pointList.scrollTop = selectedRow.offsetTop + selectedRow.offsetHeight - pointList.clientHeight;
+    }
     if (focusedIndex !== undefined) pointList.querySelector('[data-point="' + focusedIndex + '"]')?.focus();
   }
 
   function positionOnMap(event) {
-    const position = new DOMPoint(event.clientX, event.clientY).matrixTransform(map.getScreenCTM().inverse());
-    return { x: Math.max(0, Math.min(mapWidth, Math.round(position.x))),
-      y: Math.max(0, Math.min(mapHeight, Math.round(position.y))) };
+    return new DOMPoint(event.clientX, event.clientY).matrixTransform(map.getScreenCTM().inverse());
   }
 
-  map.addEventListener('pointerdown', event => {
-    if (gesture || event.button !== 0) return;
+  function selectPoint(index) {
+    selected = index;
+    render();
+  }
+
+  map.addEventListener('keydown', event => {
+    if (fleetRun) return;
+    const robot = event.target.closest('[data-robot]');
+    if (robot && ['Enter', ' '].includes(event.key)) {
+      event.preventDefault();
+      selectRobot(robot.dataset.robot);
+      return;
+    }
     const marker = event.target.closest('[data-index]');
+    if (!marker || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    selectPoint(Number(marker.dataset.index));
+  });
+  map.addEventListener('pointerdown', event => {
+    if (gesture || event.button !== 0 || event.target.closest('[data-robot]')) return;
+    const marker = work === 'missions' ? event.target.closest('[data-index]') : null;
     const index = marker ? Number(marker.dataset.index) : null;
     const from = positionOnMap(event);
     const point = points[index];
     const offset = point ? { x: point.x - from.x, y: point.y - from.y } : null;
-    gesture = { id: event.pointerId, index, from, offset, moved: false };
+    gesture = { id: event.pointerId, index, offset, moved: false,
+      x: event.clientX, y: event.clientY, cameraX: camera.x, cameraY: camera.y };
     map.setPointerCapture(event.pointerId);
     if (index !== null) {
       selected = index;
@@ -268,37 +691,50 @@
   });
   map.addEventListener('pointermove', event => {
     if (gesture?.id !== event.pointerId) return;
-    const position = positionOnMap(event);
-    if (!gesture.moved && Math.hypot(position.x - gesture.from.x, position.y - gesture.from.y) < 3) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.moved && Math.hypot(dx, dy) < 4) return;
     gesture.moved = true;
-    if (gesture.index === null) return;
-    const point = points[gesture.index];
-    point.x = Math.max(0, Math.min(mapWidth, position.x + gesture.offset.x));
-    point.y = Math.max(0, Math.min(mapHeight, position.y + gesture.offset.y));
     map.classList.add('dragging');
+    if (gesture.index === null) {
+      camera.x = gesture.cameraX - dx / camera.scale;
+      camera.y = gesture.cameraY - dy / camera.scale;
+      updateCamera();
+      return;
+    }
+    stopPreview();
+    const position = positionOnMap(event);
+    const point = points[gesture.index];
+    point.x = clamp(Math.round(position.x + gesture.offset.x), 0, mapWidth);
+    point.y = clamp(Math.round(position.y + gesture.offset.y), 0, mapHeight);
     renderMap();
     renderControls();
   });
   function endGesture(event) {
     if (gesture?.id !== event.pointerId) return;
-    if (event.type === 'pointerup' && gesture.index === null && !gesture.moved) {
-      points.push({ ...positionOnMap(event), radius: 0 });
-      selected = points.length - 1;
-    }
+    const { index, moved } = gesture;
     gesture = null;
     map.classList.remove('dragging');
-    render();
+    if (event.type !== 'pointerup' || work !== 'missions' || fleetRun) return;
+    if (index === null && !moved) {
+      const position = positionOnMap(event);
+      if (position.x < 0 || position.y < 0 || position.x > mapWidth || position.y > mapHeight) return;
+      stopPreview();
+      points.push({ x: Math.round(position.x), y: Math.round(position.y), radius: 0 });
+      selectPoint(points.length - 1);
+    } else if (index !== null) {
+      selectPoint(index);
+    }
   }
   map.addEventListener('pointerup', endGesture);
   map.addEventListener('pointercancel', endGesture);
   map.addEventListener('lostpointercapture', endGesture);
   pointList.addEventListener('click', event => {
     const point = event.target.closest('[data-point]');
-    if (!point) return;
-    selected = Number(point.dataset.point);
-    render();
+    if (point) selectPoint(Number(point.dataset.point));
   });
   curve.addEventListener('click', () => {
+    stopPreview();
     const geometry = cornerGeometry(selected);
     if (!geometry || points[selected].radius) return;
     points[selected].radius = Math.min(24, geometry.maxRadius);
@@ -306,16 +742,19 @@
     radius.focus();
   });
   straight.addEventListener('click', () => {
+    stopPreview();
     points[selected].radius = 0;
     render();
     curve.focus();
   });
   radius.addEventListener('input', () => {
+    stopPreview();
     points[selected].radius = Number(radius.value);
     renderMap();
     radiusValue.textContent = radius.value + ' px';
   });
   remove.addEventListener('click', () => {
+    stopPreview();
     if (selected === 0) return;
     points.splice(selected, 1);
     selected = Math.min(selected, points.length - 1);
@@ -323,22 +762,690 @@
     pointList.querySelector('[data-point="' + selected + '"]').focus();
   });
   resetStart.addEventListener('click', () => {
+    stopPreview();
     points[0] = { ...start };
     selected = 0;
     render();
     pointList.querySelector('[data-point="0"]').focus();
   });
   clear.addEventListener('click', () => {
+    stopPreview();
     points = [{ ...start }];
-    selected = 0;
-    render();
+    drafts.get(missionId).points = points;
+    overflow.open = false;
+    selectPoint(0);
   });
   function showExample() {
-    points = [{ ...start }, { x: 1740, y: 182, radius: 28 }, { x: 1662, y: 182, radius: 0 }];
+    stopPreview();
+    overflow.open = false;
+    points = examplePoints(activeRobot(), false);
+    drafts.get(missionId).points = points;
     selected = 1;
     render();
   }
-  document.querySelector('#example').addEventListener('click', showExample);
-  showExample();
+  document.querySelector('#example').addEventListener('click', () => showExample());
+  const robots = [
+    { id: 'amr1', number: 1, name: 'MiR .105', x: 1740, y: 336, color: '#13765c' },
+    { id: 'amr2', number: 2, name: 'AMR 2', x: 1662, y: 309, color: '#1d5b8d' },
+    { id: 'amr3', number: 3, name: 'AMR 3', x: 1824, y: 276, color: '#7b478b' }
+  ];
+  const robotById = new Map(robots.map(robot => [robot.id, robot]));
+  const legacyKey = 'smart-factory-route-editor-flows-v1';
+  const workspaceKey = 'smart-factory-route-editor-workspace-v2';
+  const query = selector => document.querySelector(selector);
+  const flowSelect = query('#flow-select');
+  const missionSelect = query('#mission-select');
+  const missionName = query('#mission-name');
+  const previewMission = query('#preview-mission');
+  const saveStatus = query('#save-status');
+  const editStatus = query('#flow-edit-status');
+  const deleteConfirm = query('#delete-confirm');
+  const fleetPins = query('#fleet-pins');
+  const flowRoutes = query('#flow-routes');
+  const flowRobots = query('#flow-robots');
+  const flowButton = query('#run-flow');
+  const flowMessage = query('#flow-message');
+  const flowProgress = query('#flow-progress');
+  const focusButton = query('#focus-robot');
+  const tabs = [...document.querySelectorAll('[data-work]')];
+  const drafts = new Map();
+  let fleetRun = null;
+  let work = 'amr';
+  let robotId = robots[0].id;
+  let missionId = '';
+  let lastDeleted = null;
+
+  function parkingPoint(robot) {
+    return { x: robot.x, y: robot.y, radius: 0 };
+  }
+
+  function examplePoints(robot, parallel) {
+    const turnY = robot.number === 1 ? (parallel ? 215 : 182) : 160 + robot.number * 20;
+    const destinationX = robot.number === 1 ? (parallel ? 1688 : 1662) : robot.x + (robot.number === 2 ? 36 : -40);
+    return [parkingPoint(robot), { x: robot.x, y: turnY, radius: robot.number === 1 ? 28 : 16 },
+      { x: destinationX, y: turnY, radius: 0 }];
+  }
+
+  function exampleFlow(id, name, parallel) {
+    return { id, name, missions: robots.map((robot, index) => ({
+      id: id + '-m' + (index + 1),
+      name: 'Mission ' + (index + 1) + (parallel ? ' · ขนาน' : ' · ต่อกัน'),
+      robot: robot.id,
+      after: index ? [id + '-m' + (parallel ? 1 : index)] : [],
+      points: examplePoints(robot, parallel)
+    })) };
+  }
+
+  function validRoute(routePoints) {
+    return Array.isArray(routePoints) && routePoints.length >= 2 && routePoints.every(point =>
+      Number.isFinite(point?.x) && point.x >= 0 && point.x <= mapWidth &&
+      Number.isFinite(point.y) && point.y >= 0 && point.y <= mapHeight &&
+      Number.isFinite(point.radius) && point.radius >= 0 && point.radius <= 200
+    ) && routePoints.some(point => point.x !== routePoints[0].x || point.y !== routePoints[0].y);
+  }
+
+  function flowProblem(steps, catalog) {
+    const ids = new Set(steps.map(step => step?.id));
+    if (ids.size !== steps.length) return 'พบขั้นซ้ำใน Flow';
+    for (const step of steps) {
+      if (typeof step?.id !== 'string' || !catalog.some(mission => mission.id === step.missionId) ||
+          !robotById.has(step.robot) || !Array.isArray(step.after) || step.after.some(id => !ids.has(id))) {
+        return 'ตรวจ Mission, AMR และเงื่อนไขเริ่มงานของทุกขั้น';
+      }
+    }
+    const ready = new Set();
+    for (let pass = 0; pass < steps.length; pass++) {
+      for (const step of steps) {
+        if (step.after.every(id => ready.has(id))) ready.add(step.id);
+      }
+    }
+    return ready.size === steps.length ? '' : 'มีขั้นที่รอกันเป็นวงวน โปรดแก้เงื่อนไขเริ่มงาน';
+  }
+
+  function fromLegacy(flows) {
+    return {
+      catalog: flows.flatMap(flow => flow.missions.map(({ id, name, points }) => ({ id, name, points }))),
+      flows: flows.map(flow => ({
+        id: flow.id, name: flow.name,
+        steps: flow.missions.map(({ id, robot, after }) => ({ id, missionId: id, robot, after }))
+      }))
+    };
+  }
+
+  function validWorkspace(value) {
+    if (!value || !Array.isArray(value.catalog) || !Array.isArray(value.flows) || !value.flows.length) return false;
+    const { catalog, flows } = value;
+    return new Set(catalog.map(mission => mission?.id)).size === catalog.length &&
+      catalog.every(mission => typeof mission?.id === 'string' && typeof mission.name === 'string' &&
+        mission.name.trim() && validRoute(mission.points)) &&
+      new Set(flows.map(flow => flow?.id)).size === flows.length &&
+      flows.every(flow => typeof flow?.id === 'string' && typeof flow.name === 'string' &&
+        Array.isArray(flow.steps) && !flowProblem(flow.steps, catalog));
+  }
+
+  function loadWorkspace() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(workspaceKey));
+      if (validWorkspace(saved)) return saved;
+      const legacy = JSON.parse(localStorage.getItem(legacyKey));
+      if (Array.isArray(legacy)) {
+        const migrated = fromLegacy(legacy);
+        if (validWorkspace(migrated)) return migrated;
+      }
+    } catch {
+      // The examples are available when saved data cannot be read.
+    }
+    return fromLegacy([exampleFlow('sequence', 'Flow 1 · วิ่งต่อกัน', false),
+      exampleFlow('parallel', 'Flow 2 · แยกวิ่งพร้อมกัน', true)]);
+  }
+
+  let workspace = loadWorkspace();
+  let flowId = workspace.flows[0].id;
+  const activeFlow = () => workspace.flows.find(flow => flow.id === flowId);
+  const findMission = id => workspace.catalog.find(mission => mission.id === id);
+  const activeRobot = () => robotById.get(robotId);
+  const robotLabel = robot => 'AMR ' + robot.number + (robot.number === 1 ? ' · MiR .105' : '');
+  const robotOptions = robots.map(robot => ({ id: robot.id, name: robotLabel(robot) }));
+
+  function persist(next, status) {
+    try {
+      localStorage.setItem(workspaceKey, JSON.stringify(next));
+    } catch {
+      status.textContent = 'เบราว์เซอร์นี้ไม่อนุญาตให้บันทึกข้อมูล';
+      return false;
+    }
+    workspace = next;
+    return true;
+  }
+
+  function setOptions(select, options, active) {
+    select.replaceChildren(...options.map(({ id, name }) => new Option(name, id)));
+    select.value = options.some(option => option.id === active) ? active : options[0]?.id ?? '';
+  }
+
+  function renderMissionFields() {
+    const unsaved = { id: '', name: 'เส้นทางใหม่ที่ยังไม่บันทึก' };
+    setOptions(missionSelect, missionId ? workspace.catalog : [unsaved, ...workspace.catalog], missionId);
+    setOptions(previewMission, workspace.catalog, previewMission.value || missionId);
+    missionName.value = drafts.get(missionId).name;
+    query('#save-mission').disabled = !missionId;
+    query('#delete-mission').disabled = !missionId;
+    previewMission.disabled = !workspace.catalog.length;
+    deleteConfirm.hidden = true;
+  }
+
+  function updateRobot() {
+    const robot = activeRobot();
+    focusButton.textContent = robot.name;
+    focusButton.setAttribute('aria-label', 'เลือก ' + robotLabel(robot));
+    focusButton.title = 'เปิดส่วน AMR';
+    query('#preview-amr-id').textContent = robot.number;
+    fleetPins.replaceChildren(...robots.map(item => robotMarker(item, work !== 'missions')));
+    for (const pin of fleetPins.children) {
+      const selectedPin = pin.dataset.robotId === robotId;
+      pin.classList.toggle('preview-selected', selectedPin);
+      if (pin.dataset.robot) pin.setAttribute('aria-pressed', String(selectedPin));
+    }
+    for (const button of query('#robot-picker').children) {
+      button.setAttribute('aria-pressed', String(button.dataset.pickRobot === robotId));
+    }
+    updateCamera();
+  }
+
+  function openMission(id) {
+    stopPreview();
+    missionId = id;
+    if (!drafts.has(id)) {
+      const saved = findMission(id);
+      drafts.set(id, saved ? structuredClone(saved) : { name: '', points: [parkingPoint(activeRobot())] });
+    }
+    points = drafts.get(id).points;
+    start = { ...(findMission(id)?.points[0] ?? points[0]) };
+    selected = 0;
+    renderMissionFields();
+    render();
+  }
+
+  function selectRobot(id) {
+    if (fleetRun || !robotById.has(id)) return;
+    stopPreview();
+    robotId = id;
+    updateRobot();
+  }
+
+  function setWork(next) {
+    if (fleetRun || work === next) return;
+    stopPreview();
+    work = next;
+    map.dataset.work = work;
+    for (const tab of tabs) {
+      const current = tab.dataset.work === work;
+      tab.setAttribute('aria-pressed', String(current));
+      document.getElementById(tab.getAttribute('aria-controls')).hidden = !current;
+    }
+    overflow.hidden = work !== 'missions';
+    preview.hidden = work === 'flows';
+    flowButton.hidden = work !== 'flows';
+    flowMessage.hidden = work !== 'flows';
+    flowProgress.hidden = true;
+    deleteConfirm.hidden = true;
+    if (work === 'flows') renderSteps();
+    setPreviewButton(false);
+    updateRobot();
+    render();
+    setSheet(true);
+  }
+
+  function saveMission(asCopy) {
+    stopPreview();
+    const name = missionName.value.trim();
+    if (!name || !validRoute(points)) {
+      saveStatus.textContent = name ? 'วางจุดบนผังอย่างน้อย 2 จุดที่ต่างกัน' : 'กรุณาระบุชื่อ Mission';
+      return;
+    }
+    const catalog = workspace.catalog.slice();
+    const id = asCopy ? newId('mission') : missionId;
+    if (!id) return;
+    const duplicate = catalog.some(mission => mission.name === name && mission.id !== id);
+    if (duplicate && !asCopy) {
+      saveStatus.textContent = 'มี Mission ชื่อนี้แล้ว กรุณาใช้ชื่ออื่น';
+      return;
+    }
+    let savedName = name;
+    if (duplicate) {
+      let suffix = 1;
+      do {
+        savedName = name.slice(0, 40) + ' · สำเนา ' + suffix++;
+      } while (catalog.some(mission => mission.name === savedName));
+    }
+    const mission = { id, name: savedName, points: structuredClone(points) };
+    if (asCopy) catalog.push(mission);
+    else catalog[catalog.findIndex(item => item.id === id)] = mission;
+    if (!persist({ ...workspace, catalog }, saveStatus)) return;
+    drafts.delete(id);
+    if (asCopy && !missionId) drafts.delete('');
+    openMission(id);
+    previewMission.value = id;
+    saveStatus.textContent = (asCopy ? 'บันทึก Mission ใหม่แล้ว · ' : 'บันทึกทับแล้ว · ') + savedName;
+  }
+
+  function deleteMission(confirm) {
+    const mission = findMission(missionId);
+    if (!mission) return;
+    const usedBy = workspace.flows.filter(flow => flow.steps.some(step => step.missionId === mission.id));
+    if (usedBy.length) {
+      deleteConfirm.hidden = true;
+      saveStatus.textContent = 'ยังลบไม่ได้ เพราะใช้อยู่ใน ' + usedBy.map(flow => flow.name).join(', ') +
+        ' กรุณาเปลี่ยน Mission หรือเอาขั้นที่ใช้ออกจาก System Flow ก่อน';
+      return;
+    }
+    if (!confirm) {
+      query('#delete-prompt').textContent = 'ลบ ' + mission.name + ' ออกจากคลังหรือไม่?';
+      deleteConfirm.hidden = false;
+      query('#cancel-delete').focus();
+      return;
+    }
+    const catalog = workspace.catalog.filter(item => item.id !== mission.id);
+    const index = workspace.catalog.indexOf(mission);
+    if (!persist({ ...workspace, catalog }, saveStatus)) return;
+    lastDeleted = { mission, index };
+    query('#undo-delete').hidden = false;
+    drafts.delete(mission.id);
+    openMission(catalog[0]?.id ?? '');
+    saveStatus.textContent = 'ลบแล้ว · ' + mission.name;
+  }
+
+  function undoDelete() {
+    if (!lastDeleted) return;
+    const { mission, index } = lastDeleted;
+    if (workspace.catalog.some(item => item.name === mission.name)) {
+      saveStatus.textContent = 'คืน Mission ไม่ได้ เพราะมี Mission ชื่อนี้แล้ว';
+      return;
+    }
+    const catalog = workspace.catalog.slice();
+    catalog.splice(index, 0, mission);
+    if (!persist({ ...workspace, catalog }, saveStatus)) return;
+    lastDeleted = null;
+    query('#undo-delete').hidden = true;
+    openMission(mission.id);
+    saveStatus.textContent = 'คืน Mission แล้ว · ' + mission.name;
+  }
+
+  function saveSteps(steps, message = 'บันทึก Flow แล้ว') {
+    const problem = flowProblem(steps, workspace.catalog);
+    if (problem) {
+      editStatus.textContent = problem;
+      renderSteps();
+      return;
+    }
+    const flows = workspace.flows.map(flow => flow.id === flowId ? { ...flow, steps } : flow);
+    if (persist({ ...workspace, flows }, editStatus)) {
+      resetFlowMap();
+      flowProgress.hidden = true;
+      flowMessage.textContent = '';
+      editStatus.textContent = message;
+    }
+    renderSteps();
+  }
+
+  function renderSteps() {
+    const list = query('#flow-steps');
+    const openDetails = new Set([...list.querySelectorAll('details[open]')].map(item => item.dataset.step));
+    const { steps } = activeFlow();
+    list.replaceChildren(...steps.map((step, index) => {
+      const item = document.createElement('li');
+      item.className = 'flow-step';
+      item.dataset.step = step.id;
+      const heading = document.createElement('h3');
+      heading.textContent = 'ขั้น ' + (index + 1);
+      const fields = document.createElement('div');
+      fields.className = 'step-fields';
+      for (const [key, label, options] of [
+        ['missionId', 'Mission', workspace.catalog], ['robot', 'AMR', robotOptions]
+      ]) {
+        const field = document.createElement('label');
+        const select = document.createElement('select');
+        field.append(label, select);
+        select.dataset.field = key;
+        setOptions(select, options, step[key]);
+        fields.append(field);
+      }
+      const dependencies = document.createElement('details');
+      dependencies.dataset.step = step.id;
+      dependencies.open = openDetails.has(step.id);
+      const summary = document.createElement('summary');
+      const prerequisites = steps.flatMap((other, position) => step.after.includes(other.id) ? [position + 1] : []);
+      summary.textContent = prerequisites.length ? 'รอขั้น ' + prerequisites.join(', ') + ' เสร็จ' : 'เริ่มได้ทันที';
+      dependencies.append(summary);
+      for (const [position, other] of steps.entries()) {
+        if (other.id === step.id) continue;
+        const label = document.createElement('label');
+        const check = document.createElement('input');
+        check.type = 'checkbox';
+        check.dataset.after = other.id;
+        check.checked = step.after.includes(other.id);
+        label.append(check, 'รอขั้น ' + (position + 1) + ' · ' + findMission(other.missionId).name);
+        dependencies.append(label);
+      }
+      const buttons = document.createElement('div');
+      buttons.className = 'step-actions';
+      for (const [action, text, title, disabled] of [
+        ['up', '↑', 'เลื่อนขั้นขึ้น', index === 0],
+        ['down', '↓', 'เลื่อนขั้นลง', index === steps.length - 1],
+        ['remove', 'เอาขั้นออก', 'เอาขั้นนี้ออกจาก Flow', false]
+      ]) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.action = action;
+        button.textContent = text;
+        button.setAttribute('aria-label', title + ' · ขั้น ' + (index + 1));
+        button.disabled = disabled;
+        buttons.append(button);
+      }
+      item.append(heading, fields, dependencies, buttons);
+      return item;
+    }));
+    query('#add-step').disabled = !workspace.catalog.length;
+    query('#order-sequence').disabled = steps.length < 2;
+    query('#order-parallel').disabled = steps.length < 2;
+    flowButton.disabled = !steps.length;
+  }
+
+  function orderedSteps(steps, parallel) {
+    return steps.map((step, index) => ({
+      ...step, after: index ? [steps[parallel ? 0 : index - 1].id] : []
+    }));
+  }
+
+  function matchesOrder(steps, parallel) {
+    return orderedSteps(steps, parallel).every((step, index) =>
+      step.after.length === steps[index].after.length && step.after[0] === steps[index].after[0]);
+  }
+
+  function applyOrder(parallel) {
+    saveSteps(orderedSteps(activeFlow().steps, parallel));
+  }
+
+  function robotMarker(robot, interactive = false) {
+    const marker = document.createElementNS(svgNamespace, 'g');
+    marker.setAttribute('transform', 'translate(' + coordinates(robot) + ')');
+    marker.dataset.robotId = robot.id;
+    if (interactive) {
+      marker.classList.add('fleet-pin');
+      marker.dataset.robot = robot.id;
+      marker.setAttribute('tabindex', '0');
+      marker.setAttribute('role', 'button');
+      marker.setAttribute('aria-label', 'เลือก ' + robotLabel(robot));
+    }
+    const icon = document.createElementNS(svgNamespace, 'g');
+    icon.classList.add('map-icon');
+    const circle = document.createElementNS(svgNamespace, 'circle');
+    circle.setAttribute('r', '13');
+    circle.setAttribute('fill', robot.color);
+    circle.setAttribute('stroke', '#fff');
+    circle.setAttribute('stroke-width', '2');
+    const text = document.createElementNS(svgNamespace, 'text');
+    text.textContent = robot.number;
+    text.classList.add('amr-run-id');
+    icon.append(circle, text);
+    marker.append(icon);
+    return marker;
+  }
+
+  function travelDuration(length) {
+    return clamp(length * 17, 1700, 8500);
+  }
+
+  function drawVehicle(node, path, length, distance) {
+    const position = path.getPointAtLength(distance);
+    let rotation = '';
+    if (node === previewRobot) {
+      const before = path.getPointAtLength(Math.max(0, distance - 1));
+      const after = path.getPointAtLength(Math.min(length, distance + 1));
+      rotation = ' rotate(' + Math.atan2(after.y - before.y, after.x - before.x) * 180 / Math.PI + ')';
+    }
+    node.setAttribute('transform', 'translate(' + coordinates(position) + ')' + rotation);
+    return position;
+  }
+
+  function resetFlowMap() {
+    delete map.dataset.flow;
+    delete map.dataset.preview;
+    flowRoutes.replaceChildren();
+    flowRobots.replaceChildren();
+  }
+
+  function setFleetControls(running) {
+    const controls = document.querySelectorAll('#sheet-body :is(button,input,select), #overflow button, .work-nav button');
+    for (const control of controls) {
+      if (running && !control.disabled) {
+        control.disabled = true;
+        control.dataset.flowLocked = 'true';
+      } else if (!running && control.dataset.flowLocked) {
+        control.disabled = false;
+        delete control.dataset.flowLocked;
+      }
+    }
+    focusButton.disabled = running;
+    flowButton.textContent = running ? 'หยุดจำลอง Flow' : 'จำลองทั้ง Flow';
+    updatePreviewControl();
+  }
+
+  function setJobState(job, state, label) {
+    job.state = state;
+    job.row.dataset.state = state;
+    job.row.textContent = job.mission.name + ' · ' + robotById.get(job.mission.robot).name + ' · ' + label;
+    job.path.setAttribute('opacity', state === 'running' ? '.95' : state === 'done' ? '.53' : '.25');
+    if (state === 'running') job.path.removeAttribute('stroke-dasharray');
+  }
+
+  function finishFlow(cancelled) {
+    cancelAnimationFrame(fleetRun.frame);
+    fleetRun = null;
+    if (cancelled) {
+      resetFlowMap();
+      flowProgress.hidden = true;
+    }
+    setFleetControls(false);
+    flowMessage.textContent = cancelled ? 'หยุดการจำลองแล้ว' : 'จำลองครบทุก Mission แล้ว';
+  }
+
+  function advanceFlow(now) {
+    if (!fleetRun) return;
+    const { jobs, vehicles, busy, completed } = fleetRun;
+    for (const job of jobs) {
+      if (job.state !== 'running') continue;
+      const progress = Math.min(1, (now - job.started) / job.duration);
+      drawVehicle(vehicles.get(job.mission.robot), job.path, job.length, job.length * progress);
+      if (progress === 1) {
+        setJobState(job, 'done', 'เสร็จแล้ว');
+        busy.delete(job.mission.robot);
+        completed.add(job.mission.id);
+      }
+    }
+    for (const job of jobs) {
+      const { mission } = job;
+      if (job.state !== 'waiting' || busy.has(mission.robot) || !mission.after.every(id => completed.has(id))) continue;
+      job.started = now;
+      busy.add(mission.robot);
+      setJobState(job, 'running', 'กำลังวิ่ง');
+      drawVehicle(vehicles.get(mission.robot), job.path, job.length, 0);
+    }
+    if (completed.size === jobs.length) finishFlow(false);
+    else fleetRun.frame = requestAnimationFrame(advanceFlow);
+  }
+
+  function runFlow() {
+    if (fleetRun) {
+      finishFlow(true);
+      return;
+    }
+    const { steps } = activeFlow();
+    const problem = flowProblem(steps, workspace.catalog);
+    const missions = steps.map(({ missionId, ...step }) => {
+      const mission = findMission(missionId);
+      return { ...step, name: mission.name, points: mission.points };
+    });
+    if (problem) {
+      flowMessage.textContent = problem;
+      return;
+    }
+    stopPreview();
+    map.dataset.flow = 'true';
+    flowProgress.replaceChildren();
+    flowProgress.hidden = false;
+    const vehicles = new Map(robots.map(robot => [robot.id, robotMarker(robot)]));
+    flowRobots.replaceChildren(...vehicles.values());
+    const jobs = missions.map(mission => {
+      const path = document.createElementNS(svgNamespace, 'path');
+      const row = document.createElement('li');
+      path.setAttribute('d', routePath(mission.points));
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', robotById.get(mission.robot).color);
+      path.setAttribute('stroke-width', '3.5');
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-dasharray', '5 5');
+      path.setAttribute('vector-effect', 'non-scaling-stroke');
+      flowRoutes.append(path);
+      flowProgress.append(row);
+      const length = path.getTotalLength();
+      const job = { mission, path, row, length, duration: travelDuration(length) };
+      setJobState(job, 'waiting', 'รอเริ่ม');
+      return job;
+    });
+    updateCamera();
+    fleetRun = { jobs, vehicles, completed: new Set(), busy: new Set(), frame: 0 };
+    setFleetControls(true);
+    flowMessage.textContent = 'กำลังจำลองจาก Mission ที่บันทึกไว้';
+    fleetRun.frame = requestAnimationFrame(advanceFlow);
+  }
+
+  query('#robot-picker').replaceChildren(...robots.map(robot => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.pickRobot = robot.id;
+    button.style.setProperty('--robot-color', robot.color);
+    button.textContent = robotLabel(robot);
+    return button;
+  }));
+  function newId(prefix) {
+    return prefix + '-' + [...crypto.getRandomValues(new Uint32Array(4))]
+      .map(value => value.toString(16).padStart(8, '0')).join('');
+  }
+  for (const tab of tabs) tab.addEventListener('click', () => {
+    if (work === tab.dataset.work) setSheet(true);
+    else setWork(tab.dataset.work);
+  });
+  query('#robot-picker').addEventListener('click', event => {
+    const button = event.target.closest('[data-pick-robot]');
+    if (button) selectRobot(button.dataset.pickRobot);
+  });
+  fleetPins.addEventListener('click', event => {
+    const marker = event.target.closest('[data-robot]');
+    if (marker) selectRobot(marker.dataset.robot);
+  });
+  focusButton.addEventListener('click', () => {
+    setWork('amr');
+    setSheet(true);
+    query('#robot-picker [aria-pressed=true]')?.focus();
+  });
+  previewMission.addEventListener('change', () => {
+    stopPreview();
+    updatePreviewControl();
+  });
+  missionSelect.addEventListener('change', () => {
+    saveStatus.textContent = '';
+    openMission(missionSelect.value);
+  });
+  missionName.addEventListener('input', () => {
+    drafts.get(missionId).name = missionName.value;
+    deleteConfirm.hidden = true;
+  });
+  query('#blank-mission').addEventListener('click', () => {
+    if (!drafts.has('')) {
+      const robot = activeRobot();
+      drafts.set('', { name: '', points: [parkingPoint(robot)] });
+    }
+    saveStatus.textContent = 'คลิกบนผังเพื่อวางจุดแรกถัดจากจุดเริ่ม หรือปรับตำแหน่งจุดเริ่มได้';
+    openMission('');
+    missionName.focus();
+  });
+  query('#save-mission').addEventListener('click', () => saveMission(false));
+  query('#new-mission').addEventListener('click', () => saveMission(true));
+  query('#delete-mission').addEventListener('click', () => deleteMission(false));
+  query('#confirm-delete').addEventListener('click', () => deleteMission(true));
+  query('#undo-delete').addEventListener('click', undoDelete);
+  query('#cancel-delete').addEventListener('click', () => {
+    deleteConfirm.hidden = true;
+    query('#delete-mission').focus();
+  });
+  flowSelect.addEventListener('change', () => {
+    flowId = flowSelect.value;
+    resetFlowMap();
+    flowProgress.hidden = true;
+    flowMessage.textContent = '';
+    editStatus.textContent = '';
+    renderSteps();
+  });
+  query('#order-sequence').addEventListener('click', () => applyOrder(false));
+  query('#order-parallel').addEventListener('click', () => applyOrder(true));
+  query('#add-step').addEventListener('click', () => {
+    const { steps } = activeFlow();
+    const mission = findMission(missionId) ?? workspace.catalog[0];
+    if (!mission) return;
+    saveSteps([...steps, { id: newId('step'), missionId: mission.id, robot: robotId,
+      after: steps.length ? [steps.at(-1).id] : [] }]);
+    query('#flow-steps li:last-child select')?.focus();
+  });
+  query('#flow-steps').addEventListener('change', event => {
+    const control = event.target;
+    const item = control.closest('li[data-step]');
+    if (!item) return;
+    const { steps } = activeFlow();
+    const index = steps.findIndex(step => step.id === item.dataset.step);
+    const step = steps[index];
+    if (!step) return;
+    const updated = { ...step };
+    if (control.dataset.field) updated[control.dataset.field] = control.value;
+    else if (control.dataset.after) updated.after = Array.from(item.querySelectorAll('input:checked'), input => input.dataset.after);
+    else return;
+    const next = steps.slice();
+    next[index] = updated;
+    saveSteps(next);
+    const selector = control.dataset.field ? '[data-field="' + control.dataset.field + '"]'
+      : '[data-after="' + CSS.escape(control.dataset.after) + '"]';
+    query('#flow-steps li[data-step="' + CSS.escape(step.id) + '"] ' + selector)?.focus();
+  });
+  query('#flow-steps').addEventListener('click', event => {
+    const button = event.target.closest('button[data-action]');
+    if (!button) return;
+    const id = button.closest('li').dataset.step;
+    const { steps } = activeFlow();
+    const index = steps.findIndex(step => step.id === id);
+    const action = button.dataset.action;
+    if (action === 'remove') {
+      const next = steps.filter(step => step.id !== id)
+        .map(step => ({ ...step, after: step.after.filter(dependency => dependency !== id) }));
+      saveSteps(next, 'เอาขั้นออกแล้ว และอัปเดตเงื่อนไขที่รอขั้นนี้');
+      query('#add-step').focus();
+    } else {
+      const next = steps.slice();
+      const destination = index + (action === 'up' ? -1 : 1);
+      [next[index], next[destination]] = [next[destination], next[index]];
+      if (matchesOrder(steps, false)) saveSteps(orderedSteps(next, false), 'เปลี่ยนลำดับการวิ่งแล้ว');
+      else if (matchesOrder(steps, true)) saveSteps(orderedSteps(next, true), 'เปลี่ยนขั้นเริ่มต้นของ Flow แล้ว');
+      else saveSteps(next, 'จัดรายการแล้ว เงื่อนไขที่ตั้งเองยังอ้างถึงขั้นเดิม');
+      const moved = query('#flow-steps li[data-step="' + CSS.escape(id) + '"]');
+      moved.querySelector('button[data-action="' + action + '"]:enabled')?.focus();
+    }
+  });
+  flowButton.addEventListener('click', runFlow);
+  setOptions(flowSelect, workspace.flows, flowId);
+  openMission(workspace.catalog[0]?.id ?? '');
+  work = '';
+  setWork('amr');
+  setSheet(false);
+  fitMap();
+
 </script>
 </html>
