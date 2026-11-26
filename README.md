@@ -2,6 +2,8 @@
 
 ชุดซอร์สสำหรับแก้ไข flow, dashboard และ AMR Route Lab จากเครื่องอื่น
 
+**สถานี A · [คู่มือตั้งกล้อง RealSense และรัน QC บน Windows](docs/station-a-camera-setup-windows.md)** — ตั้งกล้องชั่วคราว เลือกความสูง ตรวจความคม และทดสอบ OpenCV จากภาพนิ่งถึงภาพสด
+
 - `node-red/` มี flow ที่ใช้งานอยู่ รวมหน้า Live Map ที่ route `/smart-factory/live-map` และไฟล์ล็อกสำหรับติดตั้งแพ็กเกจด้วย `npm ci`
 - `grafana/dashboards/` มีไฟล์ dashboard resource ของ Grafana 13 ที่ export จากชุดที่ใช้งานอยู่ โดย datasource ของ dashboard ใช้ UID `cg4kftkp6p88wd`
 - `amr-route-lab/` มีเว็บ แผนที่ และสคริปต์สำหรับใช้งานกับ MiR เมื่อเครื่องเข้าถึงเครือข่ายแล็บได้

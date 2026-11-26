@@ -27,6 +27,7 @@
 - รายงาน Modbus WISE-4012 (`WISE-4012_Node-RED_Modbus_Report_2026-09-16.md`)
 - ระบบตรวจจับวัตถุ WISE-4012 (`Object-Detection-WISE4012.md`) และ รายงานทดสอบ DI1 (`EZ-18M-Integration-Report-2026-09-22.md`)
 - [Handoff สถานี A](amr-kitting-station-a-handoff.md) สำหรับสูตรออเดอร์ ขั้นตั้งกล้อง และเกณฑ์ทดสอบ QC
+- [คู่มือตั้งกล้อง RealSense และรัน QC บน Windows](../station-a-camera-setup-windows.md) สำหรับเปิดทำตามทีละขั้นที่ Lab
 
 ## ส่งมอบเมื่อ
 
