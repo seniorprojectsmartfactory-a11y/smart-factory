@@ -5,3 +5,7 @@
 - [แผน Dashboard](PLAN.md) ใช้ลงผู้รับผิดชอบ งาน และผลตรวจรับของทั้งสองส่วน
 
 งาน AMR ใช้ API จาก [Node-RED](../database/node-red/automation.md) และข้อมูลแผนที่กับข้อจำกัดการทำงานจาก [Robotics AMR](../robotics/amr/README.md)
+
+## บันทึกการอัปเดต
+
+- [26 พฤศจิกายน 2569 · ทีม Dashboard ปรับ UI หน้า AMR Route Editor](updates/2026-11-26-amr-route-editor.md)
