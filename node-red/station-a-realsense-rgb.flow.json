@@ -1,0 +1,58 @@
+[
+  {
+    "id": "248a327cf431bb2a",
+    "type": "tab",
+    "label": "Station A Vision - RealSense RGB Test",
+    "disabled": false,
+    "info": "Station A RGB preview and baseline records for two verified RealSense units.",
+    "env": []
+  },
+  {
+    "name": "/vision-qc-test",
+    "type": "http in",
+    "swaggerDoc": "",
+    "upload": false,
+    "x": 190,
+    "url": "/vision-qc-test",
+    "y": 100,
+    "id": "415130bd6beec06a",
+    "wires": [
+      [
+        "415130bd6beec06b"
+      ]
+    ],
+    "method": "get",
+    "z": "248a327cf431bb2a"
+  },
+  {
+    "libs": [],
+    "func": "msg.headers = {\"Content-Type\":\"text/html; charset=utf-8\",\"Cache-Control\":\"no-store\",\"Permissions-Policy\":\"camera=(self), microphone=()\"}; msg.payload = \"<!doctype html>\\n<html lang=\\\"th\\\">\\n<head><meta charset=\\\"utf-8\\\"><meta name=\\\"viewport\\\" content=\\\"width=device-width,initial-scale=1\\\">\\n<title>ทดสอบ RealSense · สถานี A</title>\\n<style>\\n*{box-sizing:border-box}body{margin:0;background:#edf1f5;color:#182338;font:16px/1.6 system-ui,sans-serif}\\nmain{width:min(100% - 32px,900px);margin:36px auto}section{background:#fff;border:1px solid #d9e2ea;border-radius:20px;padding:clamp(16px,4vw,28px);margin-bottom:16px}\\nh1,h2,p,dl{margin:0}h1{font-size:clamp(1.5rem,5vw,2rem)}h2{font-size:1.15rem;margin-bottom:10px}\\n.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0}\\nbutton{border:0;border-radius:10px;padding:9px 15px;background:#174ea6;color:#fff;font:inherit;cursor:pointer}\\nbutton.secondary{background:#e8eef6;color:#163251}button:disabled{opacity:.45;cursor:default}\\nvideo{display:block;background:#132136;width:100%;aspect-ratio:16/9;object-fit:contain;border-radius:12px}\\ndl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 14px}dd{margin:0;overflow-wrap:anywhere}dt{font-weight:600}\\n#status{font-weight:650}#status[data-state=ok]{color:#11663e}#status[data-state=error]{color:#a12625}\\nsmall{display:block;color:#4b5d73;margin-top:10px}@media(max-width:480px){main{margin-top:16px}dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:8px}}\\n</style></head><body><main>\\n<section><h1>ทดสอบกล้อง RealSense · สถานี A</h1><p id=\\\"status\\\" role=\\\"status\\\">ยังไม่ได้เปิดกล้อง</p>\\n<div class=\\\"controls\\\"><button id=\\\"start\\\">เริ่มทดสอบกล้อง RGB</button><button id=\\\"stop\\\" class=\\\"secondary\\\" disabled>หยุดกล้อง</button></div>\\n<video id=\\\"video\\\" autoplay muted playsinline aria-label=\\\"ภาพสดจาก RealSense RGB\\\"></video>\\n<small>เปิดหน้านี้บนคอมที่เสียบกล้อง USB ภาพแสดงในเบราว์เซอร์บนเครื่องนี้</small></section>\\n<section><h2>ข้อมูลอุปกรณ์และผลทดสอบ</h2><dl>\\n<dt>อุปกรณ์</dt><dd>Intel RealSense D435i</dd><dt>หมายเลขเครื่องล่าสุดที่ตรวจใน Windows</dt><dd><code>043323050394</code></dd>\\n<dt>USB VID / PID</dt><dd><code>8086:0B3A</code></dd>\\n<dt>พอร์ต USB ที่ตรวจพบ</dt><dd><code>Port_#0014.Hub_#0002</code></dd>\\n<dt>อินเทอร์เฟซ</dt><dd>RGB <code>MI_03</code> · Depth <code>MI_00</code> (หน้านี้ทดสอบ RGB)</dd>\\n<dt>ช่องทางภาพ</dt><dd>USB → Windows Camera → เบราว์เซอร์ · Node-RED เสิร์ฟหน้าเว็บที่ <code>1881</code></dd>\\n<dt>ภาพที่รับได้</dt><dd id=\\\"format\\\">รอทดสอบ</dd>\\n<dt>ผลสดล่าสุดในเบราว์เซอร์</dt><dd id=\\\"last\\\">ยังไม่มีผลที่บันทึก</dd>\\n<dt>ความสูงกล้อง</dt><dd>รอวัดที่สถานี A</dd>\\n</dl></section><section id=\\\"camera-test-records\\\" aria-labelledby=\\\"record-title\\\"><h2 id=\\\"record-title\\\">ผลทดสอบแยกตามหมายเลขเครื่อง</h2><dl><dt>ตัวที่ 1 · 043323052370</dt><dd>ผ่าน RGB · 1280 × 720 · 30 fps · 26 พ.ย. 2569 16:16:20 น.</dd><dt>ตัวที่ 2 · 043323050394</dt><dd>ผ่าน RGB · 1280 × 720 · 30 fps · 26 พ.ย. 2569 16:22:32 น.</dd></dl><small>fps เป็นค่าที่สตรีมรายงาน ทั้งสองตัวใช้ USB Port_#0014.Hub_#0002 ทีละตัว ผลสดด้านบนใช้กล้อง RealSense RGB ที่เชื่อมต่อ ส่วนหมายเลขเครื่องในบันทึกยืนยันจาก Windows ขณะทดสอบ</small></section></main>\\n<script>\\nconst video = document.getElementById('video');\\nconst status = document.getElementById('status');\\nconst start = document.getElementById('start');\\nconst stop = document.getElementById('stop');\\nconst format = document.getElementById('format');\\nconst last = document.getElementById('last');\\nconst storageKey = 'station-a-realsense-rgb-last-live-result';\\nlet stream;\\nlet timer;\\nlet frameWatch;\\nlet generation = 0;\\n\\nfunction setStatus(text, state = '') {\\n  status.textContent = text;\\n  status.dataset.state = state;\\n}\\n\\nfunction releaseTracks() {\\n  ++generation;\\n  clearTimeout(timer);\\n  clearInterval(frameWatch);\\n  if (stream) stream.getTracks().forEach(track => track.stop());\\n  stream = null;\\n  video.srcObject = null;\\n  start.disabled = false;\\n  stop.disabled = true;\\n}\\n\\nfunction showLast(result) {\\n  last.textContent = new Date(result.at).toLocaleString('th-TH') + ' · ' + result.format;\\n}\\ntry {\\n  const saved = JSON.parse(localStorage.getItem(storageKey));\\n  if (saved && saved.at && saved.format) showLast(saved);\\n} catch {}\\n\\nfunction realSenseRgb(devices) {\\n  return devices.find(device => device.kind === 'videoinput'\\n    && /realsense|d435i/i.test(device.label) && /rgb|color/i.test(device.label));\\n}\\n\\nstart.addEventListener('click', async () => {\\n  const run = ++generation;\\n  start.disabled = true;\\n  setStatus('กำลังเปิดกล้อง RealSense RGB…');\\n  format.textContent = 'รอภาพจริง';\\n  try {\\n    if (!navigator.mediaDevices?.getUserMedia) throw new Error('เปิดผ่าน http://127.0.0.1:1881 บนคอมที่เสียบกล้อง');\\n    let camera = realSenseRgb(await navigator.mediaDevices.enumerateDevices());\\n    if (!camera) {\\n      const permissionStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });\\n      try {\\n        camera = realSenseRgb(await navigator.mediaDevices.enumerateDevices());\\n      } finally {\\n        permissionStream.getTracks().forEach(track => track.stop());\\n      }\\n    }\\n    if (!camera) throw new Error('เบราว์เซอร์ไม่พบ RealSense RGB');\\n    stream = await navigator.mediaDevices.getUserMedia({\\n      video: { deviceId: { exact: camera.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },\\n      audio: false,\\n    });\\n    const track = stream.getVideoTracks()[0];\\n    if (!/realsense|d435i/i.test(track.label) || !/rgb|color/i.test(track.label)) throw new Error('อุปกรณ์ที่เปิดไม่ใช่ RealSense RGB');\\n    track.addEventListener('ended', () => {\\n      if (run !== generation) return;\\n      releaseTracks();\\n      setStatus('กล้องหยุดส่งภาพหรือหลุดการเชื่อมต่อ', 'error');\\n    });\\n    video.srcObject = stream;\\n    stop.disabled = false;\\n    await video.play();\\n    if (run !== generation) return;\\n\\n    const initialTime = video.currentTime;\\n    frameWatch = setInterval(() => {\\n      if (run !== generation || !video.videoWidth || video.currentTime <= initialTime + 0.1) return;\\n      clearInterval(frameWatch);\\n      clearTimeout(timer);\\n      const fps = track.getSettings().frameRate;\\n      const detail = video.videoWidth + ' × ' + video.videoHeight + (fps ? ' · ' + Math.round(fps * 10) / 10 + ' fps (ค่าของสตรีม)' : '');\\n      format.textContent = detail;\\n      setStatus('ผ่าน · ได้รับภาพสดจาก RealSense RGB', 'ok');\\n      const result = { at: new Date().toISOString(), format: detail };\\n      showLast(result);\\n      try { localStorage.setItem(storageKey, JSON.stringify(result)); } catch {}\\n    }, 150);\\n    timer = setTimeout(() => {\\n      if (run !== generation) return;\\n      releaseTracks();\\n      setStatus('เปิดกล้องแล้วแต่ยังไม่ได้รับภาพ', 'error');\\n    }, 10000);\\n  } catch (error) {\\n    if (run !== generation) return;\\n    releaseTracks();\\n    const detail = {\\n      NotAllowedError: 'ยังไม่ได้อนุญาตให้เบราว์เซอร์ใช้กล้อง',\\n      NotReadableError: 'เปิดกล้องไม่ได้ ลองปิดโปรแกรมอื่นที่กำลังใช้กล้อง',\\n      NotFoundError: 'เบราว์เซอร์ไม่พบกล้อง',\\n    }[error.name] || error.message;\\n    setStatus(detail, 'error');\\n  }\\n});\\nstop.addEventListener('click', () => {\\n  releaseTracks();\\n  setStatus('หยุดกล้องแล้ว');\\n});\\nwindow.addEventListener('pagehide', releaseTracks);\\n</script></body></html>\"; return msg;",
+    "timeout": 0,
+    "y": 100,
+    "type": "function",
+    "x": 440,
+    "outputs": 1,
+    "noerr": 0,
+    "wires": [
+      [
+        "415130bd6beec06e"
+      ]
+    ],
+    "finalize": "",
+    "name": "RealSense RGB browser dashboard",
+    "initialize": "",
+    "id": "415130bd6beec06b",
+    "z": "248a327cf431bb2a"
+  },
+  {
+    "headers": {},
+    "y": 140,
+    "type": "http response",
+    "x": 680,
+    "statusCode": "",
+    "wires": [],
+    "name": "",
+    "id": "415130bd6beec06e",
+    "z": "248a327cf431bb2a"
+  }
+]
