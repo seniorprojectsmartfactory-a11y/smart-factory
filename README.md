@@ -1,5 +1,16 @@
 # Smart Factory Senior Project
 
+## GitHub SF · สกิลกลางสำหรับทีม
+
+เปิด repo นี้เป็น workspace ของ AI แล้วใช้คำสั่งด้านล่าง หาก AI ต้องการไฟล์อ้างอิง ให้ชี้ไปที่ [SKILL.md](.agents/skills/smart-factory-github/SKILL.md)
+
+- `GitHub SF Push Robotic` ส่งโค้ดล่าสุดและบันทึกของฝ่ายที่ลงมือทำจริง
+- `GitHub SF Pull Dashboard` อัปเดต checkout เดิมและสรุปงานล่าสุดของ Dashboard
+- `GitHub SF Clone Dashboard` โหลด repo พร้อม Node-RED และไฟล์ที่ต้องใช้ร่วมกับหน้าเว็บ
+- `GitHub SF Save Database` เก็บงานและบันทึกในเครื่อง
+
+ระบุตำแหน่งเดียวได้ สกิลใช้แชตและไฟล์ที่เปลี่ยนเพื่อระบุฝ่ายที่ทำงานร่วมกัน แล้วแยกบันทึกตามฝ่าย โค้ดล่าสุดอยู่ที่ path เดิมและเปิดเวอร์ชันก่อนได้จาก Git history
+
 ชุดซอร์สสำหรับแก้ไข flow, dashboard และ AMR Route Lab จากเครื่องอื่น
 
 **สถานี A · [คู่มือตั้งกล้อง RealSense และรัน QC บน Windows](docs/station-a-camera-setup-windows.md)** — ตั้งกล้องชั่วคราว เลือกความสูง ตรวจความคม และทดสอบ OpenCV จากภาพนิ่งถึงภาพสด
